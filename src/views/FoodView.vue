@@ -1,65 +1,44 @@
 <template>
-  <div class="mt-5">
+  <div class="mt-5" v-if="food">
     
     <div class="pt-3">
-        <h1 class="text-h5 text-center">{{ $route.params.food }}</h1>
+        <h1 class="text-h5 text-center">{{ food.description }}</h1>
+        <h6 class="text-body-1 text-center">{{ food.calories }}{{ food.calories_unit }}</h6>
     </div>
     
-    <div class="mt-3">
+    <div class="mt-3" v-if="chartData">
         <div class="text-body2 mb-1 text-center font-weight-medium">Macros</div>
         <div class="mt-1">
             <Pie :data="chartData" :options="chartOptions" />
         </div>
     </div>
 
-   
     <div class="mt-5 pt-5">
         <div class="text-body2 mb-1 text-center font-weight-medium">Nutrition Facts</div>
-        <v-table density="compact">
-           
+
+        <v-table>
             <tbody>
                 <tr>
                     <td>
-                        Total Carbohydrates
-                        
+                        {{ food.servings_per_container }} Servings Per Container
                     </td>
-                    <td>100mg</td>
                 </tr>
                 <tr>
-                    <td colspan="2">
-                        <v-table density="compact">
-                            <tbody>
-                                <tr>
-                                    <td>Fiber</td>
-                                    <td>2.5g</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2">
-                                        <v-table density="compact">
-                                            <tbody>
-                                                <tr>
-                                                    <td>Soluble</td>
-                                                    <td>1.5g</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Insoluble</td>
-                                                    <td>1g</td>
-                                                </tr>
-                                            </tbody>
-                                        </v-table>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>Sugars</td>
-                                    <td>5g</td>
-                                </tr>
-                            </tbody>
-                        </v-table>
+                    <td>
+                        Serving Size: {{ food.serving_size }}{{ food.serving_size_unit }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Calories: {{ food.calories }}{{ food.calories_unit }}
                     </td>
                 </tr>
             </tbody>
         </v-table>
+        
+        <v-divider></v-divider>
+
+        <NutrientsTable :nutrients="food.nutrients" />
 
     </div>
 
@@ -69,18 +48,18 @@
 
         <v-row>
             <v-col
-                v-for="n in 4"
-                :key="n"
+                v-for="img in images"
+                :key="img"
                 class="d-flex child-flex"
                 cols="6"
             >
                 <v-img
-                    :lazy-src="`https://picsum.photos/10/6?image=${n * 5 + 10}`"
-                    :src="`https://picsum.photos/500/300?image=${n * 5 + 10}`"
+                    :lazy-src="img"
+                    :src="img"
                     aspect-ratio="1"
                     class="bg-grey-lighten-2"
                     cover
-                    @click="openImageModal"
+                    @click="openImageModal(img)"
                 >
                     <template v-slot:placeholder>
                         <v-row
@@ -105,10 +84,10 @@
             <v-card
                 max-width="400"
                 title="Image"
+                v-if="currentImage"
             >
                 <v-img
-                    height="200px"
-                    src="https://cdn.vuetifyjs.com/images/cards/sunshine.jpg"
+                    :src="currentImage"
                     cover
                 ></v-img>
 
@@ -127,26 +106,19 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Pie } from 'vue-chartjs'
+import axios from 'axios'
+import NutrientsTable from '@/components/NutrientsTable.vue'
+import { calculatePercentage } from '@/helpers/Numbers';
 
+import { useRoute } from 'vue-router';
 
-const chartData = {
-  labels: ['Protein', 'Fat', 'Carbs'],
-  datasets: [
-    {
-      backgroundColor: ['#980000', '#1A6BAD', '#2B5838'],
-      data: [40, 20, 80]
-    }
-  ],
-
-  
-}
 
 const chartOptions = {
   responsive: true,
-  maintainAspectRatio: false
+  maintainAspectRatio: false,
 }
 
 
@@ -154,28 +126,113 @@ ChartJS.register(ArcElement, Tooltip, Legend)
 
 const imageModalVisible = ref(false);
 
+const currentImage = ref(null);
 
 export default {
   name: 'FoodView',
   components: {
     Pie,
+    NutrientsTable
   },
-  data() {
-    return {
-        chartData,
-        chartOptions,
-        imageModalVisible,
+    
+  data: () => ({
+    chartOptions,
+    imageModalVisible,
+    
+  }),
+
+  setup() {
+
+    const route = useRoute();
+
+    const food = ref(null);
+    const images = ref([]);
+
+    const chartData = ref(null);
+  
+    const fetchData = () => {
        
+        const food_slug = route.params.food;;
+        axios.get(`http://pinoy-food-api.test/api/foods/${food_slug}`)
+        .then((res) => {
+            food.value = res.data;
+          
+            const images_arr = [
+                res.data.title_image,
+                res.data.nutrition_label_image
+            ];
+
+            if (res.data.barcode_image) {
+                images_arr.push(res.data.barcode_image);
+            }   
+
+            if (res.data.ingredients_image) {
+                images_arr.push(res.data.ingredients_image);
+            }
+
+            images.value = images_arr;
+
+          
+            const macros_keys = ['total carbohydrates', 'protein', 'total fat'];
+            
+            const macros_data = {};
+
+            res.data.nutrients.forEach((itm) => {
+                if (macros_keys.indexOf(itm.name) !== -1) {
+                   macros_data[itm.name] = itm.amount;
+                }
+            });
+
+            const macros_numbers = Object.values(macros_data);
+            const total = macros_numbers.reduce((sum, num) => sum + num, 0);
+
+            const macros_percentages = {};
+            for (const [key, value] of Object.entries(macros_data)) {
+                const percent = calculatePercentage(value, total);
+                macros_percentages[key] = percent.toFixed(2);
+            }
+
+            chartData.value = {
+                labels: ['Protein', 'Fat', 'Carbs'],
+                datasets: [
+                    {
+                        backgroundColor: ['#2ecc71', '#d35400', '#f39c12'],
+                        data: [
+                            macros_percentages['protein'],
+                            macros_percentages['total fat'],
+                            macros_percentages['total carbohydrates']
+                        ] 
+                    }
+                ],
+            }
+
+        })
+        .catch((err) => {
+            console.log('err: ', err);
+        });
     }
+
+    onMounted(fetchData);
+
+    return {
+        food,
+        images,
+        currentImage,
+        chartData,
+    }
+
   },
+
+  
 
   methods: {
       closeImageModal() {
          this.imageModalVisible = false; 
       },
 
-      openImageModal() {
+      openImageModal(url) {
           this.imageModalVisible = true;
+          currentImage.value = url;
       }
   }
 }
