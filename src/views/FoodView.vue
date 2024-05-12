@@ -127,6 +127,11 @@ import { useRoute } from 'vue-router';
 const chartOptions = {
   responsive: true,
   maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      onClick: null
+    }  
+  }
 }
 
 
