@@ -36,6 +36,11 @@
 <script>
 
 export default {
+
+  props: {
+    updateItems: Function 
+  },
+
   data: () => ({
     description: '',
     dialog: false,
@@ -44,9 +49,9 @@ export default {
   methods: {
     search() {
       this.dialog = false;
-      console.log(this.description);
-
-      this.$emit('search-changed', this.description);
+     
+      this.updateItems(this.description);
+      this.description = '';
     }
   }
 }
