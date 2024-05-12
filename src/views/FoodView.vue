@@ -3,7 +3,7 @@
     
     <div class="pt-3">
         <h1 class="text-h5 text-center">{{ food.description }}</h1>
-        <h6 class="text-body-1 text-center">{{ food.calories }}{{ food.calories_unit }}</h6>
+        <h6 class="text-body-1 text-center text-grey-darken-3">{{ food.calories }}{{ food.calories_unit }}</h6>
     </div>
     
     <div class="mt-3" v-if="chartData">
@@ -19,17 +19,17 @@
         <v-table>
             <tbody>
                 <tr>
-                    <td>
+                    <td class="text-grey-darken-3">
                         {{ food.servings_per_container }} Servings Per Container
                     </td>
                 </tr>
                 <tr>
-                    <td>
+                    <td class="text-grey-darken-3">
                         Serving Size: {{ food.serving_size }}{{ food.serving_size_unit }}
                     </td>
                 </tr>
                 <tr>
-                    <td>
+                    <td class="text-grey-darken-3">
                         Calories: {{ food.calories }}{{ food.calories_unit }}
                     </td>
                 </tr>
@@ -40,6 +40,14 @@
 
         <NutrientsTable :nutrients="food.nutrients" />
 
+    </div>
+
+    <div class="mt-5">
+        <div class="text-body2 mb-1 text-center font-weight-medium">Ingredients</div>
+
+        <p class="text-subtitle2 text-grey-darken-3">
+            {{ food.ingredients }}
+        </p>
     </div>
 
 

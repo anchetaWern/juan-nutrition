@@ -5,8 +5,8 @@
         
         <template v-for="nutrient in nutrients" :key="nutrient.name">
             <tr>
-                <td>{{ capitalizeWords(nutrient.name) }}</td>
-                <td>
+                <td class="text-grey-darken-3">{{ capitalizeWords(nutrient.name) }}</td>
+                <td class="text-grey-darken-3">
                     {{ nutrient.amount }}{{ nutrient.unit }}
                 </td>
             </tr>
