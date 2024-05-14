@@ -1,5 +1,16 @@
 <template>
-   
+    <div class="mt-5 pt-5">
+        <v-alert
+            border="top"
+            type="warning"
+            variant="outlined"
+            prominent
+            v-if="items.length === 0"
+          >
+          No matches found. Please try a different query.
+        </v-alert>
+    </div>
+
     <v-card
       class="mx-auto"
       max-width="450"
