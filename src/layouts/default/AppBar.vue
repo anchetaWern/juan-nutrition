@@ -23,7 +23,7 @@
         hide-details="auto"
         label="What are you looking for?"
         placeholder="Type the name of food"
-        v-model="description"
+        v-model="query"
         autofocus
       ></v-text-field>
       <v-btn color="primary" block @click="search" rounded="0">Search</v-btn>
@@ -42,7 +42,7 @@ export default {
   },
 
   data: () => ({
-    description: '',
+    query: '',
     dialog: false,
   }),
 
@@ -50,8 +50,8 @@ export default {
     search() {
       this.dialog = false;
      
-      this.updateItems(this.description);
-      this.description = '';
+      this.updateItems(this.query);
+      this.query = '';
     }
   }
 }

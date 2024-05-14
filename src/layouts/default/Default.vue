@@ -14,12 +14,12 @@ import DefaultView from './View.vue'
 
 const router = useRouter();
 
-const updateItems = (description) => {
+const updateItems = (q) => {
   
   router.push({ 
     name: 'Home', 
     query: { 
-      description, 
+      q, 
     }
   });
 }
