@@ -111,14 +111,30 @@ export default defineComponent({
     updateSearchResults() {
       const query = this.constructQuery();
 
+      const macros_keys = ['total carbohydrates', 'protein', 'total fat'];
+
       axios.get(`http://pinoy-food-api.test/api/foods?${query}`)
         .then((res) => {
           
           this.items = res.data.flatMap((itm, index, array) => {
+            
+            const macros = itm.nutrients.map((nutrient) => {
+              if (macros_keys.indexOf(nutrient.name) !== -1) {
+                return {
+                  [nutrient.name]: `${nutrient.amount}${nutrient.unit}` 
+                }
+                return false;
+              }
+            })
+            .filter(nut => nut)
+            .reduce((acc, obj) => {
+              return { ...acc, ...obj };
+            }, {});
+
             const item = {
               prependAvatar: itm.title_image,
               title: itm.description,
-              subtitle: `${itm.calories}${itm.calories_unit}`,
+              subtitle: `${itm.calories}${itm.calories_unit}; C: ${macros['total carbohydrates']} F: ${macros['total fat']}, P: ${macros['protein']}`,
               to: `/food/${itm.description_slug}`
             };
 
