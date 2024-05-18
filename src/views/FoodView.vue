@@ -6,7 +6,7 @@
         <h6 class="text-body-1 text-center text-grey-darken-3">{{ food.calories }}{{ food.calories_unit }}</h6>
     </div>
     
-    <div class="mt-3" v-if="chartData">
+    <div class="mt-3" v-if="hasMacros">
         <div class="text-body2 mb-1 text-center font-weight-medium">Macros</div>
         <div class="mt-1">
             <Pie :data="chartData" :options="chartOptions" />
@@ -161,6 +161,7 @@ export default {
     const food = ref(null);
     const images = ref([]);
 
+    const hasMacros = ref(true);
     const chartData = ref(null);
   
     const fetchData = () => {
@@ -217,6 +218,10 @@ export default {
                 macros_percentages[key] = percent.toFixed(2);
             }
 
+            if (Object.values(macros_data).filter(itm => itm).length === 0) {
+                hasMacros.value = false;
+            }
+
             chartData.value = {
                 labels: ['Protein', 'Fat', 'Carbs'],
                 datasets: [
@@ -243,6 +248,7 @@ export default {
         food,
         images,
         currentImage,
+        hasMacros,
         chartData,
     }
 
