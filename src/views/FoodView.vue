@@ -63,7 +63,7 @@
             >
                 <v-img
                     :lazy-src="img"
-                    :src="img"
+                    :src="img.src"
                     aspect-ratio="1"
                     class="bg-grey-lighten-2"
                     cover
@@ -91,11 +91,11 @@
         >
             <v-card
                 max-width="400"
-                title="Image"
+                :title="currentImage.title"
                 v-if="currentImage"
             >
                 <v-img
-                    :src="currentImage"
+                    :src="currentImage.src"
                     cover
                 ></v-img>
 
@@ -171,16 +171,28 @@ export default {
             food.value = res.data;
           
             const images_arr = [
-                res.data.title_image,
-                res.data.nutrition_label_image
+                {
+                    title: 'Food',
+                    src: res.data.title_image,
+                },
+                {
+                    title: 'Nutrition label',
+                    src: res.data.nutrition_label_image,
+                }
             ];
 
             if (res.data.barcode_image) {
-                images_arr.push(res.data.barcode_image);
+                images_arr.push({
+                    title: 'Barcode',
+                    src: res.data.barcode_image,
+                });
             }   
 
             if (res.data.ingredients_image) {
-                images_arr.push(res.data.ingredients_image);
+                images_arr.push({
+                    title: 'Ingredients',
+                    src: res.data.ingredients_image,
+                });
             }
 
             images.value = images_arr;
@@ -243,9 +255,9 @@ export default {
          this.imageModalVisible = false; 
       },
 
-      openImageModal(url) {
+      openImageModal(img) {
           this.imageModalVisible = true;
-          currentImage.value = url;
+          currentImage.value = img;
       }
   }
 }
