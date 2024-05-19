@@ -30,7 +30,7 @@
                 </tr>
                 <tr>
                     <td class="text-grey-darken-3">
-                        Calories: {{ food.calories }}{{ food.calories_unit }}
+                        Calories: {{ food.calories }}{{ food.calories_unit }} / {{ calorie_req_in_kcal }}{{ food.calories_unit }}
                         <v-progress-linear :model-value="calculatePercentage(food.calories, calorie_req_in_kcal)" color="primary"></v-progress-linear>
                     </td>
                 </tr>
@@ -202,6 +202,24 @@ export default {
 
         const sodium_req = mineral_intake_res.data.sodium;
         const potassium_req = mineral_intake_res.data.potassium;
+        const calcium_req = mineral_intake_res.data.male_calcium;
+        const iron_req = mineral_intake_res.data.male_iron;
+        const magnesium_req = mineral_intake_res.data.male_magnesium;
+        const zinc_req = mineral_intake_res.data.male_zinc;
+        const selenium_req = mineral_intake_res.data.male_selenium;
+
+        const vitamin_a_req = vitamin_intake_res.data.male_vitamin_a;
+        const vitamin_c_req = vitamin_intake_res.data.male_vitamin_c;
+        const vitamin_d_req = vitamin_intake_res.data.male_vitamin_d;
+        const vitamin_e_req = vitamin_intake_res.data.male_vitamin_e;
+        const vitamin_k_req = vitamin_intake_res.data.male_vitamin_k;
+
+        const vitamin_b1_req = vitamin_intake_res.data.male_thiamin;
+        const vitamin_b2_req = vitamin_intake_res.data.male_riboflavin;
+        const vitamin_b3_req = vitamin_intake_res.data.male_niacin;
+        const vitamin_b6_req = vitamin_intake_res.data.male_pyridoxine;
+        const vitamin_b9_req = vitamin_intake_res.data.male_folate;
+        const vitamin_b12_req = vitamin_intake_res.data.male_cobalamin;
 
         reni_percentages.value = {
             'dietary fiber': fiber_intake_res.data.fiber_from_in_grams,
@@ -209,9 +227,34 @@ export default {
             'total fat': fat_req,
             'total carbohydrates': carbs_req,
             'sugar': sugar_req,
+            
+            // minerals
             'sodium': sodium_req,
             'potassium': potassium_req,
+            'calcium': calcium_req,
+            'iron': iron_req,
+            'magnesium': magnesium_req,
+            'zinc': zinc_req,
+            'selenium': selenium_req,
+
+            // vitamins
+            'vitamin a': vitamin_a_req,
+            'vitamin c': vitamin_c_req,
+            'vitamin d': vitamin_d_req,
+            'vitamin e': vitamin_e_req,
+            'vitamin k': vitamin_k_req,
+            'vitamin b1': vitamin_b1_req,
+            'vitamin b2': vitamin_b2_req,
+            'vitamin b3': vitamin_b3_req,
+            'vitamin b6': vitamin_b6_req,
+           
+            'vitamin b9': vitamin_b9_req,
+            'vitamin b12': vitamin_b12_req,
         };
+
+        // todo: store in local storage
+        // check local storage first before making another request
+        // use the value in local storage if there is a value
 
         const food_slug = route.params.food;;
         axios.get(`http://pinoy-food-api.test/api/foods/${food_slug}`)

@@ -7,7 +7,7 @@
             <tr>
                 <td class="text-grey-darken-3">{{ capitalizeWords(nutrient.name) }}</td>
                 <td class="text-grey-darken-3">
-                    {{ nutrient.amount }}{{ nutrient.unit }}
+                    {{ nutrient.amount }}{{ nutrient.unit }} <span v-if="nutrients_with_reni.indexOf(nutrient.name) !== -1">/ {{ reni_percentages[nutrient.name].toFixed(0) }}{{ nutrient.unit }}</span>
                     <v-progress-linear v-if="reni_percentages && nutrients_with_reni.indexOf(nutrient.name) !== -1" :model-value="calculateReniPercentage(nutrient.name, nutrient.amount)" color="primary"></v-progress-linear>
                 </td>
             </tr>
@@ -44,7 +44,12 @@ export default {
 
   setup(props) {
     
-      const nutrients_with_reni = ['dietary fiber', 'protein', 'total fat', 'total carbohydrates', 'sugar', 'sodium', 'potassium'];
+      const nutrients_with_reni = [
+        'dietary fiber', 'protein', 'total fat', 'total carbohydrates', 'sugar', 
+        'sodium', 'potassium', 'calcium', 'iron', 'magnesium', 'zinc', 'selenium', 
+        'vitamin a', 'vitamin c', 'vitamin d', 'vitamin e', 'vitamin k', 
+        'vitamin b1', 'vitamin b2', 'vitamin b3', 'vitamin b6', 'vitamin b9', 'vitamin b12',
+      ];
 
       const calculateReniPercentage = (nutrient_name, nutrient_value) => {
         if (props.reni_percentages.hasOwnProperty(nutrient_name)) {
