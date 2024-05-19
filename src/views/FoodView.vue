@@ -31,6 +31,7 @@
                 <tr>
                     <td class="text-grey-darken-3">
                         Calories: {{ food.calories }}{{ food.calories_unit }}
+                        <v-progress-linear :model-value="calculatePercentage(food.calories, calorie_req_in_kcal)" color="primary"></v-progress-linear>
                     </td>
                 </tr>
             </tbody>
@@ -38,7 +39,7 @@
         
         <v-divider></v-divider>
 
-        <NutrientsTable :nutrients="food.nutrients" />
+        <NutrientsTable :nutrients="food.nutrients" :reni_percentages="reni_percentages" />
 
     </div>
 
@@ -163,83 +164,129 @@ export default {
 
     const hasMacros = ref(true);
     const chartData = ref(null);
-  
-    const fetchData = () => {
+
+    const calorie_req_in_kcal = ref(null);
+
+    const reni_percentages = ref(null);
+   
+    const fetchData = async () => {
+        
+        // calories
+        const energy_intake_res = await axios.get(`http://pinoy-food-api.test/api/reni-energy-intake?age=19`);
+        calorie_req_in_kcal.value = energy_intake_res.data.male_energy_req_in_kcal;
+        
+        // fiber
+        const fiber_intake_res = await axios.get(`http://pinoy-food-api.test/api/reni-recommended-macro-intake?age=19`);
+        
+        // macros
+        const macro_intake_res = await axios.get(`http://pinoy-food-api.test/api/reni-macro-intake-distribution?age=19`);
        
+        // vitamins
+        const vitamin_intake_res = await axios.get(`http://pinoy-food-api.test/api/reni-recommended-vitamin-intake?age=19`);
+        
+        // minerals
+        const mineral_intake_res = await axios.get(`http://pinoy-food-api.test/api/reni-recommended-mineral-intake?age=19`);
+        
+        const calories_per_gram_of_protein = 4;
+        const calories_per_gram_of_carbs = 4;
+        const calories_per_gram_of_fat = 9;
+        const protein_req = energy_intake_res.data.male_energy_req_in_kcal * (macro_intake_res.data.protein_from / 100) / calories_per_gram_of_protein;
+       
+        const fat_req = energy_intake_res.data.male_energy_req_in_kcal * (macro_intake_res.data.fat_from / 100) / calories_per_gram_of_fat;
+       
+        const carbs_req = energy_intake_res.data.male_energy_req_in_kcal * (macro_intake_res.data.carbs_from / 100) / calories_per_gram_of_carbs;
+       
+        const daily_sugar_percentage_limit = 9;
+        const sugar_req = energy_intake_res.data.male_energy_req_in_kcal * (daily_sugar_percentage_limit / 100) / calories_per_gram_of_carbs;
+       
+
+        const sodium_req = mineral_intake_res.data.sodium;
+        const potassium_req = mineral_intake_res.data.potassium;
+
+        reni_percentages.value = {
+            'dietary fiber': fiber_intake_res.data.fiber_from_in_grams,
+            'protein': protein_req, 
+            'total fat': fat_req,
+            'total carbohydrates': carbs_req,
+            'sugar': sugar_req,
+            'sodium': sodium_req,
+            'potassium': potassium_req,
+        };
+
         const food_slug = route.params.food;;
         axios.get(`http://pinoy-food-api.test/api/foods/${food_slug}`)
-        .then((res) => {
-            food.value = res.data;
-          
-            const images_arr = [
-                {
-                    title: 'Food',
-                    src: res.data.title_image,
-                },
-                {
-                    title: 'Nutrition label',
-                    src: res.data.nutrition_label_image,
-                }
-            ];
-
-            if (res.data.barcode_image) {
-                images_arr.push({
-                    title: 'Barcode',
-                    src: res.data.barcode_image,
-                });
-            }   
-
-            if (res.data.ingredients_image) {
-                images_arr.push({
-                    title: 'Ingredients',
-                    src: res.data.ingredients_image,
-                });
-            }
-
-            images.value = images_arr;
-
-          
-            const macros_keys = ['total carbohydrates', 'protein', 'total fat'];
+            .then((res) => {
+                food.value = res.data;
             
-            const macros_data = {};
-
-            res.data.nutrients.forEach((itm) => {
-                if (macros_keys.indexOf(itm.name) !== -1) {
-                   macros_data[itm.name] = itm.amount;
-                }
-            });
-
-            const macros_numbers = Object.values(macros_data);
-            const total = macros_numbers.reduce((sum, num) => sum + num, 0);
-
-            const macros_percentages = {};
-            for (const [key, value] of Object.entries(macros_data)) {
-                const percent = calculatePercentage(value, total);
-                macros_percentages[key] = percent.toFixed(2);
-            }
-
-            if (Object.values(macros_data).filter(itm => itm).length === 0) {
-                hasMacros.value = false;
-            }
-
-            chartData.value = {
-                labels: ['Protein', 'Fat', 'Carbs'],
-                datasets: [
+                const images_arr = [
                     {
-                        backgroundColor: ['#2ecc71', '#d35400', '#f39c12'],
-                        data: [
-                            macros_percentages['protein'],
-                            macros_percentages['total fat'],
-                            macros_percentages['total carbohydrates']
-                        ] 
+                        title: 'Food',
+                        src: res.data.title_image,
+                    },
+                    {
+                        title: 'Nutrition label',
+                        src: res.data.nutrition_label_image,
                     }
-                ],
-            }
+                ];
 
-        })
-        .catch((err) => {
-            console.log('err: ', err);
-        });
+                if (res.data.barcode_image) {
+                    images_arr.push({
+                        title: 'Barcode',
+                        src: res.data.barcode_image,
+                    });
+                }   
+
+                if (res.data.ingredients_image) {
+                    images_arr.push({
+                        title: 'Ingredients',
+                        src: res.data.ingredients_image,
+                    });
+                }
+
+                images.value = images_arr;
+
+            
+                const macros_keys = ['total carbohydrates', 'protein', 'total fat'];
+                
+                const macros_data = {};
+
+                res.data.nutrients.forEach((itm) => {
+                    if (macros_keys.indexOf(itm.name) !== -1) {
+                    macros_data[itm.name] = itm.amount;
+                    }
+                });
+
+                const macros_numbers = Object.values(macros_data);
+                const total = macros_numbers.reduce((sum, num) => sum + num, 0);
+
+                const macros_percentages = {};
+                for (const [key, value] of Object.entries(macros_data)) {
+                    const percent = calculatePercentage(value, total);
+                    macros_percentages[key] = percent.toFixed(2);
+                }
+
+                if (Object.values(macros_data).filter(itm => itm).length === 0) {
+                    hasMacros.value = false;
+                }
+
+                chartData.value = {
+                    labels: ['Protein', 'Fat', 'Carbs'],
+                    datasets: [
+                        {
+                            backgroundColor: ['#2ecc71', '#d35400', '#f39c12'],
+                            data: [
+                                macros_percentages['protein'],
+                                macros_percentages['total fat'],
+                                macros_percentages['total carbohydrates']
+                            ] 
+                        }
+                    ],
+                }
+
+            })
+            .catch((err) => {
+                console.log('err: ', err);
+            });
     }
 
     onMounted(fetchData);
@@ -250,6 +297,11 @@ export default {
         currentImage,
         hasMacros,
         chartData,
+
+        calorie_req_in_kcal,
+        reni_percentages,
+
+        calculatePercentage
     }
 
   },
