@@ -51,6 +51,14 @@
         </p>
     </div>
 
+    <div class="mt-5" v-if="food.allergen_information">
+        <div class="text-body2 mb-1 text-center font-weight-medium">Allergen Info</div>
+
+        <p class="text-subtitle2 text-grey-darken-3">
+            {{ food.allergen_information }}
+        </p>
+    </div>
+
 
     <div class="mt-5 pt-5 text-center">
         <div class="text-body2 mb-1 font-weight-medium">Images</div>
@@ -111,6 +119,12 @@
         </v-dialog>
 
     </div>
+
+    <div class="mt-5" v-if="food.origin_country">
+        <div class="text-body2 mb-1">Origin Country: {{ food.origin_country }}</div>
+
+    </div>
+
   </div>
 </template>
 
@@ -260,6 +274,7 @@ export default {
         axios.get(`http://pinoy-food-api.test/api/foods/${food_slug}`)
             .then((res) => {
                 food.value = res.data;
+                console.log('target age group: ', res.data.age)
             
                 const images_arr = [
                     {
