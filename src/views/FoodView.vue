@@ -31,7 +31,11 @@
                 <tr>
                     <td class="text-grey-darken-3">
                         Calories: {{ food.calories }}{{ food.calories_unit }} / {{ calorie_req_in_kcal }}{{ food.calories_unit }}
-                        <v-progress-linear :model-value="calculatePercentage(food.calories, calorie_req_in_kcal)" color="primary"></v-progress-linear>
+                        <v-progress-linear 
+                            :model-value="calculatePercentage(food.calories, calorie_req_in_kcal)" 
+                            bg-color="blue-darken-1" 
+                            color="blue-darken-3">
+                        </v-progress-linear>
                     </td>
                 </tr>
             </tbody>
@@ -279,6 +283,7 @@ export default {
                     'vitamin b12': vitamin_b12_req,
                 };
                 //
+                
 
                 food.value = res.data;
             

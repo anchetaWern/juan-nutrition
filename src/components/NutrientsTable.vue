@@ -3,12 +3,17 @@
     <v-table density="compact">
       <tbody>
         
-        <template v-for="nutrient in nutrients" :key="nutrient.name">
+        <template v-for="nutrient in nutrientsWithPercentage" :key="nutrient.name">
             <tr>
                 <td class="text-grey-darken-3">{{ capitalizeWords(nutrient.name) }}</td>
                 <td class="text-grey-darken-3">
-                    {{ nutrient.amount }}{{ nutrient.unit }} <span v-if="nutrients_with_reni.indexOf(nutrient.name) !== -1">/ {{ reni_percentages[nutrient.name].toFixed(0) }}{{ nutrient.unit }}</span>
-                    <v-progress-linear v-if="reni_percentages && nutrients_with_reni.indexOf(nutrient.name) !== -1" :model-value="calculateReniPercentage(nutrient.name, nutrient.amount)" color="primary"></v-progress-linear>
+                    {{ nutrient.amount }}{{ nutrient.unit }} <span v-if="nutrient.hasReni">/ {{ nutrient.reniLimit }}{{ nutrient.unit }}</span>
+                    <v-progress-linear 
+                      v-if="reni_percentages && nutrient.hasReni" 
+                      :model-value="nutrient.percentage" 
+                      :bg-color="nutrient.bgColor" 
+                      :color="nutrient.color"
+                      :reverse="nutrient.reverse"></v-progress-linear>
                 </td>
             </tr>
 
@@ -26,8 +31,9 @@
 </template>
 
 <script>
-import {capitalizeWords} from '@/helpers/Str';
-import {calculatePercentage} from '@/helpers/Numbers';
+import { computed } from 'vue';
+import { capitalizeWords } from '@/helpers/Str';
+import { calculatePercentage } from '@/helpers/Numbers';
 
 export default {
   props: {
@@ -53,20 +59,49 @@ export default {
 
       const calculateReniPercentage = (nutrient_name, nutrient_value) => {
         if (props.reni_percentages.hasOwnProperty(nutrient_name)) {
-          const percentage = calculatePercentage(nutrient_value, props.reni_percentages[nutrient_name]);
-          return percentage;
+          const reni_limit = props.reni_percentages[nutrient_name];
+          const percentage = calculatePercentage(nutrient_value, reni_limit);
+          return percentage > reni_limit ? reni_limit : percentage;
         }
-        return 0;
-        
+        return 0; 
       }
+
+      const getBackgroundColor = (value, reni_percent_value) => {
+        return value > reni_percent_value ? 'red-darken-1' : 'blue-darken-1';
+      };
+
+      const getColor = (value, reni_percent_value) => {
+        return value > reni_percent_value ? 'red-darken-3' : 'blue-darken-3';
+      };
+
+      const getReverse = (value, reni_percent_value) => {
+        return value > reni_percent_value ? true : false;
+      }
+
+      const nutrientsWithPercentage = computed(() => {
+        return props.nutrients.map(nutrient => {
+          
+          const reni_percent_value = props.reni_percentages[nutrient.name]
+          const percentage = calculateReniPercentage(nutrient.name, nutrient.amount);
+          const hasReni = nutrients_with_reni.indexOf(nutrient.name) !== -1;
+
+          return {
+            ...nutrient,
+            percentage,
+            bgColor: getBackgroundColor(nutrient.amount, reni_percent_value),
+            color: getColor(nutrient.amount, reni_percent_value),
+            reverse: getReverse(nutrient.amount, reni_percent_value), 
+            hasReni: hasReni,
+            reniLimit: hasReni ? props.reni_percentages[nutrient.name].toFixed(0) : null,
+          };
+        });
+      });
 
       return {
           capitalizeWords,
-          calculatePercentage,
-
-          calculateReniPercentage,
-
+          
           nutrients_with_reni,
+          nutrientsWithPercentage,
       }
   }
   
