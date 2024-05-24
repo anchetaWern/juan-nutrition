@@ -185,86 +185,7 @@ export default {
    
     const fetchData = async () => {
         
-        // calories
-        const energy_intake_res = await axios.get(`http://pinoy-food-api.test/api/reni-energy-intake?age=19`);
-        calorie_req_in_kcal.value = energy_intake_res.data.male_energy_req_in_kcal;
         
-        // fiber
-        const fiber_intake_res = await axios.get(`http://pinoy-food-api.test/api/reni-recommended-macro-intake?age=19`);
-        
-        // macros
-        const macro_intake_res = await axios.get(`http://pinoy-food-api.test/api/reni-macro-intake-distribution?age=19`);
-       
-        // vitamins
-        const vitamin_intake_res = await axios.get(`http://pinoy-food-api.test/api/reni-recommended-vitamin-intake?age=19`);
-        
-        // minerals
-        const mineral_intake_res = await axios.get(`http://pinoy-food-api.test/api/reni-recommended-mineral-intake?age=19`);
-        
-        const calories_per_gram_of_protein = 4;
-        const calories_per_gram_of_carbs = 4;
-        const calories_per_gram_of_fat = 9;
-        const protein_req = energy_intake_res.data.male_energy_req_in_kcal * (macro_intake_res.data.protein_from / 100) / calories_per_gram_of_protein;
-       
-        const fat_req = energy_intake_res.data.male_energy_req_in_kcal * (macro_intake_res.data.fat_from / 100) / calories_per_gram_of_fat;
-       
-        const carbs_req = energy_intake_res.data.male_energy_req_in_kcal * (macro_intake_res.data.carbs_from / 100) / calories_per_gram_of_carbs;
-       
-        const daily_sugar_percentage_limit = 9;
-        const sugar_req = energy_intake_res.data.male_energy_req_in_kcal * (daily_sugar_percentage_limit / 100) / calories_per_gram_of_carbs;
-       
-
-        const sodium_req = mineral_intake_res.data.sodium;
-        const potassium_req = mineral_intake_res.data.potassium;
-        const calcium_req = mineral_intake_res.data.male_calcium;
-        const iron_req = mineral_intake_res.data.male_iron;
-        const magnesium_req = mineral_intake_res.data.male_magnesium;
-        const zinc_req = mineral_intake_res.data.male_zinc;
-        const selenium_req = mineral_intake_res.data.male_selenium;
-
-        const vitamin_a_req = vitamin_intake_res.data.male_vitamin_a;
-        const vitamin_c_req = vitamin_intake_res.data.male_vitamin_c;
-        const vitamin_d_req = vitamin_intake_res.data.male_vitamin_d;
-        const vitamin_e_req = vitamin_intake_res.data.male_vitamin_e;
-        const vitamin_k_req = vitamin_intake_res.data.male_vitamin_k;
-
-        const vitamin_b1_req = vitamin_intake_res.data.male_thiamin;
-        const vitamin_b2_req = vitamin_intake_res.data.male_riboflavin;
-        const vitamin_b3_req = vitamin_intake_res.data.male_niacin;
-        const vitamin_b6_req = vitamin_intake_res.data.male_pyridoxine;
-        const vitamin_b9_req = vitamin_intake_res.data.male_folate;
-        const vitamin_b12_req = vitamin_intake_res.data.male_cobalamin;
-
-        reni_percentages.value = {
-            'dietary fiber': fiber_intake_res.data.fiber_from_in_grams,
-            'protein': protein_req, 
-            'total fat': fat_req,
-            'total carbohydrates': carbs_req,
-            'sugar': sugar_req,
-            
-            // minerals
-            'sodium': sodium_req,
-            'potassium': potassium_req,
-            'calcium': calcium_req,
-            'iron': iron_req,
-            'magnesium': magnesium_req,
-            'zinc': zinc_req,
-            'selenium': selenium_req,
-
-            // vitamins
-            'vitamin a': vitamin_a_req,
-            'vitamin c': vitamin_c_req,
-            'vitamin d': vitamin_d_req,
-            'vitamin e': vitamin_e_req,
-            'vitamin k': vitamin_k_req,
-            'vitamin b1': vitamin_b1_req,
-            'vitamin b2': vitamin_b2_req,
-            'vitamin b3': vitamin_b3_req,
-            'vitamin b6': vitamin_b6_req,
-           
-            'vitamin b9': vitamin_b9_req,
-            'vitamin b12': vitamin_b12_req,
-        };
 
         // todo: store in local storage
         // check local storage first before making another request
@@ -272,9 +193,94 @@ export default {
 
         const food_slug = route.params.food;;
         axios.get(`http://pinoy-food-api.test/api/foods/${food_slug}`)
-            .then((res) => {
-                food.value = res.data;
+            .then(async (res) => {
+                const age = res.data.age;
                 console.log('target age group: ', res.data.age)
+
+                //
+                // calories
+                const energy_intake_res = await axios.get(`http://pinoy-food-api.test/api/reni-energy-intake?age=${age}`);
+                calorie_req_in_kcal.value = energy_intake_res.data.male_energy_req_in_kcal;
+                
+                // fiber
+                const fiber_intake_res = await axios.get(`http://pinoy-food-api.test/api/reni-recommended-macro-intake?age=${age}`);
+                
+                // macros
+                const macro_intake_res = await axios.get(`http://pinoy-food-api.test/api/reni-macro-intake-distribution?age=${age}`);
+            
+                // vitamins
+                const vitamin_intake_res = await axios.get(`http://pinoy-food-api.test/api/reni-recommended-vitamin-intake?age=${age}`);
+                
+                // minerals
+                const mineral_intake_res = await axios.get(`http://pinoy-food-api.test/api/reni-recommended-mineral-intake?age=${age}`);
+                
+                const calories_per_gram_of_protein = 4;
+                const calories_per_gram_of_carbs = 4;
+                const calories_per_gram_of_fat = 9;
+                const protein_req = energy_intake_res.data.male_energy_req_in_kcal * (macro_intake_res.data.protein_from / 100) / calories_per_gram_of_protein;
+            
+                const fat_req = energy_intake_res.data.male_energy_req_in_kcal * (macro_intake_res.data.fat_from / 100) / calories_per_gram_of_fat;
+            
+                const carbs_req = energy_intake_res.data.male_energy_req_in_kcal * (macro_intake_res.data.carbs_from / 100) / calories_per_gram_of_carbs;
+            
+                const daily_sugar_percentage_limit = 9;
+                const sugar_req = energy_intake_res.data.male_energy_req_in_kcal * (daily_sugar_percentage_limit / 100) / calories_per_gram_of_carbs;
+            
+
+                const sodium_req = mineral_intake_res.data.sodium;
+                const potassium_req = mineral_intake_res.data.potassium;
+                const calcium_req = mineral_intake_res.data.male_calcium;
+                const iron_req = mineral_intake_res.data.male_iron;
+                const magnesium_req = mineral_intake_res.data.male_magnesium;
+                const zinc_req = mineral_intake_res.data.male_zinc;
+                const selenium_req = mineral_intake_res.data.male_selenium;
+
+                const vitamin_a_req = vitamin_intake_res.data.male_vitamin_a;
+                const vitamin_c_req = vitamin_intake_res.data.male_vitamin_c;
+                const vitamin_d_req = vitamin_intake_res.data.male_vitamin_d;
+                const vitamin_e_req = vitamin_intake_res.data.male_vitamin_e;
+                const vitamin_k_req = vitamin_intake_res.data.male_vitamin_k;
+
+                const vitamin_b1_req = vitamin_intake_res.data.male_thiamin;
+                const vitamin_b2_req = vitamin_intake_res.data.male_riboflavin;
+                const vitamin_b3_req = vitamin_intake_res.data.male_niacin;
+                const vitamin_b6_req = vitamin_intake_res.data.male_pyridoxine;
+                const vitamin_b9_req = vitamin_intake_res.data.male_folate;
+                const vitamin_b12_req = vitamin_intake_res.data.male_cobalamin;
+
+                reni_percentages.value = {
+                    'dietary fiber': fiber_intake_res.data.fiber_from_in_grams,
+                    'protein': protein_req, 
+                    'total fat': fat_req,
+                    'total carbohydrates': carbs_req,
+                    'sugar': sugar_req,
+                    
+                    // minerals
+                    'sodium': sodium_req,
+                    'potassium': potassium_req,
+                    'calcium': calcium_req,
+                    'iron': iron_req,
+                    'magnesium': magnesium_req,
+                    'zinc': zinc_req,
+                    'selenium': selenium_req,
+
+                    // vitamins
+                    'vitamin a': vitamin_a_req,
+                    'vitamin c': vitamin_c_req,
+                    'vitamin d': vitamin_d_req,
+                    'vitamin e': vitamin_e_req,
+                    'vitamin k': vitamin_k_req,
+                    'vitamin b1': vitamin_b1_req,
+                    'vitamin b2': vitamin_b2_req,
+                    'vitamin b3': vitamin_b3_req,
+                    'vitamin b6': vitamin_b6_req,
+                
+                    'vitamin b9': vitamin_b9_req,
+                    'vitamin b12': vitamin_b12_req,
+                };
+                //
+
+                food.value = res.data;
             
                 const images_arr = [
                     {
