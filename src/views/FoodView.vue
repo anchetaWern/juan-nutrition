@@ -231,7 +231,7 @@ export default {
                 const sugar_req = energy_intake_res.data.male_energy_req_in_kcal * (daily_sugar_percentage_limit / 100) / calories_per_gram_of_carbs;
             
 
-                const sodium_req = mineral_intake_res.data.sodium;
+                const sodium_req = 2300; // american heart health association - no more than 2300mg sodium per day
                 const potassium_req = mineral_intake_res.data.potassium;
                 const calcium_req = mineral_intake_res.data.male_calcium;
                 const iron_req = mineral_intake_res.data.male_iron;
