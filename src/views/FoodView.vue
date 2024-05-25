@@ -257,6 +257,7 @@ export default {
                     'dietary fiber': fiber_intake_res.data.fiber_from_in_grams,
                     'protein': protein_req, 
                     'total fat': fat_req,
+                    'cholesterol': cholesterol_req,
                     'total carbohydrates': carbs_req,
                     'sugar': sugar_req,
                     

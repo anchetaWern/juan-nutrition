@@ -7,9 +7,9 @@
             <tr>
                 <td class="text-grey-darken-3">{{ capitalizeWords(nutrient.name) }}</td>
                 <td class="text-grey-darken-3">
-                    {{ nutrient.amount }}{{ nutrient.unit }} <span v-if="nutrient.hasReni">/ {{ nutrient.reniLimit }}{{ nutrient.unit }}</span>
+                    {{ nutrient.amount }}{{ nutrient.unit }} <span v-if="nutrient.hasRecommendedDailyValues">/ {{ nutrient.dailyLimit }}{{ nutrient.unit }}</span>
                     <v-progress-linear 
-                      v-if="recommended_daily_values && nutrient.hasReni" 
+                      v-if="recommended_daily_values && nutrient.hasRecommendedDailyValues" 
                       :model-value="nutrient.percentage" 
                       :bg-color="nutrient.bgColor" 
                       :color="nutrient.color"
@@ -51,7 +51,7 @@ export default {
   setup(props) {
     
       const nutrients_with_recommended_daily_values = [
-        'dietary fiber', 'protein', 'total fat', 'total carbohydrates', 'sugar', 
+        'dietary fiber', 'protein', 'total fat', 'cholesterol', 'total carbohydrates', 'sugar', 
         'sodium', 'potassium', 'calcium', 'iron', 'magnesium', 'zinc', 'selenium', 
         'vitamin a', 'vitamin c', 'vitamin d', 'vitamin e', 'vitamin k', 
         'vitamin b1', 'vitamin b2', 'vitamin b3', 'vitamin b6', 'vitamin b9', 'vitamin b12',
@@ -83,7 +83,7 @@ export default {
           
           const reni_percent_value = props.recommended_daily_values[nutrient.name]
           const percentage = calculateReniPercentage(nutrient.name, nutrient.amount);
-          const hasReni = nutrients_with_recommended_daily_values.indexOf(nutrient.name) !== -1;
+          const hasRecommendedDailyValues = nutrients_with_recommended_daily_values.indexOf(nutrient.name) !== -1;
 
           return {
             ...nutrient,
@@ -91,8 +91,8 @@ export default {
             bgColor: getBackgroundColor(nutrient.amount, reni_percent_value),
             color: getColor(nutrient.amount, reni_percent_value),
             reverse: getReverse(nutrient.amount, reni_percent_value), 
-            hasReni: hasReni,
-            reniLimit: hasReni ? props.recommended_daily_values[nutrient.name].toFixed(0) : null,
+            hasRecommendedDailyValues: hasRecommendedDailyValues,
+            dailyLimit: hasRecommendedDailyValues && props.recommended_daily_values[nutrient.name] ? props.recommended_daily_values[nutrient.name].toFixed(0) : null,
           };
         });
       });
