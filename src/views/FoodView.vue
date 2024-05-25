@@ -43,7 +43,7 @@
         
         <v-divider></v-divider>
 
-        <NutrientsTable :nutrients="food.nutrients" :reni_percentages="reni_percentages" />
+        <NutrientsTable :nutrients="food.nutrients" :recommended_daily_values="recommended_daily_values" />
 
     </div>
 
@@ -185,7 +185,7 @@ export default {
 
     const calorie_req_in_kcal = ref(null);
 
-    const reni_percentages = ref(null);
+    const recommended_daily_values = ref(null);
    
     const fetchData = async () => {
         
@@ -232,6 +232,7 @@ export default {
             
 
                 const sodium_req = 2300; // american heart health association - no more than 2300mg sodium per day
+                const cholesterol_req = 300; // 300mg
                 const potassium_req = mineral_intake_res.data.potassium;
                 const calcium_req = mineral_intake_res.data.male_calcium;
                 const iron_req = mineral_intake_res.data.male_iron;
@@ -252,7 +253,7 @@ export default {
                 const vitamin_b9_req = vitamin_intake_res.data.male_folate;
                 const vitamin_b12_req = vitamin_intake_res.data.male_cobalamin;
 
-                reni_percentages.value = {
+                recommended_daily_values.value = {
                     'dietary fiber': fiber_intake_res.data.fiber_from_in_grams,
                     'protein': protein_req, 
                     'total fat': fat_req,
@@ -368,7 +369,7 @@ export default {
         chartData,
 
         calorie_req_in_kcal,
-        reni_percentages,
+        recommended_daily_values,
 
         calculatePercentage
     }
