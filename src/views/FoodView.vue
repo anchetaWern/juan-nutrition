@@ -199,8 +199,7 @@ export default {
         axios.get(`http://pinoy-food-api.test/api/foods/${food_slug}`)
             .then(async (res) => {
                 const age = res.data.age;
-                console.log('target age group: ', res.data.age)
-
+               
                 //
                 // calories
                 const energy_intake_res = await axios.get(`http://pinoy-food-api.test/api/reni-energy-intake?age=${age}`);
@@ -217,6 +216,9 @@ export default {
                 
                 // minerals
                 const mineral_intake_res = await axios.get(`http://pinoy-food-api.test/api/reni-recommended-mineral-intake?age=${age}`);
+
+                // fda daily values (for adults)
+                const fda_daily_nutrient_values_res = await axios.get(`http://pinoy-food-api.test/api/fda-daily-nutrient-values`);
                 
                 const calories_per_gram_of_protein = 4;
                 const calories_per_gram_of_carbs = 4;
@@ -253,7 +255,15 @@ export default {
                 const vitamin_b9_req = vitamin_intake_res.data.male_folate;
                 const vitamin_b12_req = vitamin_intake_res.data.male_cobalamin;
 
-                recommended_daily_values.value = {
+                // fda daily values
+                const fda_daily_nutrient_values_arr = fda_daily_nutrient_values_res.data.map((itm) => {
+                    return {
+                        [itm.nutrient]: itm.daily_value,
+                    }
+                });
+                const fda_daily_nutrient_values = Object.assign({}, ...fda_daily_nutrient_values_arr);
+               
+                const reni_daily_nutrient_values = {
                     'dietary fiber': fiber_intake_res.data.fiber_from_in_grams,
                     'protein': protein_req, 
                     'total fat': fat_req,
@@ -285,8 +295,9 @@ export default {
                     'vitamin b12': vitamin_b12_req,
                 };
                 //
-                
 
+                recommended_daily_values.value = {...reni_daily_nutrient_values, ...fda_daily_nutrient_values};
+               
                 food.value = res.data;
             
                 const images_arr = [

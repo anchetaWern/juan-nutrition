@@ -51,10 +51,11 @@ export default {
   setup(props) {
     
       const nutrients_with_recommended_daily_values = [
-        'dietary fiber', 'protein', 'total fat', 'cholesterol', 'total carbohydrates', 'sugar', 
-        'sodium', 'potassium', 'calcium', 'iron', 'magnesium', 'zinc', 'selenium', 
+        'dietary fiber', 'protein', 'total fat', 'saturated fat', 'cholesterol', 'total carbohydrates', 'sugar', 
+        'sodium', 'potassium', 'calcium', 'iron', 'magnesium', 'zinc', 'selenium', 'phosphorus', 'chloride', 'choline', 'chromium', 'copper',
+        'iodine', 'manganese', 'molybdenum',
         'vitamin a', 'vitamin c', 'vitamin d', 'vitamin e', 'vitamin k', 
-        'vitamin b1', 'vitamin b2', 'vitamin b3', 'vitamin b6', 'vitamin b9', 'vitamin b12',
+        'vitamin b1', 'vitamin b2', 'vitamin b3', 'vitamin b5', 'vitamin b6', 'vitamin b9', 'vitamin b12',
       ];
 
       const calculateReniPercentage = (nutrient_name, nutrient_value) => {
