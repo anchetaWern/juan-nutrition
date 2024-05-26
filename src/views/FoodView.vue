@@ -2,8 +2,10 @@
   <div class="mt-5" v-if="food">
     
     <div class="pt-3">
-        <h1 class="text-h5 text-center">{{ food.description }}</h1>
-        <h6 class="text-body-1 text-center text-grey-darken-3">{{ food.calories }}{{ food.calories_unit }}</h6>
+        <h1 class="text-h6">{{ food.description }}</h1>
+        <v-chip size="small">
+        {{ food.food_type }}
+        </v-chip>
     </div>
     
     <div class="mt-3" v-if="hasMacros">
