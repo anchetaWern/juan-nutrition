@@ -3,7 +3,7 @@
     
     <div class="pt-3">
         <h1 class="text-h6">{{ food.description }}</h1>
-        <v-chip size="small">
+        <v-chip size="small" variant="outlined">
         {{ food.food_type }}
         </v-chip>
     </div>
