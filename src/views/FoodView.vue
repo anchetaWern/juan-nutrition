@@ -8,7 +8,7 @@
     
     <div class="mt-3" v-if="hasMacros">
         <div class="text-body2 mb-1 text-center font-weight-medium">Macros</div>
-        <div class="mt-1">
+        <div class="mt-1" style="height: 130px;">
             <Pie :data="chartData" :options="chartOptions" />
         </div>
     </div>
@@ -33,8 +33,8 @@
                         Calories: {{ food.calories }}{{ food.calories_unit }} / {{ calorie_req_in_kcal }}{{ food.calories_unit }}
                         <v-progress-linear 
                             :model-value="calculatePercentage(food.calories, calorie_req_in_kcal)" 
-                            bg-color="blue-darken-1" 
-                            color="blue-darken-3">
+                            :bg-color="getCalorieBgColor(food.calories)" 
+                            :color="getCalorieColor(food.calories)">
                         </v-progress-linear>
                     </td>
                 </tr>
@@ -186,7 +186,25 @@ export default {
     const calorie_req_in_kcal = ref(null);
 
     const recommended_daily_values = ref(null);
+
+    const getCalorieBgColor = (calories) => {
+        if (calories >= 400) {
+          return 'red-darken-1';  
+        } else if (calories >= 100 && calories <= 200) {
+          return 'orange-darken-1';
+        }
+        return 'blue-darken-1';
+    }
    
+    const getCalorieColor = (calories) => {
+        if (calories >= 400) {
+          return 'red-darken-3';  
+        } else if (calories >= 100 && calories <= 200) {
+          return 'orange-darken-3';
+        }
+        return 'blue-darken-3';
+    }
+
     const fetchData = async () => {
         
         
@@ -383,7 +401,10 @@ export default {
         calorie_req_in_kcal,
         recommended_daily_values,
 
-        calculatePercentage
+        calculatePercentage,
+
+        getCalorieBgColor,
+        getCalorieColor
     }
 
   },
