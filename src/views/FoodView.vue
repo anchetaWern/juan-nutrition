@@ -2,14 +2,14 @@
   <div class="mt-5" v-if="food">
     
     <div class="pt-3">
-        <h1 class="text-h6">{{ food.description }}</h1>
-        <span v-if="food.alternate_names != 'N/A'">{{ food.alternate_names }}</span>
-
-        <div>
+        <div class="float-right">
             <v-chip size="small" variant="outlined" v-if="food.food_type">
             {{ food.food_type }}
             </v-chip>
         </div>
+
+        <h1 class="text-h6">{{ food.description }}</h1>
+        <span v-if="food.alternate_names != 'N/A'">{{ food.alternate_names }}</span>
     </div>
     
     <div class="mt-3" v-if="hasMacros">
