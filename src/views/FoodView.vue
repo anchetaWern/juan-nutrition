@@ -49,7 +49,7 @@
 
     </div>
 
-    <div class="mt-5">
+    <div class="mt-5" v-if="food.ingredients">
         <div class="text-body2 mb-1 text-center font-weight-medium">Ingredients</div>
 
         <p class="text-subtitle2 text-grey-darken-3">
