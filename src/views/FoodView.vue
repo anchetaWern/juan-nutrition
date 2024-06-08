@@ -20,7 +20,7 @@
 
         <v-table>
             <tbody>
-                <tr>
+                <tr v-if="food.servings_per_container">
                     <td class="text-grey-darken-3">
                         {{ food.servings_per_container }} Servings Per Container
                     </td>
