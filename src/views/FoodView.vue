@@ -3,9 +3,13 @@
     
     <div class="pt-3">
         <h1 class="text-h6">{{ food.description }}</h1>
-        <v-chip size="small" variant="outlined" v-if="food.food_type">
-        {{ food.food_type }}
-        </v-chip>
+        <span v-if="food.alternate_names != 'N/A'">{{ food.alternate_names }}</span>
+
+        <div>
+            <v-chip size="small" variant="outlined" v-if="food.food_type">
+            {{ food.food_type }}
+            </v-chip>
+        </div>
     </div>
     
     <div class="mt-3" v-if="hasMacros">
