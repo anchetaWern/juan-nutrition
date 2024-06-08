@@ -34,6 +34,11 @@
                         Serving Size: {{ food.serving_size }}{{ food.serving_size_unit }}
                     </td>
                 </tr>
+                <tr v-if="food.edible_portion < 100">
+                    <td class="text-grey-darken-3">
+                       Edible Portion: {{ food.edible_portion }}%
+                    </td>
+                </tr>
                 <tr>
                     <td class="text-grey-darken-3">
                         Calories: {{ food.calories }}{{ food.calories_unit }} / {{ calorie_req_in_kcal }}{{ food.calories_unit }}
