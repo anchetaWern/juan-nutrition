@@ -7,7 +7,7 @@
             <tr>
                 <td class="text-grey-darken-3">{{ capitalizeWords(nutrient.name) }}</td>
                 <td class="text-grey-darken-3">
-                    {{ nutrient.amount }}{{ nutrient.unit }} <span v-if="nutrient.hasRecommendedDailyValues">/ {{ nutrient.dailyLimit }}{{ nutrient.unit }}</span>
+                    <span v-if="nutrient.unit">{{ nutrient.amount }}{{ nutrient.unit }}</span> <span v-if="nutrient.unit == null">-</span> <span v-if="nutrient.hasRecommendedDailyValues">/ {{ nutrient.dailyLimit }}{{ nutrient.unit }}</span>
                     <v-progress-linear 
                       v-if="recommended_daily_values && nutrient.hasRecommendedDailyValues" 
                       :model-value="nutrient.percentage" 
