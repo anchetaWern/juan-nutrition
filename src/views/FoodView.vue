@@ -3,7 +3,7 @@
     
     <div class="pt-3">
         <h1 class="text-h6">{{ food.description }}</h1>
-        <v-chip size="small" variant="outlined">
+        <v-chip size="small" variant="outlined" v-if="food.food_type">
         {{ food.food_type }}
         </v-chip>
     </div>
@@ -325,11 +325,15 @@ export default {
                         title: 'Food',
                         src: res.data.title_image,
                     },
-                    {
+                    
+                ];
+
+                if (res.data.nutrition_label_image) {
+                    images_arr.push({
                         title: 'Nutrition label',
                         src: res.data.nutrition_label_image,
-                    }
-                ];
+                    })
+                }
 
                 if (res.data.barcode_image) {
                     images_arr.push({
