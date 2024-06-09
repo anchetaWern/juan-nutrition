@@ -54,7 +54,7 @@
         
         <v-divider></v-divider>
 
-        <NutrientsTable :nutrients="food.nutrients" :recommended_daily_values="recommended_daily_values" />
+        <NutrientsTable v-if="nutrients" :nutrients="nutrients" :recommended_daily_values="recommended_daily_values" />
 
     </div>
 
@@ -151,8 +151,9 @@ import { Pie } from 'vue-chartjs'
 import axios from 'axios'
 import NutrientsTable from '@/components/NutrientsTable.vue'
 import { calculatePercentage } from '@/helpers/Numbers';
+import { getSortedByName } from '@/helpers/Arr';
 
-import { useRoute } from 'vue-router';
+import { useRoute } from 'vue-router'; 
 
 
 const chartOptions = {
@@ -178,6 +179,8 @@ ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels)
 const imageModalVisible = ref(false);
 
 const currentImage = ref(null);
+
+const nutrients = ref(null);
 
 export default {
   name: 'FoodView',
@@ -375,7 +378,7 @@ export default {
 
                 res.data.nutrients.forEach((itm) => {
                     if (macros_keys.indexOf(itm.name) !== -1) {
-                    macros_data[itm.name] = itm.amount;
+                        macros_data[itm.name] = itm.amount;
                     }
                 });
 
@@ -406,6 +409,52 @@ export default {
                     ],
                 }
 
+                const element_names = ['total ash', 'water'];
+                const macro_names = ['total carbohydrates', 'total fat', 'protein'];
+                const vitamin_names = [
+                    'vitamin a', 'vitamin c', 'vitamin d', 
+                    'vitamin e', 'vitamin k', 'vitamin b1', 
+                    'vitamin b2', 'vitamin b3',
+                    'vitamin b5', 'vitamin b6', 'vitamin b7', 
+                    'vitamin b9', 'vitamin b12'
+                ];
+                const mineral_names = [
+                    'calcium', 'chloride', 'chromium', 'copper', 
+                    'iodine', 'iron', 'magnesium', 'manganese', 'molybdenum', 
+                    'phosphorus', 'potassium', 'selenium', 'sodium', 'zinc'
+                ];
+                const other_names = [
+                    'lactose'
+                ];
+
+                const elements = [];
+                const macros = [];
+                const vitamins = [];
+                const minerals = [];
+                const others = [];
+
+                res.data.nutrients.forEach((itm) => {
+                    if (element_names.indexOf(itm.name) !== -1) {
+                        elements.push(itm);
+                    } else if (macro_names.indexOf(itm.name) !== -1) {
+                        macros.push(itm);
+                    } else if (vitamin_names.indexOf(itm.name) !== -1) {
+                        vitamins.push(itm);
+                    } else if (mineral_names.indexOf(itm.name) !== -1) {
+                        minerals.push(itm);
+                    } else if (other_names.indexOf(itm.name) !== -1) {
+                        others.push(itm);
+                    }
+                });
+
+                nutrients.value = [
+                    ...getSortedByName(elements), 
+                    ...getSortedByName(macros), 
+                    ...getSortedByName(vitamins), 
+                    ...getSortedByName(minerals),
+                    ...getSortedByName(others),
+                ];
+
             })
             .catch((err) => {
                 console.log('err: ', err);
@@ -416,6 +465,7 @@ export default {
 
     return {
         food,
+        nutrients,
         images,
         currentImage,
         hasMacros,
