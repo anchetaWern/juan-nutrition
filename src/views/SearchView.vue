@@ -62,7 +62,7 @@ export default defineComponent({
     const route = useRoute();
     const router = useRouter();
 
-    const currentCategory = ref(parseInt(route.query.category) || null);
+    const currentCategory = ref(route.query.category || null);
     const currentPage = ref(parseInt(route.query.page) || 1);
     const totalPages = ref(1);
     const instance = getCurrentInstance();
@@ -79,12 +79,11 @@ export default defineComponent({
       }
     );
 
-  
 
     watch(
       () => route.query.category,
       (newCategory) => {
-        currentCategory.value = parseInt(newCategory) || null;
+        currentCategory.value = newCategory || null;
       }
     );
 
@@ -171,7 +170,7 @@ export default defineComponent({
       const macros_keys = ['total carbohydrates', 'protein', 'total fat'];
       
       const url = this.currentCategory ? `http://pinoy-food-api.test/api/foods?${query}&category=${this.currentCategory}&page=${this.currentPage}` : `http://pinoy-food-api.test/api/foods?${query}&page=${this.currentPage}`;
-     
+      
       axios.get(url)
         .then((res) => {
           const items_per_page = 10;

@@ -19,7 +19,7 @@
           :key="card.title"
           :cols="card.flex"
         >
-          <v-card @click="goToCategory(card.id)">
+          <v-card @click="goToCategory(card.slug)">
             <v-img
               :src="card.src"
               class="align-end"
@@ -54,29 +54,29 @@ import preparedAndProcessedImage from '@/assets/images/prepared-and-processed.jp
 export default {
     data: () => ({
         cards: [
-            { id: 2, title: 'Vegetables', src: vegetablesImage, flex: 12 },
-            { id: 4, title: 'Meat and Poultry', src: meatAndPoultryImage, flex: 6 },
-            { id: 7, title: 'Legumes, nuts, and seeds', src: legumesNutsSeedsImage, flex: 6 },
-            { id: 8, title: 'Fats and Oils', src: fatsAndOilsImage, flex: 6 },
+            { id: 2, slug: 'vegetables', title: 'Vegetables', src: vegetablesImage, flex: 12 },
+            { id: 4, slug: 'meat-and-poultry', title: 'Meat and Poultry', src: meatAndPoultryImage, flex: 6 },
+            { id: 7, slug: 'legumes-nuts-and-seeds', title: 'Legumes, nuts, and seeds', src: legumesNutsSeedsImage, flex: 6 },
+            { id: 8, slug: 'fats-and-oils', title: 'Fats and Oils', src: fatsAndOilsImage, flex: 6 },
 
-            { id: 3, title: 'Fruits', src: fruitsImage, flex: 6 },
-            { id: 1, title: 'Cereals and Grains', src: cerealsAndGrainsImage, flex: 6 },
+            { id: 3, slug: 'fruits', title: 'Fruits', src: fruitsImage, flex: 6 },
+            { id: 1, slug: 'cereals-and-grains', title: 'Cereals and Grains', src: cerealsAndGrainsImage, flex: 6 },
 
-            { id: 6, title: 'Dairy Products', src: dairyProductsImage, flex: 6 },
+            { id: 6, slug: 'dairy-products', title: 'Dairy Products', src: dairyProductsImage, flex: 6 },
             
-            { id: 11, title: 'Herbs and Spices', src: herbsAndSpicesImage, flex: 6 },
+            { id: 11, slug: 'herbs-and-spices', title: 'Herbs and Spices', src: herbsAndSpicesImage, flex: 6 },
             
-            { id: 10, title: 'Beverages', src: beveragesImage, flex: 6 },
+            { id: 10, slug: 'beverages', title: 'Beverages', src: beveragesImage, flex: 6 },
             
-            { id: 12, title: 'Prepared and Processed', src: preparedAndProcessedImage, flex: 6 },
-            { id: 9, title: 'Sugars and Sweets', src: sugarsAndSweetsImage, flex: 6 },
+            { id: 12, slug: 'prepared-and-processed', title: 'Prepared and Processed', src: preparedAndProcessedImage, flex: 6 },
+            { id: 9, slug: 'sugars-and-sweets', title: 'Sugars and Sweets', src: sugarsAndSweetsImage, flex: 6 },
         ],
     }),
 
     methods: {
-        goToCategory(id) {
+        goToCategory(slug) {
          
-            this.$router.push(`/search?category=${id}`);
+            this.$router.push(`/search?category=${slug}`);
         }
     }
 }
