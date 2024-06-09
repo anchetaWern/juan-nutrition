@@ -182,14 +182,14 @@ const chartOptions = {
   maintainAspectRatio: false,
   plugins: {
     legend: {
-      onClick: null
+        onClick: null,    
     },
 
     tooltip: {
         enabled: true,
         callbacks: {
             label: function(tooltipItem) {
-            return tooltipItem.formattedValue + "%";
+                return tooltipItem.formattedValue + "%";
             },
         },
     }
@@ -424,8 +424,10 @@ export default {
                     hasMacros.value = false;
                 }
 
+                console.log('not: ', macros_percentages);
+
                 chartData.value = {
-                    labels: ['Protein', 'Fat', 'Carbs'],
+                    labels: [`Protein: ${macros_percentages.protein}%`, `Fat: ${macros_percentages['total fat']}%`, `Carbs: ${macros_percentages['total carbohydrates']}%`],
                     datasets: [
                         {
                             backgroundColor: ['#2ecc71', '#d35400', '#f39c12'],
