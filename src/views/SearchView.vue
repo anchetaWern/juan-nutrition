@@ -45,6 +45,7 @@
 <script>
 import { defineComponent, watch, ref, getCurrentInstance } from 'vue';
 import axios from 'axios';
+import { useRouter, useRoute } from 'vue-router';
 
 export default defineComponent({
   data: () => ({
@@ -55,14 +56,25 @@ export default defineComponent({
   }),
 
   setup() {
-    const currentPage = ref(1);
+
+    const route = useRoute();
+    const router = useRouter();
+
+    const currentPage = ref(parseInt(route.query.page) || 1);
     const totalPages = ref(1);
     const instance = getCurrentInstance();
 
-    watch(currentPage, (newValue, oldValue) => {
-      console.log(`Value changed from ${oldValue} to ${newValue}`);
+    watch(currentPage, (newPage, oldPage) => {
+      router.push({ query: { ...route.query, page: newPage } });
       instance.proxy.updateSearchResults();
     });
+
+    watch(
+      () => route.query.page,
+      (newPage) => {
+        currentPage.value = parseInt(newPage) || 1;
+      }
+    );
 
     return {
       currentPage,
