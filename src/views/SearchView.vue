@@ -22,12 +22,28 @@
       >
           
       </v-list>
-    </v-card>    
+    </v-card>  
+    
+    <div class="text-center">
+        <v-container>
+          <v-row justify="center">
+            <v-col cols="12">
+              <v-container class="max-width">
+                <v-pagination
+                  v-model="currentPage"
+                  :length="totalPages"
+                  class="my-4"
+                ></v-pagination>
+              </v-container>
+            </v-col>
+          </v-row>
+        </v-container>
+    </div>
 
 </template>
 
 <script>
-import { defineComponent } from 'vue';
+import { defineComponent, watch, ref, getCurrentInstance } from 'vue';
 import axios from 'axios';
 
 export default defineComponent({
@@ -37,6 +53,22 @@ export default defineComponent({
       
     ],
   }),
+
+  setup() {
+    const currentPage = ref(1);
+    const totalPages = ref(1);
+    const instance = getCurrentInstance();
+
+    watch(currentPage, (newValue, oldValue) => {
+      console.log(`Value changed from ${oldValue} to ${newValue}`);
+      instance.proxy.updateSearchResults();
+    });
+
+    return {
+      currentPage,
+      totalPages
+    };
+  },
 
 
   watch: {
@@ -113,10 +145,12 @@ export default defineComponent({
 
       const macros_keys = ['total carbohydrates', 'protein', 'total fat'];
 
-      axios.get(`http://pinoy-food-api.test/api/foods?${query}`)
+      axios.get(`http://pinoy-food-api.test/api/foods?${query}&page=${this.currentPage}`)
         .then((res) => {
-          
-          this.items = res.data.flatMap((itm, index, array) => {
+          const items_per_page = 10;
+          this.totalPages = Math.round(res.data.total / items_per_page);
+
+          this.items = res.data.data.flatMap((itm, index, array) => {
             
             const macros = itm.nutrients.map((nutrient) => {
               if (macros_keys.indexOf(nutrient.name) !== -1) {
