@@ -168,7 +168,6 @@
 <script>
 import { ref, onMounted } from 'vue';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Pie } from 'vue-chartjs'
 import axios from 'axios'
 import NutrientsTable from '@/components/NutrientsTable.vue'
@@ -186,17 +185,19 @@ const chartOptions = {
       onClick: null
     },
 
-    datalabels: {
-        formatter: (value, ctx) => {
-            return Math.round(value) + "%";
+    tooltip: {
+        enabled: true,
+        callbacks: {
+            label: function(tooltipItem) {
+            return tooltipItem.formattedValue + "%";
+            },
         },
-        color: '#fff',
     }
   }
 }
 
 
-ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels)
+ChartJS.register(ArcElement, Tooltip, Legend)
 
 const imageModalVisible = ref(false);
 
