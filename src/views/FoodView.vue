@@ -54,8 +54,30 @@
         
         <v-divider></v-divider>
 
-        <NutrientsTable v-if="nutrients" :nutrients="nutrients" :recommended_daily_values="recommended_daily_values" />
+        <div class="mt-3" v-if="elements.length">
+            <span class="text-subtitle-2">Elements</span>
+            <NutrientsTable :nutrients="elements" :recommended_daily_values="recommended_daily_values" />
+        </div>
 
+        <div class="mt-3" v-if="macros.length">
+            <span class="text-subtitle-2">Macros</span>
+            <NutrientsTable :nutrients="macros" :recommended_daily_values="recommended_daily_values" />
+        </div>
+
+        <div class="mt-3" v-if="vitamins.length">
+            <span class="text-subtitle-2">Vitamins</span>
+            <NutrientsTable :nutrients="vitamins" :recommended_daily_values="recommended_daily_values" />
+        </div>
+
+        <div class="mt-3" v-if="minerals.length">
+            <span class="text-subtitle-2">Minerals</span>
+            <NutrientsTable :nutrients="minerals" :recommended_daily_values="recommended_daily_values" />
+        </div>
+
+        <div class="mt-3" v-if="others.length">
+            <span class="text-subtitle-2">Others</span>
+            <NutrientsTable :nutrients="others" :recommended_daily_values="recommended_daily_values" />
+        </div>
     </div>
 
     <div class="mt-5" v-if="food.ingredients">
@@ -181,6 +203,12 @@ const imageModalVisible = ref(false);
 const currentImage = ref(null);
 
 const nutrients = ref(null);
+
+const elements = ref(null);
+const macros = ref(null);
+const vitamins = ref(null);
+const minerals = ref(null);
+const others = ref(null);
 
 export default {
   name: 'FoodView',
@@ -427,33 +455,32 @@ export default {
                     'lactose'
                 ];
 
-                const elements = [];
-                const macros = [];
-                const vitamins = [];
-                const minerals = [];
-                const others = [];
+                const elements_items = [];
+                const macros_items = [];
+                const vitamins_items = [];
+                const minerals_items = [];
+                const others_items = [];
 
                 res.data.nutrients.forEach((itm) => {
                     if (element_names.indexOf(itm.name) !== -1) {
-                        elements.push(itm);
+                        elements_items.push(itm);
                     } else if (macro_names.indexOf(itm.name) !== -1) {
-                        macros.push(itm);
+                        macros_items.push(itm);
                     } else if (vitamin_names.indexOf(itm.name) !== -1) {
-                        vitamins.push(itm);
+                        vitamins_items.push(itm);
                     } else if (mineral_names.indexOf(itm.name) !== -1) {
-                        minerals.push(itm);
+                        minerals_items.push(itm);
                     } else if (other_names.indexOf(itm.name) !== -1) {
-                        others.push(itm);
+                        others_items.push(itm);
                     }
                 });
-
-                nutrients.value = [
-                    ...getSortedByName(elements), 
-                    ...getSortedByName(macros), 
-                    ...getSortedByName(vitamins), 
-                    ...getSortedByName(minerals),
-                    ...getSortedByName(others),
-                ];
+                
+                elements.value = getSortedByName(elements_items);
+                macros.value = getSortedByName(macros_items);
+                vitamins.value = getSortedByName(vitamins_items); 
+                minerals.value = getSortedByName(minerals_items);
+                others.value = getSortedByName(others_items);
+                
 
             })
             .catch((err) => {
@@ -466,6 +493,12 @@ export default {
     return {
         food,
         nutrients,
+        elements,
+        macros,
+        vitamins,
+        minerals,
+        others,
+
         images,
         currentImage,
         hasMacros,
