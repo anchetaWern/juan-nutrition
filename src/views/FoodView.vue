@@ -157,7 +157,7 @@
 
     </div>
 
-    <div class="mt-5" v-if="food.origin_country">
+    <div class="mt-5" v-if="food.origin_country !== 'PH'">
         <div class="text-body2 mb-1">Origin Country: {{ food.origin_country }}</div>
 
     </div>
