@@ -7,6 +7,7 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import { useRouter } from 'vue-router'
 
 import DefaultBar from './AppBar.vue'
@@ -14,13 +15,16 @@ import DefaultView from './View.vue'
 
 const router = useRouter();
 
+const currentRoute = computed(() => router.currentRoute.value);
+
 const updateItems = (q) => {
-  // todo: how to access the current category from here
-  // the problem is that it always defaults to 1
-  // maybe just remove the category when searching
+  
+  const category = currentRoute.value.query.category;
+
   router.push({ 
     name: 'Search', 
     query: { 
+      category,
       q, 
     }
   });
