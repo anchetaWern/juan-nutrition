@@ -117,6 +117,15 @@ export default defineComponent({
   methods: {
 
     constructComplexQuery(str) {
+      
+      if (str === 'low calorie') {
+        return 'calories=lte40kcal';
+      } else if (str === 'moderate calorie') {
+        return 'calories=lte100kcal';
+      } else if (str === 'high calorie') {
+        return 'calories=gte100kcal';
+      }
+
       const regex = /(carbohydrates|protein|fat|calories)(>=|<=|>|<|=)(\d+)(g|kcal|ml)(?:,|$)/g;
       let match;
 
@@ -146,19 +155,22 @@ export default defineComponent({
       }
 
       return formattedQuery;
+      
     },
    
     constructQuery() {
       let formattedQuery = '';
       const query = this.$route.query.q;
 
-      const keywords = ['carbohydrates', 'fat', 'protein', 'calories'];
+      const keywords = ['carbohydrates', 'fat', 'protein', 'calories', 'low calorie', 'moderate calorie', 'high calorie'];
       
       if (query && keywords.some(v => query.includes(v))) {
        
         formattedQuery = this.constructComplexQuery(query);
+        console.log('formatted query: ', formattedQuery);
       } else {
         formattedQuery = query ? `description=${query}` : '';
+        console.log('else: ', formattedQuery);
       }
 
       return formattedQuery;
@@ -166,6 +178,7 @@ export default defineComponent({
 
     updateSearchResults() {
       const query = this.constructQuery();
+      console.log('query: ', query);
 
       const macros_keys = ['total carbohydrates', 'protein', 'total fat'];
       
