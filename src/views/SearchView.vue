@@ -130,6 +130,12 @@ export default defineComponent({
         return 'fat=lte7g';
       } else if (str === 'high fat') {
         return 'fat=gt7g';
+      } else if (str === 'low protein') {
+        return 'protein=lt5g';
+      } else if (str === 'high protein') {
+        return 'protein=gt10g';
+      } else if (str === 'moderate protein') {
+        return 'protein=lt10g';
       }
 
       const regex = /(carbohydrates|protein|fat|calories)(>=|<=|>|<|=)(\d+)(g|kcal|ml)(?:,|$)/g;
@@ -171,7 +177,8 @@ export default defineComponent({
       const keywords = [
         'carbohydrates', 'fat', 'protein',
         'calories', 'low calorie', 'moderate calorie', 'high calorie',
-        'low fat', 'high fat', 'moderate fat'
+        'low fat', 'high fat', 'moderate fat',
+        'low protein', 'high protein', 'moderate protein',
       ];
       
       if (query && keywords.some(v => query.includes(v))) {
