@@ -168,6 +168,18 @@ export default defineComponent({
         return 'calcium=gt200mg';
       } else if (str === 'moderate calcium') {
         return 'calcium=lt200mg';
+      } else if (str === 'low vitamin c') {
+        return 'vitamin_c=lt10mg';
+      } else if (str === 'high vitamin c') {
+        return 'vitamin_c=gt30mg';
+      } else if (str === 'moderate vitamin c') {
+        return 'vitamin_c=lt30mg';
+      } else if (str === 'low vitamin a') {
+        return 'vitamin_a=lt500IU';
+      } else if (str === 'high vitamin a') {
+        return 'vitamin_a=gt1000IU';
+      } else if (str === 'moderate vitamin a') {
+        return 'vitamin_a=lt1000IU';
       }
 
       const regex = /(carbohydrates|protein|fat|calories)(>=|<=|>|<|=)(\d+)(g|kcal|ml)(?:,|$)/g;
@@ -217,6 +229,8 @@ export default defineComponent({
         'low sugar', 'high sugar', 'moderate sugar',
         'zero cholesterol',
         'low calcium', 'high calcium', 'moderate calcium',
+        'low vitamin c', 'high vitamin c', 'moderate vitamin c',
+        'low vitamin a', 'high vitamin a', 'moderate vitamin a',
       ];
       
       if (query && keywords.some(v => query.includes(v))) {
