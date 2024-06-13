@@ -162,6 +162,12 @@ export default defineComponent({
         return 'sugar=lt15g';
       } else if (str === 'zero cholesterol') {
         return 'cholesterol=eq0mg';
+      } else if (str === 'low calcium') {
+        return 'calcium=lt100mg';
+      } else if (str === 'high calcium') {
+        return 'calcium=gt200mg';
+      } else if (str === 'moderate calcium') {
+        return 'calcium=lt200mg';
       }
 
       const regex = /(carbohydrates|protein|fat|calories)(>=|<=|>|<|=)(\d+)(g|kcal|ml)(?:,|$)/g;
@@ -210,6 +216,7 @@ export default defineComponent({
         'low fiber', 'high fiber', 'moderate fiber',
         'low sugar', 'high sugar', 'moderate sugar',
         'zero cholesterol',
+        'low calcium', 'high calcium', 'moderate calcium',
       ];
       
       if (query && keywords.some(v => query.includes(v))) {
