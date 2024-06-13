@@ -154,6 +154,12 @@ export default defineComponent({
         return 'fiber=gt5g';
       } else if (str === 'moderate fiber') {
         return 'fiber=lt5g';
+      } else if (str === 'low sugar') {
+        return 'sugar=lt5g';
+      } else if (str === 'high sugar') {
+        return 'sugar=gt15g';
+      } else if (str === 'moderate sugar') {
+        return 'sugar=lt15g';
       }
 
       const regex = /(carbohydrates|protein|fat|calories)(>=|<=|>|<|=)(\d+)(g|kcal|ml)(?:,|$)/g;
@@ -200,6 +206,7 @@ export default defineComponent({
         'low carb', 'high carb', 'moderate carb',
         'low sodium', 'high sodium', 'moderate sodium',
         'low fiber', 'high fiber', 'moderate fiber',
+        'low sugar', 'high sugar', 'moderate sugar',
       ];
       
       if (query && keywords.some(v => query.includes(v))) {
