@@ -142,6 +142,12 @@ export default defineComponent({
         return 'carbohydrates=gt30g';
       } else if (str === 'moderate carb') {
         return 'carbohydrates=lt30g';
+      } else if (str === 'low sodium') {
+        return 'sodium=lte140mg';
+      } else if (str === 'high sodium') {
+        return 'sodium=gt400mg';
+      } else if (str === 'moderate sodium') {
+        return 'sodium=lt400mg';
       }
 
       const regex = /(carbohydrates|protein|fat|calories)(>=|<=|>|<|=)(\d+)(g|kcal|ml)(?:,|$)/g;
@@ -185,7 +191,8 @@ export default defineComponent({
         'calories', 'low calorie', 'moderate calorie', 'high calorie',
         'low fat', 'high fat', 'moderate fat',
         'low protein', 'high protein', 'moderate protein',
-        'low carb', 'high carb', 'moderate carb'
+        'low carb', 'high carb', 'moderate carb',
+        'low sodium', 'high sodium', 'moderate sodium',
       ];
       
       if (query && keywords.some(v => query.includes(v))) {
