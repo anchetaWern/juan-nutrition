@@ -265,7 +265,7 @@ export default defineComponent({
 
       const macros_keys = ['total carbohydrates', 'protein', 'total fat'];
       
-      const url = this.currentCategory ? `https://juanutrisyon.info/api/foods?${query}&category=${this.currentCategory}&page=${this.currentPage}` : `https://juanutrisyon.info/api/foods?${query}&page=${this.currentPage}`;
+      const url = this.currentCategory ? `https://api.juanutrisyon.info/api/foods?${query}&category=${this.currentCategory}&page=${this.currentPage}` : `https://api.juanutrisyon.info/api/foods?${query}&page=${this.currentPage}`;
       
       axios.get(url)
         .then((res) => {
