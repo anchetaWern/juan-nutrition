@@ -288,7 +288,7 @@ export default defineComponent({
             }, {});
 
             const item = {
-              prependAvatar: itm.title_image,
+              prependAvatar: `https://juanutrisyon.info/storage${itm.title_image}`,
               title: itm.description,
               subtitle: `${itm.calories}${itm.calories_unit}; C: ${macros['total carbohydrates']} F: ${macros['total fat']}, P: ${macros['protein']}`,
               to: `/food/${itm.description_slug}`
