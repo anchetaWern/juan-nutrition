@@ -135,31 +135,31 @@ export default defineComponent({
       } else if (str === 'high protein') {
         return 'protein=gt10g';
       } else if (str === 'moderate protein') {
-        return 'protein=lt10g';
+        return 'protein=lte10g';
       } else if (str === 'low carb') {
         return 'carbohydrates=lt15g';
       } else if (str === 'high carb') {
         return 'carbohydrates=gt30g';
       } else if (str === 'moderate carb') {
-        return 'carbohydrates=lt30g';
+        return 'carbohydrates=lte30g';
       } else if (str === 'low sodium') {
         return 'sodium=lte140mg';
       } else if (str === 'high sodium') {
         return 'sodium=gt400mg';
       } else if (str === 'moderate sodium') {
-        return 'sodium=lt400mg';
+        return 'sodium=lte400mg';
       } else if (str === 'low fiber') {
         return 'fiber=lt2g';
       } else if (str === 'high fiber') {
         return 'fiber=gt5g';
       } else if (str === 'moderate fiber') {
-        return 'fiber=lt5g';
+        return 'fiber=lte5g';
       } else if (str === 'low sugar') {
         return 'sugar=lt5g';
       } else if (str === 'high sugar') {
         return 'sugar=gt15g';
       } else if (str === 'moderate sugar') {
-        return 'sugar=lt15g';
+        return 'sugar=lte15g';
       } else if (str === 'zero cholesterol') {
         return 'cholesterol=eq0mg';
       } else if (str === 'low calcium') {
@@ -167,19 +167,19 @@ export default defineComponent({
       } else if (str === 'high calcium') {
         return 'calcium=gt200mg';
       } else if (str === 'moderate calcium') {
-        return 'calcium=lt200mg';
+        return 'calcium=lte200mg';
       } else if (str === 'low vitamin c') {
         return 'vitamin_c=lt10mg';
       } else if (str === 'high vitamin c') {
         return 'vitamin_c=gt30mg';
       } else if (str === 'moderate vitamin c') {
-        return 'vitamin_c=lt30mg';
+        return 'vitamin_c=lte30mg';
       } else if (str === 'low vitamin a') {
         return 'vitamin_a=lt500IU';
       } else if (str === 'high vitamin a') {
         return 'vitamin_a=gt1000IU';
       } else if (str === 'moderate vitamin a') {
-        return 'vitamin_a=lt1000IU';
+        return 'vitamin_a=lte1000IU';
       } else if (str === 'low iron') {
         return 'iron=lt1mg';
       } else if (str === 'high iron') {
