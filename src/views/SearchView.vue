@@ -48,7 +48,7 @@ import { defineComponent, watch, ref, getCurrentInstance } from 'vue';
 import axios from 'axios';
 import { useRouter, useRoute } from 'vue-router';
 
-const API_BASE_URI = import.meta.env.API_BASE_URL;
+const API_BASE_URI = import.meta.env.VITE_API_URI;
 
 export default defineComponent({
   data: () => ({
