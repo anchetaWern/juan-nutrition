@@ -176,6 +176,8 @@ import { getSortedByName } from '@/helpers/Arr';
 
 import { useRoute } from 'vue-router'; 
 
+const API_BASE_URI = import.meta.env.API_BASE_URL;
+
 
 const chartOptions = {
   responsive: true,
@@ -265,29 +267,29 @@ export default {
         // use the value in local storage if there is a value
 
         const food_slug = route.params.food;;
-        axios.get(`https://api.juanutrisyon.info/api/foods/${food_slug}`)
+        axios.get(`${API_BASE_URI}/foods/${food_slug}`)
             .then(async (res) => {
                 const age = res.data.age;
                
                 //
                 // calories
-                const energy_intake_res = await axios.get(`https://api.juanutrisyon.info/api/reni-energy-intake?age=${age}`);
+                const energy_intake_res = await axios.get(`${API_BASE_URI}/reni-energy-intake?age=${age}`);
                 calorie_req_in_kcal.value = energy_intake_res.data.male_energy_req_in_kcal;
                 
                 // fiber
-                const fiber_intake_res = await axios.get(`https://api.juanutrisyon.info/api/reni-recommended-macro-intake?age=${age}`);
+                const fiber_intake_res = await axios.get(`${API_BASE_URI}/reni-recommended-macro-intake?age=${age}`);
                 
                 // macros
-                const macro_intake_res = await axios.get(`https://api.juanutrisyon.info/api/reni-macro-intake-distribution?age=${age}`);
+                const macro_intake_res = await axios.get(`${API_BASE_URI}/reni-macro-intake-distribution?age=${age}`);
             
                 // vitamins
-                const vitamin_intake_res = await axios.get(`https://api.juanutrisyon.info/api/reni-recommended-vitamin-intake?age=${age}`);
+                const vitamin_intake_res = await axios.get(`${API_BASE_URI}/reni-recommended-vitamin-intake?age=${age}`);
                 
                 // minerals
-                const mineral_intake_res = await axios.get(`https://api.juanutrisyon.info/api/reni-recommended-mineral-intake?age=${age}`);
+                const mineral_intake_res = await axios.get(`${API_BASE_URI}/reni-recommended-mineral-intake?age=${age}`);
 
                 // fda daily values (for adults)
-                const fda_daily_nutrient_values_res = await axios.get(`https://api.juanutrisyon.info/api/fda-daily-nutrient-values`);
+                const fda_daily_nutrient_values_res = await axios.get(`${API_BASE_URI}/fda-daily-nutrient-values`);
                 
                 const calories_per_gram_of_protein = 4;
                 const calories_per_gram_of_carbs = 4;

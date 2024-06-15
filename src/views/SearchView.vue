@@ -48,6 +48,7 @@ import { defineComponent, watch, ref, getCurrentInstance } from 'vue';
 import axios from 'axios';
 import { useRouter, useRoute } from 'vue-router';
 
+const API_BASE_URI = import.meta.env.API_BASE_URL;
 
 export default defineComponent({
   data: () => ({
@@ -265,7 +266,7 @@ export default defineComponent({
 
       const macros_keys = ['total carbohydrates', 'protein', 'total fat'];
       
-      const url = this.currentCategory ? `https://api.juanutrisyon.info/api/foods?${query}&category=${this.currentCategory}&page=${this.currentPage}` : `https://api.juanutrisyon.info/api/foods?${query}&page=${this.currentPage}`;
+      const url = this.currentCategory ? `${API_BASE_URI}/foods?${query}&category=${this.currentCategory}&page=${this.currentPage}` : `${API_BASE_URI}/foods?${query}&page=${this.currentPage}`;
       
       axios.get(url)
         .then((res) => {
