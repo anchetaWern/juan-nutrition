@@ -3,7 +3,7 @@
     <v-app-bar-title>
       <a href="/" style="color: #333;">
       <v-icon icon="mdi-food" />
-      Juan Nutrition
+      Juan Nutrisyon
       </a>
     </v-app-bar-title>
 
