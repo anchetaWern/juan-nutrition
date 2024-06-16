@@ -223,7 +223,7 @@ export default defineComponent({
    
     constructQuery() {
       let formattedQuery = '';
-      const query = this.$route.query.q;
+      const query = this.$route.query.q.toLowerCase();
 
       const keywords = [
         'carbohydrates', 'fat', 'protein',
