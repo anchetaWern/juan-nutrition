@@ -223,7 +223,8 @@ export default defineComponent({
    
     constructQuery() {
       let formattedQuery = '';
-      const query = this.$route.query.q.toLowerCase();
+      const query = this.$route.query.q;
+      const normalizedQuery = query ? query.toLowerCase() : query;
 
       const keywords = [
         'carbohydrates', 'fat', 'protein',
@@ -241,12 +242,12 @@ export default defineComponent({
         'low iron', 'high iron', 'moderate iron'
       ];
       
-      if (query && keywords.some(v => query.includes(v))) {
+      if (normalizedQuery && keywords.some(v => normalizedQuery.includes(v))) {
        
-        formattedQuery = this.constructComplexQuery(query);
+        formattedQuery = this.constructComplexQuery(normalizedQuery);
         console.log('formatted query: ', formattedQuery);
       } else {
-        formattedQuery = query ? `description=${query}` : '';
+        formattedQuery = normalizedQuery ? `description=${normalizedQuery}` : '';
         console.log('else: ', formattedQuery);
       }
 
