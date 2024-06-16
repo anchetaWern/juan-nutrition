@@ -8,8 +8,10 @@
             prominent
             v-if="items.length === 0"
           >
-          No matches found. Please try a different query.
+          No matches found for query '{{state.searchSummary}}'. Please try a different query.
         </v-alert>
+
+        <v-alert :text="`Showing results for '${state.searchSummary}'`" class="mb-2" v-if="state.searchSummary && items.length > 0" type="info"></v-alert>
     </div>
 
     <v-card
@@ -44,21 +46,46 @@
 </template>
 
 <script>
-import { defineComponent, watch, ref, getCurrentInstance } from 'vue';
+import { defineComponent, watch, ref, getCurrentInstance, reactive } from 'vue';
 import axios from 'axios';
 import { useRouter, useRoute } from 'vue-router';
 
 const API_BASE_URI = import.meta.env.VITE_API_URI;
 
+
+const categoryNames = {
+  'vegetables': 'Vegetables',
+  'meat-and-poultry': 'Meat and Poultry',
+  'legumes-nuts-and-seeds': 'Legumes, nuts, and seeds',
+  'fats-and-oils': 'Fats and Oils',
+  'fruits': 'Fruits',
+  'cereals-and-grains': 'Cereals and Grains',
+  'dairy-products': 'Dairy Products',
+  'herbs-and-spices': 'Herbs and Spices',
+  'beverages': 'Beverages',
+  'prepared-and-processed': 'Prepared and Processed',
+  'sugars-and-sweets': 'Sugars and Sweets',
+};
+
+function getCategoryName(slug) {
+    
+  return categoryNames[slug];
+}
+
 export default defineComponent({
   data: () => ({
     dialog: false,
-    items: [
-      
-    ],
+    items: [],
   }),
+  
 
   setup() {
+
+    const state = reactive({
+      searchSummary: ''
+    });
+
+    const { proxy } = getCurrentInstance();
 
     const route = useRoute();
     const router = useRouter();
@@ -67,6 +94,30 @@ export default defineComponent({
     const currentPage = ref(parseInt(route.query.page) || 1);
     const totalPages = ref(1);
     const instance = getCurrentInstance();
+
+    function updateSearchSummary(newSummary) {
+      state.searchSummary = newSummary;
+    }
+
+
+    const params = new URLSearchParams(route.query);
+    
+    let search_summary = '';
+
+    if (currentCategory.value) {
+      search_summary += `Category: ${getCategoryName(currentCategory.value)}`;
+    }
+
+    if (params.get('q')) {
+     
+      if (currentCategory.value) {
+        search_summary += ", ";
+      }
+      search_summary += `${params.get('q')}`;
+    }
+
+    updateSearchSummary(search_summary);
+
 
     watch(currentPage, (newPage, oldPage) => {
       router.push({ query: { ...route.query, page: newPage } });
@@ -92,6 +143,8 @@ export default defineComponent({
       currentPage,
       currentCategory,
       totalPages,
+      updateSearchSummary,
+      state
     };
   },
 
@@ -102,6 +155,21 @@ export default defineComponent({
       handler(newParams, oldParams) {
        
         if (JSON.stringify(newParams) !== JSON.stringify(oldParams)) {
+
+          let search_summary = '';
+          if (newParams.category) {
+            search_summary = `Category: ${newParams.category}`;
+          }
+
+          if (newParams.q) {
+            if (newParams.category) {
+              search_summary += ", ";
+            }
+
+            search_summary += `${newParams.q}`;
+          }
+
+          this.updateSearchSummary(search_summary);
         
           this.updateSearchResults();
         }
@@ -245,23 +313,21 @@ export default defineComponent({
       if (normalizedQuery && keywords.some(v => normalizedQuery.includes(v))) {
        
         formattedQuery = this.constructComplexQuery(normalizedQuery);
-        console.log('formatted query: ', formattedQuery);
       } else {
         formattedQuery = normalizedQuery ? `description=${normalizedQuery}` : '';
-        console.log('else: ', formattedQuery);
       }
 
       return formattedQuery;
     },
 
     updateSearchResults() {
-      const query = this.constructQuery();
-      console.log('query: ', query);
 
+      const query = this.constructQuery();
+      
       const macros_keys = ['total carbohydrates', 'protein', 'total fat'];
       
       const url = this.currentCategory ? `${API_BASE_URI}/foods?${query}&category=${this.currentCategory}&page=${this.currentPage}` : `${API_BASE_URI}/foods?${query}&page=${this.currentPage}`;
-      
+
       axios.get(url)
         .then((res) => {
           const items_per_page = 10;

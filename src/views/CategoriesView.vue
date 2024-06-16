@@ -52,6 +52,7 @@ import sugarsAndSweetsImage from '@/assets/images/sugars-and-sweets.jpg';
 import preparedAndProcessedImage from '@/assets/images/prepared-and-processed.jpg'
 
 export default {
+    
     data: () => ({
         cards: [
             { id: 2, slug: 'vegetables', title: 'Vegetables', src: vegetablesImage, flex: 12 },
