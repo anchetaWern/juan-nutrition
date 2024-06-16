@@ -34,7 +34,7 @@
                         Serving Size: {{ food.serving_size }}{{ food.serving_size_unit }}
                     </td>
                 </tr>
-                <tr v-if="food.edible_portion < 100">
+                <tr v-if="food.edible_portion && food.edible_portion < 100">
                     <td class="text-grey-darken-3">
                        Edible Portion: {{ food.edible_portion }}%
                     </td>
