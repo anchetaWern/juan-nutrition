@@ -7,7 +7,7 @@
             <tr>
                 <td class="text-grey-darken-3">{{ capitalizeWords(nutrient.name) }}</td>
                 <td class="text-grey-darken-3">
-                    <span v-if="nutrient.unit">{{ nutrient.amount }}{{ nutrient.unit }}</span> <span v-if="nutrient.unit == null">-</span> <span v-if="nutrient.hasRecommendedDailyValues">/ {{ nutrient.dailyLimit }}{{ nutrient.unit }}</span>
+                    <span v-if="nutrient.unit">{{ formatNumber(nutrient.amount) }}{{ nutrient.unit }}</span> <span v-if="nutrient.unit == null">-</span> <span v-if="nutrient.hasRecommendedDailyValues">/ {{ nutrient.dailyLimit }}{{ nutrient.unit }}</span>
                     <v-progress-linear 
                       v-if="recommended_daily_values && nutrient.hasRecommendedDailyValues" 
                       :model-value="nutrient.percentage" 
@@ -33,7 +33,7 @@
 <script>
 import { computed } from 'vue';
 import { capitalizeWords } from '@/helpers/Str';
-import { calculatePercentage } from '@/helpers/Numbers';
+import { calculatePercentage, formatNumber } from '@/helpers/Numbers';
 
 export default {
   props: {
@@ -120,7 +120,7 @@ export default {
 
       return {
           capitalizeWords,
-          
+          formatNumber,
           nutrients_with_recommended_daily_values,
           nutrientsWithPercentage,
       }
