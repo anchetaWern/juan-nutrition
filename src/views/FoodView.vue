@@ -191,7 +191,17 @@ const chartOptions = {
         enabled: true,
         callbacks: {
             label: function(tooltipItem) {
+                console.log(tooltipItem);
                 return tooltipItem.formattedValue + "%";
+            },
+            title: function(tooltipItem) {
+                return null;
+            },
+            footer: function(tooltipItem) {
+                return null;
+            },
+            beforeLabel: function(tooltipItem) {
+                return null;
             },
         },
     }
