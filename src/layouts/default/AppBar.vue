@@ -8,7 +8,7 @@
     </v-app-bar-title>
 
     <template v-slot:append>  
-
+      <v-btn icon="mdi-help" @click="helpDialog = true"></v-btn>
       <v-btn icon="mdi-magnify" @click="dialog = true"></v-btn>
     </template>    
 
@@ -31,6 +31,32 @@
 
   </v-dialog>
 
+  <v-dialog
+    v-model="helpDialog"
+    width="auto"
+  >
+    <template v-slot:default="{ isActive }">
+      <v-card title="Help">
+        <template v-slot:text>
+          You can click on the magnifying glass icon to begin searching. Just type in what you're looking for (eg. <code>Rambutan</code>, <code>high protein</code>, <code>carbohydrates<=2g</code>, <code>high iron</code>, <code>high vitamin c</code>). 
+          <br><br>You can click on any of the food categories in the homepage. Note that triggering search while viewing a category will limit the search results to the current category. Be sure to navigate to the homepage before you initiate search if you don't want this behavior.
+          <br><br>Results are sorted from smallest nutrition value to the largest. 
+          <br><br>Only 10 food items is loaded per page. You can click the left and right arrows at the bottom of each page to navigate through the available pages.
+        </template>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn
+            text="ok"
+            variant="flat"
+            @click="isActive.value = false"
+          ></v-btn>
+        </v-card-actions>
+      </v-card>
+    </template>
+  </v-dialog>
+
 </template>
 
 <script>
@@ -44,6 +70,7 @@ export default {
   data: () => ({
     query: '',
     dialog: false,
+    helpDialog: false
   }),
 
   methods: {
