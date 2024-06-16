@@ -187,12 +187,6 @@ export default defineComponent({
         return 'iron=gt5mg';
       } else if (str === 'moderate iron') {
         return 'iron=lte5mg';
-      } else if (str === 'low vitamin b1') {
-        return 'vitamin_b1=lt0.05mg'; // wont work with the current parser. maybe just multiply it by 100, or update regex
-      } else if (str === 'high vitamin b1') {
-        return 'vitamin_b1=gt0.2mg';
-      } else if (str === 'moderate vitamin b1') {
-        return 'vitamin_b1=lte0.2mg';
       }
 
       const regex = /(carbohydrates|protein|fat|calories)(>=|<=|>|<|=)(\d+)(g|kcal|ml)(?:,|$)/g;
@@ -244,8 +238,7 @@ export default defineComponent({
         'low calcium', 'high calcium', 'moderate calcium',
         'low vitamin c', 'high vitamin c', 'moderate vitamin c',
         'low vitamin a', 'high vitamin a', 'moderate vitamin a',
-        'low iron', 'high iron', 'moderate iron',
-        'low vitamin b1', 'high vitamin b1', 'moderate vitamin b1',
+        'low iron', 'high iron', 'moderate iron'
       ];
       
       if (query && keywords.some(v => query.includes(v))) {
