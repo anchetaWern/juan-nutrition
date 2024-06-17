@@ -12,8 +12,8 @@
 <template>
  
 
-    <v-container class="px-0 mx-0 mt-5" fluid>
-      <v-row dense>
+    <v-container class="mt-5" id="category-container">
+      <v-row dense justify="center">
         <v-col
           v-for="card in cards"
           :key="card.title"
@@ -36,6 +36,12 @@
     </v-container>
  
 </template>
+
+<style scoped>
+#category-container {
+  max-width: 450px;
+}
+</style>
 
 <script>
 
