@@ -257,7 +257,7 @@ export default defineComponent({
         return 'iron=lte5mg';
       }
 
-      const regex = /(carbohydrates|protein|fat|calories)(>=|<=|>|<|=)(\d+)(g|kcal|ml)(?:,|$)/g;
+      const regex = /(carbohydrates|protein|fat|calories)(>=|<=|>|<|=)(\d+(\.\d+)?)(g|kcal|ml)(?:,|$)/g;
       let match;
 
       let formattedQuery = '';
@@ -271,10 +271,12 @@ export default defineComponent({
       };
 
       while ((match = regex.exec(str)) !== null) {
+        console.log(match)
         const keyword = match[1];
         const cond = match[2];
-        const value = parseInt(match[3]);
-        const unit = match[4];
+        const value = match[3];
+        console.log('val: ', value);
+        const unit = match[5];
 
         if (keyword) {
           formattedQuery += `${keyword}=${conditions[cond]}${value}${unit}&`;
