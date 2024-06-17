@@ -14,10 +14,7 @@
         <v-alert :text="`Showing results for '${state.searchSummary}'`" class="mb-2" v-if="state.searchSummary && items.length > 0" type="info"></v-alert>
     </div>
 
-    <v-card
-      class="mx-auto"
-      max-width="450"
-    >
+    <v-card class="mx-auto" max-width="450">
       <v-list
         :items="items"
         lines="three"
@@ -44,6 +41,7 @@
     </div>
 
 </template>
+
 
 <script>
 import { defineComponent, watch, ref, getCurrentInstance, reactive } from 'vue';

@@ -34,6 +34,7 @@
   <v-dialog
     v-model="helpDialog"
     width="auto"
+    max-width="400px"
   >
     <template v-slot:default="{ isActive }">
       <v-card title="Help">
