@@ -255,7 +255,13 @@ export default defineComponent({
         return 'iron=gt5mg';
       } else if (str === 'moderate iron') {
         return 'iron=lte5mg';
-      }
+      } else if (str === 'low potassium') {
+        return 'potassium=lt100mg';
+      } else if (str === 'high potassium') {
+        return 'potassium=gt300mg';
+      } else if (str === 'moderate potassium') {
+        return 'potassium=lte300mg';
+      } 
 
       const regex = /(carbohydrates|protein|fat|calories)(>=|<=|>|<|=)(\d+(\.\d+)?)(g|kcal|ml)(?:,|$)/g;
       let match;
@@ -309,7 +315,8 @@ export default defineComponent({
         'low calcium', 'high calcium', 'moderate calcium',
         'low vitamin c', 'high vitamin c', 'moderate vitamin c',
         'low vitamin a', 'high vitamin a', 'moderate vitamin a',
-        'low iron', 'high iron', 'moderate iron'
+        'low iron', 'high iron', 'moderate iron',
+        'low potassium', 'high potassium', 'moderate potassium'
       ];
       
       if (normalizedQuery && keywords.some(v => normalizedQuery.includes(v))) {
