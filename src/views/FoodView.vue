@@ -133,10 +133,11 @@
 
 
         <v-dialog
+            max-width="400"
             v-model="imageModalVisible"   
         >
             <v-card
-                max-width="400"
+                
                 :title="currentImage.title"
                 v-if="currentImage"
             >
