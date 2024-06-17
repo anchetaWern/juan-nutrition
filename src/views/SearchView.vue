@@ -267,6 +267,24 @@ export default defineComponent({
         return 'magnesium=gt50mg';
       } else if (str === 'moderate magnesium') {
         return 'magnesium=lt50mg';
+      } else if (str === 'low vitamin b1') {
+        return 'vitamin_b1=lt0.1mg';
+      } else if (str === 'high vitamin b1') {
+        return 'vitamin_b1=gt0.5mg';
+      } else if (str === 'moderate vitamin b1') {
+        return 'vitamin_b1=lte0.5mg';
+      } else if (str === 'low vitamin b2') {
+        return 'vitamin_b2=lt0.1mg';
+      } else if (str === 'high vitamin b2') {
+        return 'vitamin_b2=gt0.5mg';
+      } else if (str === 'moderate vitamin b2') {
+        return 'vitamin_b2=lte0.5mg';
+      } else if (str === 'low vitamin b3') {
+        return 'vitamin_b3=lt1mg';
+      } else if (str === 'high vitamin b3') {
+        return 'vitamin_b3=gt3mg';
+      } else if (str === 'moderate vitamin b3') {
+        return 'vitamin_b3=lte3mg';
       } 
 
       const regex = /(carbohydrates|protein|fat|calories)(>=|<=|>|<|=)(\d+(\.\d+)?)(g|kcal|ml)(?:,|$)/g;
@@ -323,7 +341,10 @@ export default defineComponent({
         'low vitamin a', 'high vitamin a', 'moderate vitamin a',
         'low iron', 'high iron', 'moderate iron',
         'low potassium', 'high potassium', 'moderate potassium',
-        'low magnesium', 'high magnesium', 'moderate magnesium'
+        'low magnesium', 'high magnesium', 'moderate magnesium',
+        'low vitamin b1', 'high vitamin b1', 'moderate vitamin b1',
+        'low vitamin b2', 'high vitamin b2', 'moderate vitamin b2',
+        'low vitamin b3', 'high vitamin b3', 'moderate vitamin b3',
       ];
       
       if (normalizedQuery && keywords.some(v => normalizedQuery.includes(v))) {
