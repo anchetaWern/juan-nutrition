@@ -41,7 +41,7 @@
                 </tr>
                 <tr>
                     <td class="text-grey-darken-3">
-                        Calories: {{ food.calories }}{{ food.calories_unit }} / {{ calorie_req_in_kcal }}{{ food.calories_unit }}
+                        Calories: {{ food.calories }}{{ food.calories_unit }} / {{ calorie_req_in_kcal }}{{ food.calories_unit }} ({{ formatNumber(calculatePercentage(food.calories, calorie_req_in_kcal)) }}%)
                         <v-progress-linear 
                             :model-value="calculatePercentage(food.calories, calorie_req_in_kcal)" 
                             :bg-color="getCalorieBgColor(food.calories)" 
@@ -172,7 +172,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Pie } from 'vue-chartjs'
 import axios from 'axios'
 import NutrientsTable from '@/components/NutrientsTable.vue'
-import { calculatePercentage } from '@/helpers/Numbers';
+import { calculatePercentage, formatNumber } from '@/helpers/Numbers';
 import { getSortedByName } from '@/helpers/Arr';
 
 import { useRoute } from 'vue-router'; 
@@ -524,6 +524,7 @@ export default {
         recommended_daily_values,
 
         calculatePercentage,
+        formatNumber,
 
         getCalorieBgColor,
         getCalorieColor

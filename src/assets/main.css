@@ -36,3 +36,11 @@ a,
   }
   */
 }
+
+.small-text {
+  font-size: 0.7rem;
+}
+
+.tiny-text {
+  font-size: 0.6rem;
+}
