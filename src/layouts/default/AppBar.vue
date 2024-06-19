@@ -26,6 +26,7 @@
         v-model="query"
         autofocus
       ></v-text-field>
+     
       <v-btn color="primary" block @click="search" rounded="0">Search</v-btn>
     </v-card>
 
@@ -34,7 +35,7 @@
   <v-dialog
     v-model="helpDialog"
     width="auto"
-    max-width="400px"
+    max-width="350px"
   >
     <template v-slot:default="{ isActive }">
       <v-card title="Help">
