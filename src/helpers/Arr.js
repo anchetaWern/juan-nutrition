@@ -9,3 +9,11 @@ export function getSortedByName(arr) {
         return newItem;
     }).sort((a, b) => a.name.localeCompare(b.name));
 }
+
+export function findAgeData(age, ageType = 'year', data) {
+    return data.find(item => {
+        return item.age_type === ageType &&
+            item.age_from <= age &&
+            (item.age_to === null || item.age_to >= age);
+    });
+}
