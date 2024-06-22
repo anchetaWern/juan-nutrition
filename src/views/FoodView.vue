@@ -3,8 +3,8 @@
     
     <div class="pt-3">
         <div class="float-right">
-            <v-chip size="small" variant="outlined" v-if="food.food_type">
-            {{ food.food_type }}
+            <v-chip size="small" variant="outlined" v-if="food.type">
+            <span>{{ food.type.name }}</span> <span v-if="food.subtype">&nbsp;/ {{ food.subtype.name }}</span>
             </v-chip>
         </div>
 
@@ -20,8 +20,8 @@
     </div>
 
     <div class="mt-5 pt-5">
-        <div class="text-body2 mb-1 text-center font-weight-medium">Nutrition Facts</div>
-
+        <div class="text-body2 mb-3 text-center font-weight-medium">Nutrition Facts</div>
+       
         <v-table>
             <tbody>
                 <tr v-if="food.servings_per_container">
@@ -223,6 +223,9 @@ const vitamins = ref(null);
 const minerals = ref(null);
 const others = ref(null);
 
+
+
+
 export default {
   name: 'FoodView',
   components: {
@@ -233,8 +236,8 @@ export default {
   data: () => ({
     chartOptions,
     imageModalVisible,
-    
   }),
+
 
   setup() {
 
@@ -580,7 +583,8 @@ export default {
         formatNumber,
 
         getCalorieBgColor,
-        getCalorieColor
+        getCalorieColor,
+        
     }
 
   },
