@@ -56,6 +56,7 @@ import fatsAndOilsImage from '@/assets/images/fats-and-oils.jpg';
 import beveragesImage from '@/assets/images/beverages.jpg';
 import sugarsAndSweetsImage from '@/assets/images/sugars-and-sweets.jpg';
 import preparedAndProcessedImage from '@/assets/images/prepared-and-processed.jpg'
+import foragedFoodsImage from '@/assets/images/foraged-foods.jpg'
 
 export default {
     
@@ -77,6 +78,7 @@ export default {
             
             { id: 12, slug: 'prepared-and-processed', title: 'Prepared and Processed', src: preparedAndProcessedImage, flex: 6 },
             { id: 9, slug: 'sugars-and-sweets', title: 'Sugars and Sweets', src: sugarsAndSweetsImage, flex: 6 },
+            { id: 9, slug: 'foraged-foods', title: 'Foraged Foods', src: foragedFoodsImage, flex: 12 },
         ],
     }),
 
