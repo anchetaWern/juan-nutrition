@@ -63,6 +63,7 @@ const categoryNames = {
   'beverages': 'Beverages',
   'prepared-and-processed': 'Prepared and Processed',
   'sugars-and-sweets': 'Sugars and Sweets',
+  'foraged-foods': 'Foraged Foods'
 };
 
 function getCategoryName(slug) {
