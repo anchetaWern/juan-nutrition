@@ -15,6 +15,9 @@ import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
+import axios from 'axios'
+
+const API_BASE_URI = import.meta.env.VITE_API_URI
 
 
 const vuetify = createVuetify({
@@ -24,6 +27,23 @@ const vuetify = createVuetify({
 
 const app = createApp(App)
 const pinia = createPinia()
+
+app.use({
+  install() {
+
+    if (!localStorage.getItem('food_types')) {
+      const food_types_url = `${API_BASE_URI}/food-types`;
+      axios.get(food_types_url)
+        .then((res) => {
+          localStorage.setItem('food_types', JSON.stringify(res.data));
+        })
+        .catch((err) => {
+          console.log('err: ', err);
+        });
+    } 
+
+  }
+});
 
 app.use(router)
 app.use(vuetify)

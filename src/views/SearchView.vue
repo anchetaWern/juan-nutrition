@@ -47,29 +47,9 @@
 import { defineComponent, watch, ref, getCurrentInstance, reactive } from 'vue';
 import axios from 'axios';
 import { useRouter, useRoute } from 'vue-router';
+import { unslugify } from '@/helpers/Str';
 
 const API_BASE_URI = import.meta.env.VITE_API_URI;
-
-
-const categoryNames = {
-  'vegetables': 'Vegetables',
-  'meat-and-poultry': 'Meat and Poultry',
-  'legumes-nuts-and-seeds': 'Legumes, nuts, and seeds',
-  'fats-and-oils': 'Fats and Oils',
-  'fruits': 'Fruits',
-  'cereals-and-grains': 'Cereals and Grains',
-  'dairy-products': 'Dairy Products',
-  'herbs-and-spices': 'Herbs and Spices',
-  'beverages': 'Beverages',
-  'prepared-and-processed': 'Prepared and Processed',
-  'sugars-and-sweets': 'Sugars and Sweets',
-  'foraged-foods': 'Foraged Foods'
-};
-
-function getCategoryName(slug) {
-    
-  return categoryNames[slug];
-}
 
 export default defineComponent({
   data: () => ({
@@ -100,11 +80,21 @@ export default defineComponent({
 
 
     const params = new URLSearchParams(route.query);
+
     
     let search_summary = '';
 
+    const categories = JSON.parse(localStorage.getItem('food_types'));
+
+    function getCategory(slug) {
+      if (categories) {
+        return categories.find(cat => cat.slug === slug);
+      }
+      return {name: unslugify(slug)};
+    }
+
     if (currentCategory.value) {
-      search_summary += `Category: ${getCategoryName(currentCategory.value)}`;
+      search_summary += `Category: ${getCategory(currentCategory.value).name}`;
     }
 
     if (params.get('q')) {
@@ -363,6 +353,7 @@ export default defineComponent({
       const macros_keys = ['total carbohydrates', 'protein', 'total fat'];
       
       const url = this.currentCategory ? `${API_BASE_URI}/foods?${query}&category=${this.currentCategory}&page=${this.currentPage}` : `${API_BASE_URI}/foods?${query}&page=${this.currentPage}`;
+
 
       axios.get(url)
         .then((res) => {

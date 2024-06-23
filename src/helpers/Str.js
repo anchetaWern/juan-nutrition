@@ -7,3 +7,9 @@ export function capitalizeWords(str) {
         }
     }).join(' ');
 }
+
+export function unslugify(slug) {
+    let result = slug.replace(/[-_]/g, ' ');
+    result = result.replace(/\b\w/g, (char) => char.toUpperCase());
+    return result;
+  }
