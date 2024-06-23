@@ -2,9 +2,9 @@
   <div class="mt-5" v-if="food">
     
     <div class="pt-3">
-        <div class="float-right">
+        <div class="float-right cursor-pointer">
             <v-chip size="small" variant="outlined" v-if="food.type">
-            <span>{{ food.type.name }}</span> <span v-if="food.subtype">&nbsp;/ {{ food.subtype.name }}</span>
+            <span @click="viewCategory(food.type.slug)">{{ food.type.name }}</span> <span @click="viewCategory(food.subtype.slug)" v-if="food.subtype">&nbsp;/ {{ food.subtype.name }}</span>
             </v-chip>
         </div>
 
@@ -222,8 +222,6 @@ const macros = ref(null);
 const vitamins = ref(null);
 const minerals = ref(null);
 const others = ref(null);
-
-
 
 
 export default {
@@ -592,6 +590,10 @@ export default {
   
 
   methods: {
+      viewCategory(slug) {
+          this.$router.push(`/search?category=${slug}`);
+      },
+      
       closeImageModal() {
          this.imageModalVisible = false; 
       },
