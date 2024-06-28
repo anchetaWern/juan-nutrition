@@ -5,7 +5,9 @@
         
         <template v-for="nutrient in nutrientsWithPercentage" :key="nutrient.name">
             <tr>
-                <td class="text-grey-darken-3">{{ capitalizeWords(nutrient.name) }}</td>
+                <td class="text-grey-darken-3">
+                  <span class="small-text">{{ capitalizeWords(nutrient.name) }}</span>
+                </td>
                 <td class="text-grey-darken-3">
                     <span v-if="nutrient.unit" class="tiny-text">{{ formatNumber(nutrient.amount) }}{{ nutrient.unit }}</span> <span v-if="nutrient.unit == null" class="tiny-text">-</span> <span v-if="nutrient.hasRecommendedDailyValues" class="tiny-text">/ {{ nutrient.dailyLimit }}{{ nutrient.unit }}</span><span v-if="nutrient.hasRecommendedDailyValues" class="small-text"> ({{ formatNumber(nutrient.percentage) }}%)</span>
                     <v-progress-linear 

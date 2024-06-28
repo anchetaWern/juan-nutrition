@@ -215,7 +215,7 @@ import axios from 'axios'
 import NutrientsTable from '@/components/NutrientsTable.vue'
 import { calculatePercentage, formatNumber } from '@/helpers/Numbers';
 import { getSortedByName, findAgeData } from '@/helpers/Arr';
-import { nutrientUnit } from '@/helpers/DailyValues';
+import { nutrientUnit, standardizeVitaminD, standardizeVitaminA, standardizeVitaminE, standardizeVitaminB3, standardizeVitaminB9 } from '@/helpers/Nutrients';
 
 import { useRoute } from 'vue-router'; 
 
@@ -479,9 +479,8 @@ export default {
 
                 const combined_daily_values = {...reni_daily_nutrient_values, ...fda_daily_nutrient_values};
                 recommended_daily_values.value = combined_daily_values;
-                
-
-                var dv_table = Object.keys(combined_daily_values).map((key) => {
+               
+                const dv_table = Object.keys(combined_daily_values).map((key) => {
                     const val = combined_daily_values[key];
                     const unit = nutrientUnit(key);
                     return {
@@ -593,7 +592,27 @@ export default {
                     } else if (macro_names.indexOf(itm.name) !== -1) {
                         macros_items.push(itm);
                     } else if (vitamin_names.indexOf(itm.name) !== -1) {
-                        vitamins_items.push(itm);
+                     
+                        const standard_unit = nutrientUnit(itm.name);
+                        let updated_itm = itm;
+                        if (itm.name === 'vitamin d') {
+                            const standard_amount = standardizeVitaminD(itm.amount, itm.unit);
+                            updated_itm = {...itm, amount: standard_amount, unit: standard_unit};
+                        } else if (itm.name === 'vitamin a') {
+                            const standard_amount = standardizeVitaminA(itm.amount, itm.unit);
+                            updated_itm = {...itm, amount: standard_amount, unit: standard_unit};
+                        } else if (itm.name === 'vitamin e') {
+                            const standard_amount = standardizeVitaminE(itm.amount, itm.unit);
+                            updated_itm = {...itm, amount: standard_amount, unit: standard_unit};
+                        } else if (itm.name === 'vitamin b3') {
+                            const standard_amount = standardizeVitaminB3(itm.amount, itm.unit);
+                            updated_itm = {...itm, amount: standard_amount, unit: standard_unit};
+                        } else if (itm.name === 'vitamin b9') {
+                            const standard_amount = standardizeVitaminB9(itm.amount, itm.unit);
+                            updated_itm = {...itm, amount: standard_amount, unit: standard_unit};
+                        }
+
+                        vitamins_items.push(updated_itm);
                     } else if (mineral_names.indexOf(itm.name) !== -1) {
                         minerals_items.push(itm);
                     } else if (other_names.indexOf(itm.name) !== -1) {
