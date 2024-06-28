@@ -1,0 +1,42 @@
+const common_nutrient_units = {
+    "dietary fiber": "g",
+    "protein": "g",
+    "total fat": "g",
+    "cholesterol": "mg",
+    "total carbohydrates": "g",
+    "sugar": "g",
+    "sodium": "mg",
+    "potassium": "mg",
+    "calcium": "mg",
+    "iron": "mg",
+    "magnesium": "mg",
+    "zinc": "mg",
+    "selenium": "mcg",
+    "vitamin a": "µg",
+    "vitamin c": "mg",
+    "vitamin d": "mcg",
+    "vitamin e": "mg",
+    "vitamin k": "mcg",
+    "vitamin b1": "mg",
+    "vitamin b2": "mg",
+    "vitamin b3": "mg NE",
+    "vitamin b6": "mg",
+    "vitamin b9": "mcg DFE",
+    "vitamin b12": "mcg",
+    "biotin": "mcg",
+    "chloride": "mg",
+    "choline": "mg",
+    "chromium": "mcg",
+    "copper": "mg",
+    "total fiber": "g",
+    "iodine": "mcg",
+    "manganese": "mg",
+    "molybdenum": "mcg",
+    "vitamin b5": "mg",
+    "phosphorus": "mg",
+    "saturated fat": "g"
+}  
+
+export function nutrientUnit(nutrient) {
+    return common_nutrient_units[nutrient];
+}

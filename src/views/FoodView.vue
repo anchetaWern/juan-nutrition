@@ -20,7 +20,7 @@
     </div>
 
     <div class="mt-5 pt-5">
-        <div class="text-body2 mb-3 text-center font-weight-medium">Nutrition Facts</div>
+        <div class="text-body2 mb-3 text-center font-weight-medium">Nutrition Facts <v-btn variant="text" size="x-small" icon="mdi-help" @click="dvHelp = true"></v-btn></div>
        
         <v-table>
             <tbody>
@@ -164,6 +164,47 @@
     </div>
 
   </div>
+
+
+    <v-dialog
+        v-model="dvHelp"
+        width="350px"
+    >
+        <template v-slot:default="{ isActive }">
+            <v-card title="Daily Values">
+
+                <div class="px-2">
+                    <v-expansion-panels>
+                        <v-expansion-panel
+                            title="View more info"
+                            text="The daily values are a combination of the reference guide from the US Food and Drug Administration and the Philippine Dietary Reference Intakes from the DOST Food and Nutrition Research Institute. Note that these values may vary depending on the target age group for the specific food. If the target age group is not mentioned, it means 19 to 29 year old male was used as the target age group."
+                        >
+                        </v-expansion-panel>
+                    </v-expansion-panels>
+
+                </div>        
+
+                <div class="px-10 pt-3">
+                    <ul>
+                        <li v-for="n in daily_values_table">
+                        {{n.nutrient}} = {{n.value}}    
+                        </li>
+                    </ul>
+                </div>
+
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+
+                    <v-btn
+                        text="ok"
+                        variant="flat"
+                        @click="isActive.value = false"
+                    ></v-btn>
+                </v-card-actions>
+            </v-card>
+        </template>
+    </v-dialog>
+
 </template>
 
 <script>
@@ -174,6 +215,7 @@ import axios from 'axios'
 import NutrientsTable from '@/components/NutrientsTable.vue'
 import { calculatePercentage, formatNumber } from '@/helpers/Numbers';
 import { getSortedByName, findAgeData } from '@/helpers/Arr';
+import { nutrientUnit } from '@/helpers/DailyValues';
 
 import { useRoute } from 'vue-router'; 
 
@@ -234,6 +276,7 @@ export default {
   data: () => ({
     chartOptions,
     imageModalVisible,
+    dvHelp: false
   }),
 
 
@@ -250,6 +293,8 @@ export default {
     const calorie_req_in_kcal = ref(null);
 
     const recommended_daily_values = ref(null);
+
+    const daily_values_table = ref(null);
 
     const getCalorieBgColor = (calories) => {
         if (calories >= 400) {
@@ -434,7 +479,18 @@ export default {
 
                 const combined_daily_values = {...reni_daily_nutrient_values, ...fda_daily_nutrient_values};
                 recommended_daily_values.value = combined_daily_values;
-              
+                
+
+                var dv_table = Object.keys(combined_daily_values).map((key) => {
+                    const val = combined_daily_values[key];
+                    const unit = nutrientUnit(key);
+                    return {
+                        nutrient: key, 
+                        value: `${val}${unit}`
+                   }
+                });
+                
+                daily_values_table.value = dv_table;
                 //
 
                 food.value = res.data;
@@ -576,6 +632,8 @@ export default {
 
         calorie_req_in_kcal,
         recommended_daily_values,
+
+        daily_values_table,
 
         calculatePercentage,
         formatNumber,
