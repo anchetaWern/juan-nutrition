@@ -309,7 +309,7 @@ export default {
     chartOptions,
     imageModalVisible,
     dvHelp: false,
-    displayValuesPerContainer: true,
+    displayValuesPerContainer: false,
   }),
 
 
