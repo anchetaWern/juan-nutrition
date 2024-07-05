@@ -23,11 +23,13 @@
         <div class="text-body2 text-center font-weight-medium">Nutrition Facts <v-btn variant="text" size="x-small" icon="mdi-help" @click="dvHelp = true"></v-btn></div>
        
         <v-switch 
+            v-if="hasValuesPerContainerToggle"
             label="Display values per container" 
             v-model="displayValuesPerContainer" 
             color="success"
             hide-details
             inset
+            
         >
         </v-switch>
 
@@ -328,6 +330,7 @@ export default {
     const daily_values_table = ref(null);
 
     const servingsPerContainer = ref(1);
+    const hasValuesPerContainerToggle = ref(false);
 
     const getCalorieBgColor = (calories) => {
         if (calories >= 400) {
@@ -389,6 +392,10 @@ export default {
                 food.value = res.data;
                 if (res.data.servings_per_container) {
                     servingsPerContainer.value = res.data.servings_per_container;
+
+                    if (res.data.servings_per_container > 1) {
+                        hasValuesPerContainerToggle.value = true;
+                    }
                 }
                 
             
@@ -552,6 +559,7 @@ export default {
 
         daily_values_table,
         servingsPerContainer,
+        hasValuesPerContainerToggle,
 
         calculatePercentage,
         formatNumber,
