@@ -20,8 +20,17 @@
     </div>
 
     <div class="mt-5 pt-5">
-        <div class="text-body2 mb-3 text-center font-weight-medium">Nutrition Facts <v-btn variant="text" size="x-small" icon="mdi-help" @click="dvHelp = true"></v-btn></div>
+        <div class="text-body2 text-center font-weight-medium">Nutrition Facts <v-btn variant="text" size="x-small" icon="mdi-help" @click="dvHelp = true"></v-btn></div>
        
+        <v-switch 
+            label="Display values per container" 
+            v-model="displayValuesPerContainer" 
+            color="success"
+            hide-details
+            inset
+        >
+        </v-switch>
+
         <v-table>
             <tbody>
                 <tr v-if="food.servings_per_container">
@@ -41,7 +50,7 @@
                 </tr>
                 <tr>
                     <td class="text-grey-darken-3">
-                        Calories: {{ food.calories }}{{ food.calories_unit }} / {{ calorie_req_in_kcal }}{{ food.calories_unit }} ({{ formatNumber(calculatePercentage(food.calories, calorie_req_in_kcal)) }}%)
+                        Calories: {{ amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer) }}{{ food.calories_unit }} / {{ calorie_req_in_kcal }}{{ food.calories_unit }} ({{ formatNumber(calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer), calorie_req_in_kcal)) }}%)
                         <v-progress-linear 
                             :model-value="calculatePercentage(food.calories, calorie_req_in_kcal)" 
                             :bg-color="getCalorieBgColor(food.calories)" 
@@ -56,27 +65,47 @@
 
         <div class="mt-3" v-if="elements.length">
             <span class="text-subtitle-2">Elements</span>
-            <NutrientsTable :nutrients="elements" :recommended_daily_values="recommended_daily_values" />
+            <NutrientsTable 
+                :nutrients="elements" 
+                :servingsPerContainer="servingsPerContainer" 
+                :displayValuesPerContainer="displayValuesPerContainer"
+                :recommended_daily_values="recommended_daily_values" />
         </div>
 
         <div class="mt-3" v-if="macros.length">
             <span class="text-subtitle-2">Macros</span>
-            <NutrientsTable :nutrients="macros" :recommended_daily_values="recommended_daily_values" />
+            <NutrientsTable 
+                :nutrients="macros" 
+                :servingsPerContainer="servingsPerContainer" 
+                :displayValuesPerContainer="displayValuesPerContainer"
+                :recommended_daily_values="recommended_daily_values" />
         </div>
 
         <div class="mt-3" v-if="vitamins.length">
             <span class="text-subtitle-2">Vitamins</span>
-            <NutrientsTable :nutrients="vitamins" :recommended_daily_values="recommended_daily_values" />
+            <NutrientsTable 
+                :nutrients="vitamins" 
+                :servingsPerContainer="servingsPerContainer" 
+                :displayValuesPerContainer="displayValuesPerContainer"
+                :recommended_daily_values="recommended_daily_values" />
         </div>
 
         <div class="mt-3" v-if="minerals.length">
             <span class="text-subtitle-2">Minerals</span>
-            <NutrientsTable :nutrients="minerals" :recommended_daily_values="recommended_daily_values" />
+            <NutrientsTable 
+                :nutrients="minerals" 
+                :servingsPerContainer="servingsPerContainer" 
+                :displayValuesPerContainer="displayValuesPerContainer"
+                :recommended_daily_values="recommended_daily_values" />
         </div>
 
         <div class="mt-3" v-if="others.length">
             <span class="text-subtitle-2">Others</span>
-            <NutrientsTable :nutrients="others" :recommended_daily_values="recommended_daily_values" />
+            <NutrientsTable 
+                :nutrients="others" 
+                :servingsPerContainer="servingsPerContainer" 
+                :displayValuesPerContainer="displayValuesPerContainer"
+                :recommended_daily_values="recommended_daily_values" />
         </div>
     </div>
 
@@ -214,6 +243,7 @@ import { Pie } from 'vue-chartjs'
 import axios from 'axios'
 import NutrientsTable from '@/components/NutrientsTable.vue'
 import { calculatePercentage, formatNumber } from '@/helpers/Numbers';
+import { amountPerContainer } from '@/helpers/Nutrients';
 import { getSortedByName, findAgeData } from '@/helpers/Arr';
 import { nutrientUnit, standardizeVitaminD, standardizeVitaminA, standardizeVitaminE, standardizeVitaminB3, standardizeVitaminB9 } from '@/helpers/Nutrients';
 
@@ -276,7 +306,8 @@ export default {
   data: () => ({
     chartOptions,
     imageModalVisible,
-    dvHelp: false
+    dvHelp: false,
+    displayValuesPerContainer: true,
   }),
 
 
@@ -295,6 +326,8 @@ export default {
     const recommended_daily_values = ref(null);
 
     const daily_values_table = ref(null);
+
+    const servingsPerContainer = ref(1);
 
     const getCalorieBgColor = (calories) => {
         if (calories >= 400) {
@@ -476,7 +509,7 @@ export default {
                     'vitamin b9': vitamin_b9_req,
                     'vitamin b12': vitamin_b12_req,
                 };
-
+                
                 const combined_daily_values = {...reni_daily_nutrient_values, ...fda_daily_nutrient_values};
                 recommended_daily_values.value = combined_daily_values;
                
@@ -491,8 +524,12 @@ export default {
                 
                 daily_values_table.value = dv_table;
                 //
-
+                console.log('SIR!', res.data);
                 food.value = res.data;
+                if (res.data.servings_per_container) {
+                    servingsPerContainer.value = res.data.servings_per_container;
+                }
+                
             
                 const images_arr = [
                     {
@@ -653,12 +690,15 @@ export default {
         recommended_daily_values,
 
         daily_values_table,
+        servingsPerContainer,
 
         calculatePercentage,
         formatNumber,
 
         getCalorieBgColor,
         getCalorieColor,
+
+        amountPerContainer
         
     }
 

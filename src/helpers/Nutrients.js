@@ -110,3 +110,8 @@ export function standardizeVitaminB9(value, unit) {
 
     return value;
 }
+
+export function amountPerContainer(amount, servingsPerContainer, displayValuesPerContainer) {
+    const multiplier = displayValuesPerContainer ? servingsPerContainer : 1;
+    return amount * multiplier;
+}

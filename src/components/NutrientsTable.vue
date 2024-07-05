@@ -9,7 +9,7 @@
                   <span class="small-text">{{ capitalizeWords(nutrient.name) }}</span>
                 </td>
                 <td class="text-grey-darken-3">
-                    <span v-if="nutrient.unit" class="tiny-text">{{ formatNumber(nutrient.amount) }}{{ nutrient.unit }}</span> <span v-if="nutrient.unit == null" class="tiny-text">-</span> <span v-if="nutrient.hasRecommendedDailyValues" class="tiny-text">/ {{ nutrient.dailyLimit }}{{ nutrient.unit }}</span><span v-if="nutrient.hasRecommendedDailyValues" class="small-text"> ({{ formatNumber(nutrient.percentage) }}%)</span>
+                    <span v-if="nutrient.unit" class="tiny-text">{{ formatNumber(amountPerContainer(nutrient.amount, servingsPerContainer, displayValuesPerContainer)) }}{{ nutrient.unit }}</span> <span v-if="nutrient.unit == null" class="tiny-text">-</span> <span v-if="nutrient.hasRecommendedDailyValues" class="tiny-text">/ {{ nutrient.dailyLimit }}{{ nutrient.unit }}</span><span v-if="nutrient.hasRecommendedDailyValues" class="small-text"> ({{ formatNumber(nutrient.percentage) }}%)</span>
                     <v-progress-linear 
                       v-if="recommended_daily_values && nutrient.hasRecommendedDailyValues" 
                       :model-value="nutrient.percentage" 
@@ -21,7 +21,11 @@
 
             <tr v-if="nutrient.composition">
                 <td colspan="2">
-                    <NutrientsTable :nutrients="nutrient.composition" :recommended_daily_values="recommended_daily_values" />
+                    <NutrientsTable 
+                      :nutrients="nutrient.composition" 
+                      :servingsPerContainer="servingsPerContainer" 
+                      :displayValuesPerContainer="displayValuesPerContainer" 
+                      :recommended_daily_values="recommended_daily_values" />
                 </td>
             </tr>
         </template>
@@ -36,6 +40,7 @@
 import { computed } from 'vue';
 import { capitalizeWords } from '@/helpers/Str';
 import { calculatePercentage, formatNumber } from '@/helpers/Numbers';
+import { amountPerContainer } from '@/helpers/Nutrients';
 
 export default {
   props: {
@@ -46,6 +51,16 @@ export default {
     recommended_daily_values: {
       type: Object,
       required: true,
+    },
+    servingsPerContainer: {
+      type: Number,
+      required: false,
+      default: 1
+    },
+    displayValuesPerContainer: {
+      type: Boolean,
+      required: true,
+      default: true,
     }
   },
 
@@ -104,16 +119,18 @@ export default {
       const nutrientsWithPercentage = computed(() => {
         return props.nutrients.map(nutrient => {
           
-          const daily_limit = props.recommended_daily_values[nutrient.name]
-          const percentage = calculateReniPercentage(nutrient.name, nutrient.amount);
+          const daily_limit = props.recommended_daily_values[nutrient.name];
+          const multiplier = props.displayValuesPerContainer ? props.servingsPerContainer : 1;
+          const total_amount = nutrient.amount * multiplier;
+          const percentage = calculateReniPercentage(nutrient.name, total_amount);
           const hasRecommendedDailyValues = nutrients_with_recommended_daily_values.indexOf(nutrient.name) !== -1;
 
           return {
             ...nutrient,
             percentage,
-            bgColor: getBackgroundColor(nutrient.amount, daily_limit),
-            color: getColor(nutrient.amount, daily_limit),
-            reverse: getReverse(nutrient.amount, daily_limit), 
+            bgColor: getBackgroundColor(total_amount, daily_limit),
+            color: getColor(total_amount, daily_limit),
+            reverse: getReverse(total_amount, daily_limit), 
             hasRecommendedDailyValues: hasRecommendedDailyValues,
             dailyLimit: hasRecommendedDailyValues && props.recommended_daily_values[nutrient.name] ? props.recommended_daily_values[nutrient.name].toFixed(0) : null,
           };
@@ -125,6 +142,7 @@ export default {
           formatNumber,
           nutrients_with_recommended_daily_values,
           nutrientsWithPercentage,
+          amountPerContainer,
       }
   }
   
