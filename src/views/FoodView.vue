@@ -54,9 +54,9 @@
                     <td class="text-grey-darken-3">
                         Calories: {{ amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer) }}{{ food.calories_unit }} / {{ calorie_req_in_kcal }}{{ food.calories_unit }} ({{ formatNumber(calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer), calorie_req_in_kcal)) }}%)
                         <v-progress-linear 
-                            :model-value="calculatePercentage(food.calories, calorie_req_in_kcal)" 
-                            :bg-color="getCalorieBgColor(food.calories)" 
-                            :color="getCalorieColor(food.calories)">
+                            :model-value="calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer), calorie_req_in_kcal)" 
+                            :bg-color="getCalorieBgColor(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer))" 
+                            :color="getCalorieColor(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer))">
                         </v-progress-linear>
                     </td>
                 </tr>
