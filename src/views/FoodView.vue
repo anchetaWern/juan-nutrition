@@ -42,7 +42,7 @@
                 </tr>
                 <tr>
                     <td class="text-grey-darken-3">
-                        Serving Size: {{ food.serving_size }}{{ food.serving_size_unit }}
+                        Serving Size: {{ food.serving_size }}{{ food.serving_size_unit }} <span v-if="food.custom_serving_size">/ {{ food.custom_serving_size }}</span>
                     </td>
                 </tr>
                 <tr v-if="food.edible_portion && food.edible_portion < 100">
