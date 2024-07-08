@@ -9,7 +9,7 @@
                   <span class="small-text">{{ capitalizeWords(nutrient.name) }}</span>
                 </td>
                 <td class="text-grey-darken-3">
-                    <span v-if="nutrient.unit" class="tiny-text">{{ formatNumber(amountPerContainer(nutrient.amount, servingsPerContainer, displayValuesPerContainer)) }}{{ nutrient.unit }}</span> <span v-if="nutrient.unit == null" class="tiny-text">-</span> <span v-if="nutrient.hasRecommendedDailyValues" class="tiny-text">/ {{ nutrient.dailyLimit }}{{ nutrient.unit }}</span><span v-if="nutrient.hasRecommendedDailyValues" class="small-text"> ({{ formatNumber(nutrient.percentage) }}%)</span>
+                    <span v-if="nutrient.unit" class="tiny-text">{{ formatNumber(amountPerContainer(nutrient.amount, servingsPerContainer, displayValuesPerContainer, newServingSize)) }}{{ nutrient.unit }}</span> <span v-if="nutrient.unit == null" class="tiny-text">-</span> <span v-if="nutrient.hasRecommendedDailyValues" class="tiny-text">/ {{ nutrient.dailyLimit }}{{ nutrient.unit }}</span><span v-if="nutrient.hasRecommendedDailyValues" class="small-text"> ({{ formatNumber(nutrient.percentage) }}%)</span>
                     <v-progress-linear 
                       v-if="recommended_daily_values && nutrient.hasRecommendedDailyValues" 
                       :model-value="nutrient.percentage" 
@@ -25,7 +25,8 @@
                       :nutrients="nutrient.composition" 
                       :servingsPerContainer="servingsPerContainer" 
                       :displayValuesPerContainer="displayValuesPerContainer" 
-                      :recommended_daily_values="recommended_daily_values" />
+                      :recommended_daily_values="recommended_daily_values"
+                      :newServingSize="newServingSize" />
                 </td>
             </tr>
         </template>
@@ -61,6 +62,11 @@ export default {
       type: Boolean,
       required: true,
       default: true,
+    },
+    newServingSize: {
+      type: Number,
+      required: false,
+      default: null,
     }
   },
 
@@ -75,7 +81,7 @@ export default {
         'vitamin b1', 'vitamin b2', 'vitamin b3', 'vitamin b5', 'vitamin b6', 'vitamin b9', 'vitamin b12',
       ];
 
-      const calculateReniPercentage = (nutrient_name, nutrient_value) => {
+      const calculateNutrientPercentage = (nutrient_name, nutrient_value) => {
         if (props.recommended_daily_values.hasOwnProperty(nutrient_name)) {
           const reni_limit = props.recommended_daily_values[nutrient_name];
           const percentage = calculatePercentage(nutrient_value, reni_limit);
@@ -121,8 +127,8 @@ export default {
           
           const daily_limit = props.recommended_daily_values[nutrient.name];
           const multiplier = props.displayValuesPerContainer ? props.servingsPerContainer : 1;
-          const total_amount = nutrient.amount * multiplier;
-          const percentage = calculateReniPercentage(nutrient.name, total_amount);
+          const total_amount = amountPerContainer(nutrient.amount, props.servingsPerContainer, props.displayValuesPerContainer, props.newServingSize); // nutrient.amount * multiplier;
+          const percentage = calculateNutrientPercentage(nutrient.name, total_amount);
           const hasRecommendedDailyValues = nutrients_with_recommended_daily_values.indexOf(nutrient.name) !== -1;
 
           return {

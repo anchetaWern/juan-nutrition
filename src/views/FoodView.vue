@@ -42,7 +42,8 @@
                 </tr>
                 <tr>
                     <td class="text-grey-darken-3">
-                        Serving Size: {{ food.serving_size }}{{ food.serving_size_unit }} <span v-if="food.custom_serving_size">/ {{ food.custom_serving_size }}</span>
+                        Serving Size: {{ servingSize(food.serving_size, newServingSize) }}{{ food.serving_size_unit }} <span v-if="food.custom_serving_size">/ {{ food.custom_serving_size }}</span>
+                        <v-btn size="x-small" @click="openModifyModal">Modify</v-btn>
                     </td>
                 </tr>
                 <tr v-if="food.edible_portion && food.edible_portion < 100">
@@ -52,11 +53,11 @@
                 </tr>
                 <tr>
                     <td class="text-grey-darken-3">
-                        Calories: {{ amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer) }}{{ food.calories_unit }} / {{ calorie_req_in_kcal }}{{ food.calories_unit }} ({{ formatNumber(calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer), calorie_req_in_kcal)) }}%)
+                        Calories: {{ amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, newServingSize) }}{{ food.calories_unit }} / {{ calorie_req_in_kcal }}{{ food.calories_unit }} ({{ formatNumber(calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, newServingSize), calorie_req_in_kcal)) }}%)
                         <v-progress-linear 
-                            :model-value="calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer), calorie_req_in_kcal)" 
-                            :bg-color="getCalorieBgColor(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer))" 
-                            :color="getCalorieColor(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer))">
+                            :model-value="calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, newServingSize), calorie_req_in_kcal)" 
+                            :bg-color="getCalorieBgColor(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, newServingSize))" 
+                            :color="getCalorieColor(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, newServingSize))">
                         </v-progress-linear>
                     </td>
                 </tr>
@@ -71,7 +72,8 @@
                 :nutrients="elements" 
                 :servingsPerContainer="servingsPerContainer" 
                 :displayValuesPerContainer="displayValuesPerContainer"
-                :recommended_daily_values="recommended_daily_values" />
+                :recommended_daily_values="recommended_daily_values"
+                :newServingSize="newServingSize" />
         </div>
 
         <div class="mt-3" v-if="macros.length">
@@ -80,7 +82,8 @@
                 :nutrients="macros" 
                 :servingsPerContainer="servingsPerContainer" 
                 :displayValuesPerContainer="displayValuesPerContainer"
-                :recommended_daily_values="recommended_daily_values" />
+                :recommended_daily_values="recommended_daily_values"
+                :newServingSize="newServingSize" />
         </div>
 
         <div class="mt-3" v-if="vitamins.length">
@@ -89,7 +92,8 @@
                 :nutrients="vitamins" 
                 :servingsPerContainer="servingsPerContainer" 
                 :displayValuesPerContainer="displayValuesPerContainer"
-                :recommended_daily_values="recommended_daily_values" />
+                :recommended_daily_values="recommended_daily_values"
+                :newServingSize="newServingSize" />
         </div>
 
         <div class="mt-3" v-if="minerals.length">
@@ -98,7 +102,8 @@
                 :nutrients="minerals" 
                 :servingsPerContainer="servingsPerContainer" 
                 :displayValuesPerContainer="displayValuesPerContainer"
-                :recommended_daily_values="recommended_daily_values" />
+                :recommended_daily_values="recommended_daily_values"
+                :newServingSize="newServingSize" />
         </div>
 
         <div class="mt-3" v-if="others.length">
@@ -107,7 +112,8 @@
                 :nutrients="others" 
                 :servingsPerContainer="servingsPerContainer" 
                 :displayValuesPerContainer="displayValuesPerContainer"
-                :recommended_daily_values="recommended_daily_values" />
+                :recommended_daily_values="recommended_daily_values"
+                :newServingSize="newServingSize" />
         </div>
     </div>
 
@@ -161,6 +167,25 @@
                 </v-img>
             </v-col>
         </v-row>
+
+
+        <v-dialog
+            v-model="modifyServingSizeDialog"
+            width="300"
+        >
+            <v-card>
+                <v-text-field
+                    hide-details="auto"
+                    label="Serving size in grams"
+                    placeholder="50"
+                    v-model="newServingSize"
+                    autofocus
+                ></v-text-field>
+            
+                <v-btn color="primary" block @click="modifyServingSize" rounded="0">Modify serving size</v-btn>
+            </v-card>
+
+        </v-dialog>
 
 
         <v-dialog
@@ -247,7 +272,7 @@ import NutrientsTable from '@/components/NutrientsTable.vue'
 import { calculatePercentage, formatNumber } from '@/helpers/Numbers';
 import { amountPerContainer } from '@/helpers/Nutrients';
 import { getSortedByName, findAgeData } from '@/helpers/Arr';
-import { nutrientUnit, standardizeVitaminD, standardizeVitaminA, standardizeVitaminE, standardizeVitaminB3, standardizeVitaminB9 } from '@/helpers/Nutrients';
+import { nutrientUnit, standardizeVitaminD, standardizeVitaminA, standardizeVitaminE, standardizeVitaminB3, standardizeVitaminB9, servingSize } from '@/helpers/Nutrients';
 
 import { useRoute } from 'vue-router'; 
 
@@ -332,6 +357,10 @@ export default {
     const servingsPerContainer = ref(1);
     const hasValuesPerContainerToggle = ref(false);
 
+    const modifyServingSizeDialog = ref(false);
+
+    const newServingSize = ref(null);
+
     const getCalorieBgColor = (calories) => {
         if (calories >= 400) {
           return 'red-darken-1';  
@@ -348,6 +377,16 @@ export default {
           return 'orange-darken-3';
         }
         return 'blue-darken-3';
+    }
+
+    const openModifyModal = () => {
+        console.log('na')
+        modifyServingSizeDialog.value = true;
+    }
+
+    const modifyServingSize = () => {
+        modifyServingSizeDialog.value = false;
+        console.log('new serving size: ', newServingSize.value);
     }
 
     const fetchData = async () => {
@@ -567,8 +606,15 @@ export default {
         getCalorieBgColor,
         getCalorieColor,
 
-        amountPerContainer
+        amountPerContainer,
+
+        openModifyModal,
+        modifyServingSizeDialog,
+
+        modifyServingSize,
+        newServingSize,
         
+        servingSize,
     }
 
   },

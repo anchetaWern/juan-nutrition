@@ -111,7 +111,27 @@ export function standardizeVitaminB9(value, unit) {
     return value;
 }
 
-export function amountPerContainer(amount, servingsPerContainer, displayValuesPerContainer) {
+export function amountPerContainer(amount, servingsPerContainer, displayValuesPerContainer, newServingSize = 100) {
     const multiplier = displayValuesPerContainer ? servingsPerContainer : 1;
-    return amount * multiplier;
+    const originalNutrientAmount = amount * multiplier;
+
+    if (isNumeric(newServingSize)) {
+        return modifyServingSize(100, newServingSize, originalNutrientAmount);
+    }
+    return originalNutrientAmount;
+}
+
+function modifyServingSize(originalServingSize, newServingSize, originalNutrientAmount) {
+    return (newServingSize / originalServingSize) * originalNutrientAmount;
+}
+
+export function servingSize(originalServingSize, newServingSize) {
+    if (isNumeric(newServingSize)) {
+        return newServingSize;
+    }
+    return originalServingSize;
+}
+
+function isNumeric(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
 }
