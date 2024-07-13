@@ -9,7 +9,7 @@
                   <span class="small-text">{{ capitalizeWords(nutrient.name) }}</span>
                 </td>
                 <td class="text-grey-darken-3">
-                    <span v-if="nutrient.unit" class="tiny-text">{{ formatNumber(amountPerContainer(nutrient.amount, servingsPerContainer, displayValuesPerContainer, newServingSize)) }}{{ nutrient.unit }}</span> <span v-if="nutrient.unit == null" class="tiny-text">-</span> <span v-if="nutrient.hasRecommendedDailyValues" class="tiny-text">/ {{ nutrient.dailyLimit }}{{ nutrient.unit }}</span><span v-if="nutrient.hasRecommendedDailyValues" class="small-text"> ({{ formatNumber(nutrient.percentage) }}%)</span>
+                    <span v-if="nutrient.unit" class="tiny-text">{{ formatNumber(amountPerContainer(nutrient.amount, servingsPerContainer, displayValuesPerContainer, newServingSize, newServingCount)) }}{{ nutrient.unit }}</span> <span v-if="nutrient.unit == null" class="tiny-text">-</span> <span v-if="nutrient.hasRecommendedDailyValues" class="tiny-text">/ {{ nutrient.dailyLimit }}{{ nutrient.unit }}</span><span v-if="nutrient.hasRecommendedDailyValues" class="small-text"> ({{ formatNumber(nutrient.percentage) }}%)</span>
                     <v-progress-linear 
                       v-if="recommended_daily_values && nutrient.hasRecommendedDailyValues" 
                       :model-value="nutrient.percentage" 
@@ -26,7 +26,8 @@
                       :servingsPerContainer="servingsPerContainer" 
                       :displayValuesPerContainer="displayValuesPerContainer" 
                       :recommended_daily_values="recommended_daily_values"
-                      :newServingSize="newServingSize" />
+                      :newServingSize="newServingSize"
+                      :newServingCount="newServingCount" />
                 </td>
             </tr>
         </template>
@@ -64,6 +65,11 @@ export default {
       default: true,
     },
     newServingSize: {
+      type: Number,
+      required: false,
+      default: null,
+    },
+    newServingCount: {
       type: Number,
       required: false,
       default: null,
@@ -127,7 +133,7 @@ export default {
           
           const daily_limit = props.recommended_daily_values[nutrient.name];
           const multiplier = props.displayValuesPerContainer ? props.servingsPerContainer : 1;
-          const total_amount = amountPerContainer(nutrient.amount, props.servingsPerContainer, props.displayValuesPerContainer, props.newServingSize); // nutrient.amount * multiplier;
+          const total_amount = amountPerContainer(nutrient.amount, props.servingsPerContainer, props.displayValuesPerContainer, props.newServingSize, props.newServingCount); // nutrient.amount * multiplier;
           const percentage = calculateNutrientPercentage(nutrient.name, total_amount);
           const hasRecommendedDailyValues = nutrients_with_recommended_daily_values.indexOf(nutrient.name) !== -1;
 

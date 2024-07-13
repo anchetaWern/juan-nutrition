@@ -37,13 +37,14 @@
             <tbody>
                 <tr v-if="food.servings_per_container">
                     <td class="text-grey-darken-3">
-                        {{ food.servings_per_container }} Servings Per Container
+                        {{ newServingCount ? newServingCount : food.servings_per_container }} Servings Per Container
+                        <v-btn size="x-small" @click="openModifyServingCountModal">Modify</v-btn>
                     </td>
                 </tr>
                 <tr>
                     <td class="text-grey-darken-3">
                         Serving Size: {{ servingSize(food.serving_size, newServingSize) }}{{ food.serving_size_unit }} <span v-if="food.custom_serving_size">/ {{ food.custom_serving_size }}</span>
-                        <v-btn size="x-small" @click="openModifyModal">Modify</v-btn>
+                        <v-btn size="x-small" @click="openModifyServingSizeModal">Modify</v-btn>
                     </td>
                 </tr>
                 <tr v-if="food.edible_portion && food.edible_portion < 100">
@@ -53,11 +54,11 @@
                 </tr>
                 <tr>
                     <td class="text-grey-darken-3">
-                        Calories: {{ amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, newServingSize) }}{{ food.calories_unit }} / {{ calorie_req_in_kcal }}{{ food.calories_unit }} ({{ formatNumber(calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, newServingSize), calorie_req_in_kcal)) }}%)
+                        Calories: {{ formatNumber(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, newServingSize, newServingCount)) }}{{ food.calories_unit }} / {{ calorie_req_in_kcal }}{{ food.calories_unit }} ({{ formatNumber(calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, newServingSize, newServingCount), calorie_req_in_kcal)) }}%)
                         <v-progress-linear 
-                            :model-value="calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, newServingSize), calorie_req_in_kcal)" 
-                            :bg-color="getCalorieBgColor(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, newServingSize))" 
-                            :color="getCalorieColor(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, newServingSize))">
+                            :model-value="calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, newServingSize, newServingCount), calorie_req_in_kcal)" 
+                            :bg-color="getCalorieBgColor(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, newServingSize, newServingCount))" 
+                            :color="getCalorieColor(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, newServingSize, newServingCount))">
                         </v-progress-linear>
                     </td>
                 </tr>
@@ -73,7 +74,8 @@
                 :servingsPerContainer="servingsPerContainer" 
                 :displayValuesPerContainer="displayValuesPerContainer"
                 :recommended_daily_values="recommended_daily_values"
-                :newServingSize="newServingSize" />
+                :newServingSize="newServingSize"
+                :newServingCount="newServingCount" />
         </div>
 
         <div class="mt-3" v-if="macros.length">
@@ -83,7 +85,8 @@
                 :servingsPerContainer="servingsPerContainer" 
                 :displayValuesPerContainer="displayValuesPerContainer"
                 :recommended_daily_values="recommended_daily_values"
-                :newServingSize="newServingSize" />
+                :newServingSize="newServingSize"
+                :newServingCount="newServingCount" />
         </div>
 
         <div class="mt-3" v-if="vitamins.length">
@@ -93,7 +96,8 @@
                 :servingsPerContainer="servingsPerContainer" 
                 :displayValuesPerContainer="displayValuesPerContainer"
                 :recommended_daily_values="recommended_daily_values"
-                :newServingSize="newServingSize" />
+                :newServingSize="newServingSize"
+                :newServingCount="newServingCount" />
         </div>
 
         <div class="mt-3" v-if="minerals.length">
@@ -103,7 +107,8 @@
                 :servingsPerContainer="servingsPerContainer" 
                 :displayValuesPerContainer="displayValuesPerContainer"
                 :recommended_daily_values="recommended_daily_values"
-                :newServingSize="newServingSize" />
+                :newServingSize="newServingSize"
+                :newServingCount="newServingCount" />
         </div>
 
         <div class="mt-3" v-if="others.length">
@@ -113,7 +118,8 @@
                 :servingsPerContainer="servingsPerContainer" 
                 :displayValuesPerContainer="displayValuesPerContainer"
                 :recommended_daily_values="recommended_daily_values"
-                :newServingSize="newServingSize" />
+                :newServingSize="newServingSize"
+                :newServingCount="newServingCount" />
         </div>
     </div>
 
@@ -183,6 +189,24 @@
                 ></v-text-field>
             
                 <v-btn color="primary" block @click="modifyServingSize" rounded="0">Modify serving size</v-btn>
+            </v-card>
+
+        </v-dialog>
+
+        <v-dialog
+            v-model="modifyServingCountDialog"
+            width="300"
+        >
+            <v-card>
+                <v-text-field
+                    hide-details="auto"
+                    label="Serving Count"
+                    placeholder="5"
+                    v-model="newServingCount"
+                    autofocus
+                ></v-text-field>
+            
+                <v-btn color="primary" block @click="modifyServingCount" rounded="0">Modify number of servings</v-btn>
             </v-card>
 
         </v-dialog>
@@ -359,7 +383,11 @@ export default {
 
     const modifyServingSizeDialog = ref(false);
 
+    const modifyServingCountDialog = ref(false);
+
     const newServingSize = ref(null);
+
+    const newServingCount = ref(null);
 
     const getCalorieBgColor = (calories) => {
         if (calories >= 400) {
@@ -379,14 +407,24 @@ export default {
         return 'blue-darken-3';
     }
 
-    const openModifyModal = () => {
-        console.log('na')
+    const openModifyServingCountModal = () => {
+        console.log('su');
+        modifyServingCountDialog.value = true;
+    }
+
+    const openModifyServingSizeModal = () => {
+        console.log('na');
         modifyServingSizeDialog.value = true;
     }
 
     const modifyServingSize = () => {
         modifyServingSizeDialog.value = false;
         console.log('new serving size: ', newServingSize.value);
+    }
+
+    const modifyServingCount = () => {
+        modifyServingCountDialog.value = false;
+        console.log('new serving count: ', newServingCount.value);
     }
 
     const fetchData = async () => {
@@ -608,11 +646,18 @@ export default {
 
         amountPerContainer,
 
-        openModifyModal,
+        openModifyServingCountModal,
+
+        openModifyServingSizeModal,
         modifyServingSizeDialog,
 
         modifyServingSize,
         newServingSize,
+
+        modifyServingCountDialog,
+        newServingCount,
+
+        modifyServingCount,
         
         servingSize,
     }
