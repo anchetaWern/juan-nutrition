@@ -123,12 +123,16 @@
         </div>
     </div>
 
-    <div class="mt-5" v-if="food.ingredients">
+    <div class="mt-5 text-center" v-if="food.ingredients">
         <div class="text-body2 mb-1 text-center font-weight-medium">Ingredients</div>
 
         <p class="text-subtitle2 text-grey-darken-3">
             {{ food.ingredients }}
         </p>
+
+       <v-btn variant="plain" size="x-small" @click="openIngredientsInfoModal" v-if="food.hasIngredientsInfo">
+       View More Info
+       </v-btn>
     </div>
 
     <div class="mt-5" v-if="food.allergen_information">
@@ -207,6 +211,44 @@
                 ></v-text-field>
             
                 <v-btn color="primary" block @click="modifyServingCount" rounded="0">Modify number of servings</v-btn>
+            </v-card>
+
+        </v-dialog>
+
+        <v-dialog
+            v-model="ingredientsInfoDialog"
+            fullscreen
+            transition="dialog-bottom-transition"
+            v-slot:default="{ isActive }"
+        >
+            <v-card title="Ingredients Analysis">
+                <template v-slot:text>
+
+                    <div v-for="(ingredient, index) in food_ingredients">
+                        <div class="mb-5">
+                            <div class="text-subtitle-1 font-weight-bold">{{ ingredient.name }}</div>
+                            <div class="mb-2 text-grey-darken-4">Score: {{ ingredient.score }} out of 5</div>
+                            <p class="text-body-2">{{ ingredient.effects }}</p>
+                            <div class="mt-3">
+                                <div class="font-weight-medium">Health Risks</div>
+                                <p class="text-body-2">{{ ingredient.health_risks }}</p>
+                            </div>
+                        </div>
+
+                        <v-divider class="mb-5"></v-divider>
+                    </div>
+                   
+
+                </template>
+
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                        text="close"
+                        variant="flat"
+                        @click="isActive.value = false"
+                    ></v-btn>
+                </v-card-actions>
             </v-card>
 
         </v-dialog>
@@ -385,9 +427,13 @@ export default {
 
     const modifyServingCountDialog = ref(false);
 
+    const ingredientsInfoDialog = ref(false);
+
     const newServingSize = ref(null);
 
     const newServingCount = ref(null);
+
+    const food_ingredients = ref(null);
 
     const getCalorieBgColor = (calories) => {
         if (calories >= 400) {
@@ -408,23 +454,31 @@ export default {
     }
 
     const openModifyServingCountModal = () => {
-        console.log('su');
         modifyServingCountDialog.value = true;
     }
 
     const openModifyServingSizeModal = () => {
-        console.log('na');
         modifyServingSizeDialog.value = true;
+    }
+
+     const openIngredientsInfoModal = () => {
+        // todo:
+        const food_slug = route.params.food;
+        axios.get(`${API_BASE_URI}/food-ingredients/${food_slug}`)
+            .then(async (res) => {
+                console.log('res: ', res.data);
+                food_ingredients.value = res.data;
+            });
+
+        ingredientsInfoDialog.value = true;
     }
 
     const modifyServingSize = () => {
         modifyServingSizeDialog.value = false;
-        console.log('new serving size: ', newServingSize.value);
     }
 
     const modifyServingCount = () => {
         modifyServingCountDialog.value = false;
-        console.log('new serving count: ', newServingCount.value);
     }
 
     const fetchData = async () => {
@@ -660,6 +714,10 @@ export default {
         modifyServingCount,
         
         servingSize,
+
+        openIngredientsInfoModal,
+        ingredientsInfoDialog,
+        food_ingredients,
     }
 
   },
