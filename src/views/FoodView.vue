@@ -11,7 +11,9 @@
         <h1 class="text-h6">{{ food.description }}</h1>
         <span v-if="food.alternate_names != 'N/A'">{{ food.alternate_names }}</span>
     </div>
-    
+
+    <NutriScore :currentGrade="nutriscore" />
+  
     <div class="mt-3" v-if="hasMacros">
         <div class="text-body2 mb-1 text-center font-weight-medium">Macros</div>
         <div class="mt-1" style="height: 130px;">
@@ -335,6 +337,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Pie } from 'vue-chartjs'
 import axios from 'axios'
 import NutrientsTable from '@/components/NutrientsTable.vue'
+import NutriScore from '@/components/NutriScore.vue'
 import { calculatePercentage, formatNumber } from '@/helpers/Numbers';
 import { amountPerContainer } from '@/helpers/Nutrients';
 import { getSortedByName, findAgeData } from '@/helpers/Arr';
@@ -393,7 +396,8 @@ export default {
   name: 'FoodView',
   components: {
     Pie,
-    NutrientsTable
+    NutrientsTable,
+    NutriScore
   },
     
   data: () => ({
@@ -434,6 +438,8 @@ export default {
     const newServingCount = ref(null);
 
     const food_ingredients = ref(null);
+
+    const nutriscore = ref(null);
 
     const getCalorieBgColor = (calories) => {
         if (calories >= 400) {
@@ -495,6 +501,13 @@ export default {
         //
 
         const food_slug = route.params.food;
+
+        axios.get(`${API_BASE_URI}/nutriscore/${food_slug}`)
+            .then(async (res) => {
+                nutriscore.value = res.data.grade;
+                console.log('nutriscore: ', res.data);
+            });
+
         axios.get(`${API_BASE_URI}/foods/${food_slug}`)
             .then(async (res) => {
 
@@ -718,6 +731,7 @@ export default {
         openIngredientsInfoModal,
         ingredientsInfoDialog,
         food_ingredients,
+        nutriscore,
     }
 
   },
