@@ -12,8 +12,11 @@
         <span v-if="food.alternate_names != 'N/A'">{{ food.alternate_names }}</span>
     </div>
 
-    <NutriScore :currentGrade="nutriscore" />
-  
+    <div class="d-flex flex-row justify-space-evenly">
+        <NutriScore :currentGrade="nutriscore" />
+        <NovaRating :currentGrade="food.subtype.nova_class" />
+    </div>
+
     <div class="mt-3" v-if="hasMacros">
         <div class="text-body2 mb-1 text-center font-weight-medium">Macros</div>
         <div class="mt-1" style="height: 130px;">
@@ -338,6 +341,7 @@ import { Pie } from 'vue-chartjs'
 import axios from 'axios'
 import NutrientsTable from '@/components/NutrientsTable.vue'
 import NutriScore from '@/components/NutriScore.vue'
+import NovaRating from '@/components/NovaRating.vue'
 import { calculatePercentage, formatNumber } from '@/helpers/Numbers';
 import { amountPerContainer } from '@/helpers/Nutrients';
 import { getSortedByName, findAgeData } from '@/helpers/Arr';
@@ -397,7 +401,8 @@ export default {
   components: {
     Pie,
     NutrientsTable,
-    NutriScore
+    NutriScore,
+    NovaRating
   },
     
   data: () => ({
