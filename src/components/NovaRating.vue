@@ -1,14 +1,66 @@
 <template>
   <div class="nova-score">
+    <v-btn variant="text" size="x-small" class="float-end pb-1" icon="mdi-help" @click="novaDialog = true"></v-btn>
     <img :src="getImageSrc()" />
   </div>
+
+
+    <v-dialog
+        v-model="novaDialog"
+        fullscreen
+        transition="dialog-bottom-transition"
+    >
+        <template v-slot:default="{ isActive }">
+            <v-card title="NOVA">
+                <template v-slot:text>
+                    <div class="text-body-2">
+                    The NOVA food classification system categorizes foods based on the extent and purpose of their processing. Developed by researchers at the University of São Paulo, it is widely used in public health and nutrition research. The system includes four categories:
+                    </div>
+
+                    <ol class="pt-3 pl-3">
+                        <li>
+                            <div class="text-body-2 font-weight-medium">Unprocessed or Minimally Processed Foods</div>
+                            <div class="text-caption mb-2">Foods that are edible in their natural state or altered slightly to extend their shelf life or enhance their preparation (e.g., fresh fruits, vegetables, grains, meats, and milk).</div>
+                        </li>
+                        <li>
+                            <div class="text-body-2 font-weight-medium">Processed Culinary Ingredients</div>
+                            <div class="text-caption mb-2">Substances extracted from minimally processed foods or from nature and used in cooking (e.g., oils, butter, sugar, and salt).</div>
+                        </li>
+                        <li>
+                            <div class="text-body-2 font-weight-medium">Processed Foods</div>
+                            <div class="text-caption mb-2">Foods that have been altered by adding salt, sugar, oil, or other substances to make them more durable or palatable (e.g., canned vegetables, cheese, and freshly made bread).</div>
+                        </li>
+                        <li>
+                            <div class="text-body-2 font-weight-medium">Ultra-Processed Foods</div>
+                            <div class="text-caption mb-2">Formulations mostly of substances derived from foods and additives, with little or no whole food content. These are often industrially manufactured, designed to be convenient and hyper-palatable (e.g., sugary snacks, soft drinks, instant noodles, and ready-to-eat meals).</div>
+                        </li>
+                    </ol>
+                </template>
+
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+
+                    <v-btn
+                    text="ok"
+                    variant="flat"
+                    @click="isActive.value = false"
+                    ></v-btn>
+                </v-card-actions>
+
+            </v-card>
+        </template>
+    </v-dialog>
+
 </template>
 
 <script>
+import { ref } from 'vue';
 import one from '@/assets/images/nova/nova-group-1.svg';
 import two from '@/assets/images/nova/nova-group-2.svg';
 import three from '@/assets/images/nova/nova-group-3.svg';
 import four from '@/assets/images/nova/nova-group-4.svg';
+
+const novaDialog = ref(false);
 
 export default {
   props: {
@@ -22,6 +74,7 @@ export default {
   },
   data() {
     return {
+      novaDialog,
       images: {
         '1': one,
         '2': two,
