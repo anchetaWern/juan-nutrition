@@ -58,7 +58,8 @@ export function standardizeVitaminD(value, unit) {
 export function standardizeVitaminA(value, unit) {
     const standard_unit = 'mcg'; // mcg of RAE
     const conversion_factors = {
-        'IU': 0.05,
+        'mg': 1000,
+        'IU': 0.3, // note: this is for retinol. the conversion factor for beta-carotene (a precursor of vit A) it's 0.6 µg. no way of distinguishing between the two yet in the database though
         'µg': 0.05,
         'μgre': 1, // can be used interchangeably
     };
@@ -115,7 +116,7 @@ export function amountPerContainer(amount, servingsPerContainer, displayValuesPe
     const servingCount = newServingCount ? newServingCount : servingsPerContainer;
    
     const multiplier = displayValuesPerContainer ? servingCount : 1;
-    console.log('multiplier: ', multiplier);
+   
     const originalNutrientAmount = amount * multiplier;
 
     if (isNumeric(newServingSize)) {
