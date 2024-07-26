@@ -14,7 +14,7 @@
 
     <div class="d-flex flex-row justify-space-evenly">
         <NutriScore :currentGrade="nutriscore" />
-        <NovaRating :currentGrade="food.subtype.nova_class" />
+        <NovaRating :currentGrade="food.subtype ? food.subtype.nova_class : food.type.nova_class" />
     </div>
 
     <div class="mt-3" v-if="hasMacros">
