@@ -14,9 +14,151 @@
     <template v-slot:default="{ isActive }">
       <v-card title="Nutri-score">
         <template v-slot:text>
-          <div class="text-body-2">
-          Nutri-Score is a front-of-pack nutritional label designed to help consumers make healthier food choices at a glance. Developed in France, it provides a simple, color-coded system that grades food products based on their nutritional quality. The scale ranges from 'A' to 'E'.
+          <div class="mb-5">
+            <div class="text-body-1 mb-2">
+            Negative Points
+            </div>
+
+            <div class="d-flex flex-row align-center justify-space-between">
+              <div class="text-body-2">
+              Calories ({{ nutriscore.details.negative_points.energy }}/10)
+              </div>
+
+              <div>
+                <v-rating
+                  v-model="nutriscore.details.negative_points.energy"
+                  length="10"
+                  readonly
+                  empty-icon="mdi-square-outline"
+                  full-icon="mdi-square"
+                  active-color="red-darken-2"
+                  color="red-darken-2"
+                  size="x-small"
+                  density="compact"
+                ></v-rating>
+              </div> 
+            </div>
+
+            <div class="d-flex flex-row align-center justify-space-between">
+              <div class="text-body-2">
+              Sugar ({{ nutriscore.details.negative_points.simple_sugars }}/10)
+              </div>
+
+              <div>
+                <v-rating
+                  v-model="nutriscore.details.negative_points.simple_sugars"
+                  length="10"
+                  readonly
+                  empty-icon="mdi-square-outline"
+                  full-icon="mdi-square"
+                  active-color="red-darken-2"
+                  color="red-darken-2"
+                  size="x-small"
+                  density="compact"
+                ></v-rating>
+              </div> 
+              
+            </div>
+
+            <div class="d-flex flex-row align-center justify-space-between">
+              <div class="text-body-2">
+              Saturated Fat ({{ nutriscore.details.negative_points.saturated_fats }}/10)
+              </div>
+
+              <div>
+                <v-rating
+                  v-model="nutriscore.details.negative_points.saturated_fats"
+                  length="10"
+                  readonly
+                  empty-icon="mdi-square-outline"
+                  full-icon="mdi-square"
+                  active-color="red-darken-2"
+                  color="red-darken-2"
+                  size="x-small"
+                  density="compact"
+                ></v-rating>
+              </div> 
+              
+            </div>
+
+
+            <div class="text-body-1 mb-2 mt-5">
+            Positive Points
+            </div>
+
+            <div class="d-flex flex-row align-center justify-space-between">
+              <div class="text-body-2">
+              Proteins ({{ nutriscore.details.positive_points.protein }}/5)
+              </div>
+
+              <div>
+                <v-rating
+                  v-model="nutriscore.details.positive_points.protein"
+                  length="5"
+                  readonly
+                  empty-icon="mdi-square-outline"
+                  full-icon="mdi-square"
+                  active-color="green-darken-2"
+                  color="green-darken-2"
+                  size="x-small"
+                  density="compact"
+                ></v-rating>
+              </div> 
+            </div>
+
+            <div class="d-flex flex-row align-center justify-space-between">
+              <div class="text-body-2">
+              Fiber ({{ nutriscore.details.positive_points.fiber }}/5)
+              </div>
+
+              <div>
+                <v-rating
+                  v-model="nutriscore.details.positive_points.fiber"
+                  length="5"
+                  readonly
+                  empty-icon="mdi-square-outline"
+                  full-icon="mdi-square"
+                  active-color="green-darken-2"
+                  color="green-darken-2"
+                  size="x-small"
+                  density="compact"
+                ></v-rating>
+              </div> 
+              
+            </div>
+
+            <div class="d-flex flex-row align-center justify-space-between">
+              <div class="text-body-2">
+              Fruits, vegetables, legumes ({{ nutriscore.details.positive_points.fruits_vegetables_nuts_legumes ? nutriscore.details.positive_points.fruits_vegetables_nuts_legumes : 0 }}/5)
+              </div>
+
+              <div>
+                <v-rating
+                  v-model="nutriscore.details.positive_points.fruits_vegetables_nuts_legumes"
+                  length="5"
+                  readonly
+                  empty-icon="mdi-square-outline"
+                  full-icon="mdi-square"
+                  active-color="green-darken-2"
+                  color="green-darken-2"
+                  size="x-small"
+                  density="compact"
+                ></v-rating>
+              </div> 
+              
+            </div>
           </div>
+
+
+          <v-divider></v-divider>
+
+          <div class="text-body-1 pt-3 mb-3">What is Nutri-score? </div>
+
+          <div class="text-body-2">
+          The Nutri-Score, also known as the 5-Colour Nutrition label or 5-CNL, is a five-colour nutrition label and nutritional rating system, and an attempt to simplify the nutritional rating system demonstrating the overall nutritional value of food products. It assigns products a rating letter from A (best) to E (worst), with associated colors from green to red.
+          </div>
+
+          <img :src="getImageSrc()" />
           
           <ul class="pt-3 pl-3">
               <li>
@@ -87,21 +229,20 @@ import C from '@/assets/images/nutriscore/nutriscore-C.svg';
 import D from '@/assets/images/nutriscore/nutriscore-D.svg';
 import E from '@/assets/images/nutriscore/nutriscore-E.svg';
 
+
 const nutriScoreDialog = ref(false);
 
 export default {
   props: {
-    currentGrade: {
-      type: String,
-      required: true,
-      validator: function (value) {
-        return ['A', 'B', 'C', 'D', 'E'].indexOf(value) !== -1;
-      }
+    nutriscore: {
+      type: Object,
+      required: true
     }
   },
   data() {
     return {
       nutriScoreDialog,
+      
       images: {
         'A': A,
         'B': B,
@@ -113,7 +254,7 @@ export default {
   },
   methods: {
     getImageSrc() {
-      return this.images[this.currentGrade];
+      return this.images[this.nutriscore.grade];
     }
   }
 };

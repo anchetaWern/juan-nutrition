@@ -13,7 +13,7 @@
     </div>
 
     <div class="d-flex flex-row justify-space-evenly">
-        <NutriScore :currentGrade="nutriscore" />
+        <NutriScore :nutriscore="nutriscore" />
         <NovaRating :currentGrade="food.subtype ? food.subtype.nova_class : food.type.nova_class" />
     </div>
 
@@ -410,6 +410,7 @@ export default {
     imageModalVisible,
     dvHelp: false,
     displayValuesPerContainer: false,
+    
   }),
 
 
@@ -509,7 +510,7 @@ export default {
 
         axios.get(`${API_BASE_URI}/nutriscore/${food_slug}`)
             .then(async (res) => {
-                nutriscore.value = res.data.grade;
+                nutriscore.value = res.data;
                 console.log('nutriscore: ', res.data);
             });
 
