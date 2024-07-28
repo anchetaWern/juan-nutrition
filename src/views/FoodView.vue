@@ -295,29 +295,64 @@
 
     <v-dialog
         v-model="dvHelp"
-        width="350px"
+        fullscreen
+        transition="dialog-bottom-transition"
     >
         <template v-slot:default="{ isActive }">
             <v-card title="Daily Values">
+    
+                <template v-slot:text>
+                    <div class="text-body-2">
+                        <p>
+                        The Daily Values are the recommended amounts of nutrients to consume or not to exceed each day. 
+                        These values are from the<a href="https://www.fda.gov/food/nutrition-facts-label/daily-value-nutrition-and-supplement-facts-labels" target="_blank">
+                        U.S. Food and Drug Administration.</a> 
+                        5% DV or less of a nutrient per serving is considered low. 20% DV or more of a nutrient is considered high.
+                        </p>
+                        <p class="mt-2">
+                        The values are color coded: <span class="text-blue">blue</span> for low, <span class="text-orange">orange</span> for moderate, <span class="text-red">red</span> for high.
+                        </p>
+                        <p>
+                        For nutrients that are generally good for everyone: protein, dietary fiber, vitamins and minerals. You want to aim for foods that are orange or red color.
+                        </p>
+                        <p>
+                        For nutrients that are generally bad for everyone (when consumed in large amounts): sodium, saturated fat. You want to aim for foods that have blue color.
+                        </p>
+                        <p class="mt-2">
+                        Do note that these values are only meant to serve as a general reference for the nutritional needs of the average person. 
+                        Individual needs may vary depending on various factors such as age, gender, activity level, health status, body size and composition, metabolic rate, genetic factors, lifestyle and dietary habits, and environmental factors.
+                        </p>
 
-                <div class="px-2">
-                    <v-expansion-panels>
-                        <v-expansion-panel
-                            title="View more info"
-                            text="The daily values are a combination of the reference guide from the US Food and Drug Administration and the Philippine Dietary Reference Intakes from the DOST Food and Nutrition Research Institute. Note that these values may vary depending on the target age group for the specific food. If the target age group is not mentioned, it means 19 to 29 year old male was used as the target age group."
-                        >
-                        </v-expansion-panel>
-                    </v-expansion-panels>
+                        <p class="mt-2">These are the reference values for each nutrient:</p>
+                        
+                    </div>   
 
-                </div>        
+                    <div class="pt-3 text-body-2">
+                 
+                        <v-table density="compact">
+                            <thead>
+                                <tr>
+                                <th class="text-left">
+                                    Nutrient
+                                </th>
+                                <th class="text-left">
+                                    Value
+                                </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr
+                                    v-for="item in daily_values_table"
+                                    :key="item.nutrient"
+                                >
+                                <td>{{ item.nutrient }}</td>
+                                <td>{{ item.value }}</td>
+                                </tr>
+                            </tbody>
+                        </v-table>
 
-                <div class="px-10 pt-3">
-                    <ul>
-                        <li v-for="n in daily_values_table">
-                        {{n.nutrient}} = {{n.value}}    
-                        </li>
-                    </ul>
-                </div>
+                    </div>
+                </template>
 
                 <v-card-actions>
                     <v-spacer></v-spacer>
