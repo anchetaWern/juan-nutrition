@@ -19,9 +19,12 @@
             Negative Points
             </div>
 
-            <div class="d-flex flex-row align-center justify-space-between">
-              <div class="text-body-2">
-              Calories ({{ nutriscore.details.negative_points.energy }}/10)
+            <div class="d-flex flex-row align-center justify-space-between mb-2">
+              <div>
+                <div class="text-body-2">
+                Calories
+                </div>
+                <div class="text-caption">{{ nutriscore.details.negative_points.energy }}/10 points</div>
               </div>
 
               <div>
@@ -39,9 +42,12 @@
               </div> 
             </div>
 
-            <div class="d-flex flex-row align-center justify-space-between">
-              <div class="text-body-2">
-              Sugar ({{ nutriscore.details.negative_points.simple_sugars }}/10)
+            <div class="d-flex flex-row align-center justify-space-between mb-2">
+              <div>
+                <div class="text-body-2">
+                Sugar
+                </div>
+                <div class="text-caption">{{ nutriscore.details.negative_points.simple_sugars }}/10 points</div>
               </div>
 
               <div>
@@ -61,8 +67,13 @@
             </div>
 
             <div class="d-flex flex-row align-center justify-space-between">
-              <div class="text-body-2">
-              Saturated Fat ({{ nutriscore.details.negative_points.saturated_fats }}/10)
+              <div>
+                <div class="text-body-2">
+                Saturated Fat
+                </div>
+                <div class="text-caption">
+                {{ nutriscore.details.negative_points.saturated_fats }}/10 points
+                </div>
               </div>
 
               <div>
@@ -86,9 +97,14 @@
             Positive Points
             </div>
 
-            <div class="d-flex flex-row align-center justify-space-between">
-              <div class="text-body-2">
-              Proteins ({{ nutriscore.details.positive_points.protein }}/5)
+            <div class="d-flex flex-row align-center justify-space-between mb-2">
+              <div>
+                <div class="text-body-2">
+                Proteins
+                </div>
+                <div class="text-caption">
+                {{ nutriscore.details.positive_points.protein }}/5 points
+                </div>
               </div>
 
               <div>
@@ -106,9 +122,12 @@
               </div> 
             </div>
 
-            <div class="d-flex flex-row align-center justify-space-between">
-              <div class="text-body-2">
-              Fiber ({{ nutriscore.details.positive_points.fiber }}/5)
+            <div class="d-flex flex-row align-center justify-space-between mb-2">
+              <div>
+                <div class="text-body-2">
+                Fiber
+                </div>
+                <div class="text-caption">{{ nutriscore.details.positive_points.fiber }}/5 points</div>
               </div>
 
               <div>
@@ -128,8 +147,13 @@
             </div>
 
             <div class="d-flex flex-row align-center justify-space-between">
-              <div class="text-body-2">
-              Fruits, vegetables, legumes ({{ nutriscore.details.positive_points.fruits_vegetables_nuts_legumes ? nutriscore.details.positive_points.fruits_vegetables_nuts_legumes : 0 }}/5)
+              <div>
+                <div class="text-body-2">
+                Fruits, vegetables, legumes
+                </div>
+                <div class="text-caption">
+                {{ nutriscore.details.positive_points.fruits_vegetables_nuts_legumes ? nutriscore.details.positive_points.fruits_vegetables_nuts_legumes : 0 }}/5 points
+                </div>
               </div>
 
               <div>
