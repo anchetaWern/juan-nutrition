@@ -209,7 +209,7 @@
           <div class="text-body-1 pt-3 mb-3">What is Nutri-score? </div>
 
           <div class="text-body-2">
-          The Nutri-Score, also known as the 5-Colour Nutrition label or 5-CNL, is a five-colour nutrition label and nutritional rating system, and an attempt to simplify the nutritional rating system demonstrating the overall nutritional value of food products. It assigns products a rating letter from A (best) to E (worst), with associated colors from green to red.
+          The <a href="https://www.santepubliquefrance.fr/en/nutri-score" target="_blank">Nutri-Score</a>, also known as the 5-Colour Nutrition label or 5-CNL, is a five-colour nutrition label and nutritional rating system, and an attempt to simplify the nutritional rating system demonstrating the overall nutritional value of food products. It assigns products a rating letter from A (best) to E (worst), with associated colors from green to red.
           </div>
 
           <img :src="getImageSrc()" />

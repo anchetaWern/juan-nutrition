@@ -13,8 +13,10 @@
         <template v-slot:default="{ isActive }">
             <v-card title="NOVA">
                 <template v-slot:text>
+                    <img :src="getImageSrc()" />
+                    
                     <div class="text-body-2">
-                    The NOVA food classification system categorizes foods based on the extent and purpose of their processing. Developed by researchers at the University of São Paulo, it is widely used in public health and nutrition research. The system includes four categories:
+                    The <a href="https://en.wikipedia.org/wiki/Nova_classification" target="_blank">NOVA food classification system</a> categorizes foods based on the extent and purpose of their processing. Developed by researchers at the University of São Paulo, it is widely used in public health and nutrition research. The system includes four categories:
                     </div>
 
                     <ol class="pt-3 pl-3">
