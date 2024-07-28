@@ -13,8 +13,20 @@
         <template v-slot:default="{ isActive }">
             <v-card title="NOVA">
                 <template v-slot:text>
+
+                  <v-alert
+                    type="warning"
+                    variant="outlined"
+                    density="compact"
+                  >
+                    Note that the NOVA classification is still a work in progress. <span v-if="showNovaAlert">It's based off of the food category and those are AI generated. Ideally, it should be based off of the ingredients and processing method. Since we don't have a complete data on those yet, the developer decided to based it off the food category.</span>
+                    <div>
+                      <v-btn size="x-small" variant="text" @click="toggleNovaAlert">{{ showNovaAlert ? "Read less" : "Read more" }}</v-btn>
+                    </div>
+                  </v-alert>
+
                     <img :src="getImageSrc()" />
-                    
+
                     <div class="text-body-2">
                     The <a href="https://en.wikipedia.org/wiki/Nova_classification" target="_blank">NOVA food classification system</a> categorizes foods based on the extent and purpose of their processing. Developed by researchers at the University of São Paulo, it is widely used in public health and nutrition research. The system includes four categories:
                     </div>
@@ -37,6 +49,8 @@
                             <div class="text-caption mb-2">Formulations mostly of substances derived from foods and additives, with little or no whole food content. These are often industrially manufactured, designed to be convenient and hyper-palatable (e.g., sugary snacks, soft drinks, instant noodles, and ready-to-eat meals).</div>
                         </li>
                     </ol>
+
+
                 </template>
 
                 <v-card-actions>
@@ -77,6 +91,7 @@ export default {
   data() {
     return {
       novaDialog,
+      showNovaAlert: false,
       images: {
         '1': one,
         '2': two,
@@ -88,6 +103,10 @@ export default {
   methods: {
     getImageSrc() {
       return this.images[this.currentGrade];
+    },
+
+    toggleNovaAlert() {
+      this.showNovaAlert = !this.showNovaAlert;
     }
   }
 };

@@ -14,6 +14,21 @@
     <template v-slot:default="{ isActive }">
       <v-card title="Nutri-score" :subtitle="`Grade: ${nutriscore.grade} (${nutriscore.total_negative} - ${nutriscore.total_positive} = ${nutriscore.points} points)`">
         <template v-slot:text>
+
+          <div class="mb-3">
+            <v-alert 
+              density="compact"
+              type="warning"
+              variant="outlined"
+            >
+              Note that the Nutri-score computation is still a work in progress. <span v-if="showNutriScoreAlert"> Specifically, it has a flaw in the computation of points for fruits, vegetables and legumes. Detailed ingredient data is needed to estimate the percentage of fruits, vegetables, and legumes so the developer decided to just set it to 100% if the food belongs to any of those aformentioned categories.</span>
+              <div>
+                <v-btn size="x-small" variant="text" @click="toggleNutriScoreAlert">{{ showNutriScoreAlert ? "Read less" : "Read more" }}</v-btn>
+              </div>
+            </v-alert>
+          </div>
+
+
           <div class="mb-5">
             <div class="mb-2">
               <div class="text-body-1">
@@ -304,12 +319,18 @@ export default {
         'C': C,
         'D': D,
         'E': E,
-      }
+      },
+
+      showNutriScoreAlert: false,
     };
   },
   methods: {
     getImageSrc() {
       return this.images[this.nutriscore.grade];
+    },
+
+    toggleNutriScoreAlert() {
+      this.showNutriScoreAlert = !this.showNutriScoreAlert;
     }
   }
 };

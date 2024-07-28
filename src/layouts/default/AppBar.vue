@@ -48,6 +48,8 @@
           <br><br>Most of the foods here are from PhilFCT <a href="https://i.fnri.dost.gov.ph/fct/library/starting_pg" target="_blank">(Philippine Food Composition Tables Online Database)</a>
           <br>Some are gathered from the author taking pictures of food labels. If you want to contribute, be sure to visit <a href="https://contribute.juanutrisyon.info" target="_blank">contribute.juanutrisyon.info</a>
           and send me a message at ancheta dot wern at gmail dot com, as it requires an API key to submit food labels.
+        
+          <br><br>Note that the food categorization still needs a lot of work. The foods are currently categorized via AI so it's not perfect. The categorization tool is still a work in progress.
         </template>
 
         <v-card-actions>
