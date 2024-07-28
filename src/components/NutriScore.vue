@@ -12,11 +12,13 @@
     transition="dialog-bottom-transition"
   >
     <template v-slot:default="{ isActive }">
-      <v-card title="Nutri-score">
+      <v-card title="Nutri-score" :subtitle="`Grade: ${nutriscore.grade} (${nutriscore.total_negative} - ${nutriscore.total_positive} = ${nutriscore.points} points)`">
         <template v-slot:text>
           <div class="mb-5">
-            <div class="text-body-1 mb-2">
-            Negative Points
+            <div class="mb-2">
+              <div class="text-body-1">
+              Negative Points <span class="text-subtitle-2 text-grey-darken-1">{{ nutriscore.total_positive }}/40 points</span>
+              </div>
             </div>
 
             <div class="d-flex flex-row align-center justify-space-between mb-2">
@@ -24,7 +26,7 @@
                 <div class="text-body-2">
                 Calories
                 </div>
-                <div class="text-caption">{{ nutriscore.details.negative_points.energy }}/10 points</div>
+                <div class="text-caption text-grey-darken-1">{{ nutriscore.details.negative_points.energy }}/10 points</div>
               </div>
 
               <div>
@@ -47,7 +49,7 @@
                 <div class="text-body-2">
                 Sugar
                 </div>
-                <div class="text-caption">{{ nutriscore.details.negative_points.simple_sugars }}/10 points</div>
+                <div class="text-caption text-grey-darken-1">{{ nutriscore.details.negative_points.simple_sugars }}/10 points</div>
               </div>
 
               <div>
@@ -66,12 +68,12 @@
               
             </div>
 
-            <div class="d-flex flex-row align-center justify-space-between">
+            <div class="d-flex flex-row align-center justify-space-between mb-2">
               <div>
                 <div class="text-body-2">
                 Saturated Fat
                 </div>
-                <div class="text-caption">
+                <div class="text-caption text-grey-darken-1">
                 {{ nutriscore.details.negative_points.saturated_fats }}/10 points
                 </div>
               </div>
@@ -92,9 +94,37 @@
               
             </div>
 
+            <div class="d-flex flex-row align-center justify-space-between">
+              <div>
+                <div class="text-body-2">
+                Sodium
+                </div>
+                <div class="text-caption text-grey-darken-1">
+                {{ nutriscore.details.negative_points.salt }}/10 points
+                </div>
+              </div>
 
-            <div class="text-body-1 mb-2 mt-5">
-            Positive Points
+              <div>
+                <v-rating
+                  v-model="nutriscore.details.negative_points.saturated_fats"
+                  length="10"
+                  readonly
+                  empty-icon="mdi-square-outline"
+                  full-icon="mdi-square"
+                  active-color="red-darken-2"
+                  color="red-darken-2"
+                  size="x-small"
+                  density="compact"
+                ></v-rating>
+              </div> 
+              
+            </div>
+
+
+            <div class="mb-2 mt-5">
+              <div class="text-body-1">
+              Positive Points <span class="text-subtitle-2 text-grey-darken-1">{{ nutriscore.total_positive }}/15 points</span>
+              </div>
             </div>
 
             <div class="d-flex flex-row align-center justify-space-between mb-2">
@@ -102,7 +132,7 @@
                 <div class="text-body-2">
                 Proteins
                 </div>
-                <div class="text-caption">
+                <div class="text-caption text-grey-darken-1">
                 {{ nutriscore.details.positive_points.protein }}/5 points
                 </div>
               </div>
@@ -127,7 +157,7 @@
                 <div class="text-body-2">
                 Fiber
                 </div>
-                <div class="text-caption">{{ nutriscore.details.positive_points.fiber }}/5 points</div>
+                <div class="text-caption text-grey-darken-1">{{ nutriscore.details.positive_points.fiber }}/5 points</div>
               </div>
 
               <div>
@@ -151,8 +181,8 @@
                 <div class="text-body-2">
                 Fruits, vegetables, legumes
                 </div>
-                <div class="text-caption">
-                {{ nutriscore.details.positive_points.fruits_vegetables_nuts_legumes ? nutriscore.details.positive_points.fruits_vegetables_nuts_legumes : 0 }}/5 points
+                <div class="text-caption text-grey-darken-1">
+                {{ nutriscore.details.positive_points.fruits_vegetables_nuts_legumes }}/5 points
                 </div>
               </div>
 
@@ -254,6 +284,7 @@ import D from '@/assets/images/nutriscore/nutriscore-D.svg';
 import E from '@/assets/images/nutriscore/nutriscore-E.svg';
 
 
+
 const nutriScoreDialog = ref(false);
 
 export default {
@@ -266,7 +297,7 @@ export default {
   data() {
     return {
       nutriScoreDialog,
-      
+
       images: {
         'A': A,
         'B': B,
