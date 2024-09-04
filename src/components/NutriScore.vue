@@ -32,7 +32,7 @@
           <div class="mb-5">
             <div class="mb-2">
               <div class="text-body-1">
-              Negative Points <span class="text-subtitle-2 text-grey-darken-1">{{ nutriscore.total_positive }}/40 points</span>
+              Negative Points <span class="text-subtitle-2 text-grey-darken-1">{{ nutriscore.total_negative }}/40 points</span>
               </div>
             </div>
 
