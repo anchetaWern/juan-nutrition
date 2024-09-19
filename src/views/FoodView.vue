@@ -18,7 +18,7 @@
             type="warning"
             variant="outlined"
         >
-            The available data for this food is incomplete.
+            This food has incomplete data.
         </v-alert>
     </div>  
 
