@@ -12,7 +12,17 @@
         <span v-if="food.alternate_names != 'N/A'">{{ food.alternate_names }}</span>
     </div>
 
-    <div class="d-flex flex-row justify-space-evenly">
+    <div class="mt-5" v-if="food.nutrients.length === 0 || food.calories === null || food.food_type === null || food.food_state === null">
+        <v-alert 
+            density="compact"
+            type="warning"
+            variant="outlined"
+        >
+            The available data for this food is incomplete.
+        </v-alert>
+    </div>  
+
+    <div class="d-flex flex-row justify-space-evenly" v-if="food.type">
         <NutriScore :nutriscore="nutriscore" />
         <NovaRating :currentGrade="food.subtype ? food.subtype.nova_class : food.type.nova_class" />
     </div>
@@ -24,7 +34,7 @@
         </div>
     </div>
 
-    <div class="mt-5 pt-5">
+    <div class="mt-5 pt-5" v-if="food.nutrients.length > 0">
         <div class="text-body2 text-center font-weight-medium">Nutrition Facts <v-btn variant="text" size="x-small" icon="mdi-help" @click="dvHelp = true"></v-btn></div>
        
         <v-switch 
@@ -46,7 +56,7 @@
                         <v-btn size="x-small" @click="openModifyServingCountModal">Modify</v-btn>
                     </td>
                 </tr>
-                <tr>
+                <tr v-if="food.serving_size">
                     <td class="text-grey-darken-3">
                         Serving Size: {{ servingSize(food.serving_size, newServingSize) }}{{ food.serving_size_unit }} <span v-if="food.custom_serving_size">/ {{ food.custom_serving_size }}</span>
                         <v-btn size="x-small" @click="openModifyServingSizeModal">Modify</v-btn>
@@ -57,7 +67,7 @@
                        Edible Portion: {{ food.edible_portion }}%
                     </td>
                 </tr>
-                <tr>
+                <tr v-if="food.calories">
                     <td class="text-grey-darken-3">
                         Calories: {{ formatNumber(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, newServingSize, newServingCount)) }}{{ food.calories_unit }} / {{ calorie_req_in_kcal }}{{ food.calories_unit }} ({{ formatNumber(calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, newServingSize, newServingCount), calorie_req_in_kcal)) }}%)
                         <v-progress-linear 
@@ -285,9 +295,8 @@
 
     </div>
 
-    <div class="mt-5" v-if="food.origin_country !== 'PH'">
+    <div class="mt-5" v-if="food.origin_country && food.origin_country !== 'PH'">
         <div class="text-body2 mb-1">Origin Country: {{ food.origin_country }}</div>
-
     </div>
 
   </div>
