@@ -12,7 +12,7 @@
         <span v-if="food.alternate_names != 'N/A'">{{ food.alternate_names }}</span>
     </div>
 
-    <div class="mt-5" v-if="food.nutrients.length === 0 || food.calories === null || food.food_type === null || food.food_state === null">
+    <div class="mt-5" v-if="food.nutrients.length === 0 || food.calories === null || food.food_type === null || food.serving_size === null">
         <v-alert 
             density="compact"
             type="warning"
