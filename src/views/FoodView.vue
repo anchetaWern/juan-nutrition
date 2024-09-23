@@ -10,12 +10,14 @@
             </div>
         </div>
 
-        <div class="d-flex justify-space-between align-center">
+        <div class="d-flex justify-space-between align-center mt-3">
             <div class="mt-1">
                 <h1 class="text-body-1">{{ food.description }}</h1>
                 <span v-if="food.alternate_names != 'N/A'" class="text-medium-emphasis text-subtitle-2">{{ food.alternate_names }}</span>
             </div>
-            
+            <div>
+                <v-btn size="small" color="success" variant="outlined" @click="openModifyServingCountModal">Add to recipe</v-btn>
+            </div>
         </div>
     </div>
 
@@ -29,7 +31,7 @@
         </v-alert>
     </div>  
 
-    <div class="d-flex flex-row justify-space-evenly" v-if="food.type">
+    <div class="d-flex flex-row justify-space-evenly mt-3" v-if="food.type">
         <NutriScore :nutriscore="nutriscore" />
         <NovaRating :currentGrade="food.subtype ? food.subtype.nova_class : food.type.nova_class" />
     </div>
