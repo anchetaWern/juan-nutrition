@@ -2,14 +2,21 @@
   <div class="mt-5" v-if="food">
     
     <div class="pt-3">
-        <div class="float-right cursor-pointer">
-            <v-chip size="small" variant="outlined" v-if="food.type">
-            <span @click="viewCategory(food.type.slug)">{{ food.type.name }}</span> <span @click="viewCategory(food.subtype.slug)" v-if="food.subtype">&nbsp;/ {{ food.subtype.name }}</span>
-            </v-chip>
+        <div class="d-flex justify-end cursor-pointer">
+            <div>
+                <v-chip size="small" variant="outlined" v-if="food.type">
+                <span @click="viewCategory(food.type.slug)">{{ food.type.name }}</span> <span @click="viewCategory(food.subtype.slug)" v-if="food.subtype">&nbsp;/ {{ food.subtype.name }}</span>
+                </v-chip>
+            </div>
         </div>
 
-        <h1 class="text-h6">{{ food.description }}</h1>
-        <span v-if="food.alternate_names != 'N/A'">{{ food.alternate_names }}</span>
+        <div class="d-flex justify-space-between align-center">
+            <div class="mt-1">
+                <h1 class="text-body-1">{{ food.description }}</h1>
+                <span v-if="food.alternate_names != 'N/A'" class="text-medium-emphasis text-subtitle-2">{{ food.alternate_names }}</span>
+            </div>
+            
+        </div>
     </div>
 
     <div class="mt-5" v-if="food.nutrients.length === 0 || food.calories === null || food.food_type === null || food.serving_size === null">
