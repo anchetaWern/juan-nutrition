@@ -15,9 +15,7 @@
                 <h1 class="text-body-1">{{ food.description }}</h1>
                 <span v-if="food.alternate_names != 'N/A'" class="text-medium-emphasis text-subtitle-2">{{ food.alternate_names }}</span>
             </div>
-            <div>
-                <v-btn size="small" color="success" variant="outlined" @click="openModifyServingCountModal">Add to recipe</v-btn>
-            </div>
+            
         </div>
     </div>
 
