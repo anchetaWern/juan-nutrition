@@ -15,7 +15,9 @@
                 <h1 class="text-body-1">{{ food.description }}</h1>
                 <span v-if="food.alternate_names != 'N/A'" class="text-medium-emphasis text-subtitle-2">{{ food.alternate_names }}</span>
             </div>
-            
+            <div>
+                <v-btn size="small" color="success" variant="outlined" @click="addToRecipe">Add to recipe</v-btn>
+            </div>
         </div>
     </div>
 
@@ -400,6 +402,9 @@ import { nutrientUnit, standardizeVitaminD, standardizeVitaminA, standardizeVita
 
 import { useRoute } from 'vue-router'; 
 
+import { createToast, clearToasts } from 'mosha-vue-toastify'
+import 'mosha-vue-toastify/dist/style.css'
+
 const API_BASE_URI = import.meta.env.VITE_API_URI;
 
 
@@ -524,7 +529,7 @@ export default {
         modifyServingSizeDialog.value = true;
     }
 
-     const openIngredientsInfoModal = () => {
+    const openIngredientsInfoModal = () => {
         // todo:
         const food_slug = route.params.food;
         axios.get(`${API_BASE_URI}/food-ingredients/${food_slug}`)
@@ -535,6 +540,42 @@ export default {
 
         ingredientsInfoDialog.value = true;
     }
+
+    
+    const addToRecipe = () => {
+       
+        const recipe = localStorage.getItem('recipe');
+        let recipe_data = [];
+        if (recipe) {
+            recipe_data = JSON.parse(recipe);
+        }
+
+        const index = recipe_data.findIndex(itm => itm.description_slug === food.value.description_slug);
+        if (index === -1) {
+            recipe_data.push(food.value);
+            localStorage.setItem('recipe', JSON.stringify(recipe_data));
+
+            let serving_size_data = {};
+            const serving_size = localStorage.getItem('serving_sizes');
+            if (serving_size) {
+                serving_size_data = JSON.parse(serving_size);
+            }
+
+            serving_size_data[food.value.description_slug] = food.value.serving_size;
+            localStorage.setItem('serving_sizes', JSON.stringify(serving_size_data));
+
+            createToast(
+                {
+                    title: 'Added!',
+                    description: 'Ingredient was added to recipe'
+                }, 
+                { type: 'success', position: 'bottom-right' }
+            );
+        } 
+      
+        // todo: update appbar with ingredient count
+    }
+
 
     const modifyServingSize = () => {
         modifyServingSizeDialog.value = false;
@@ -789,6 +830,8 @@ export default {
         ingredientsInfoDialog,
         food_ingredients,
         nutriscore,
+
+        addToRecipe
     }
 
   },

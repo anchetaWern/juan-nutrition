@@ -7,8 +7,16 @@
     </v-app-bar-title>
 
     <template v-slot:append>  
-      <v-btn icon="mdi-help" @click="helpDialog = true"></v-btn>
-      <v-btn icon="mdi-magnify" @click="dialog = true"></v-btn>
+      <v-badge
+        :content="ingredientCount"
+        overlap
+        color="success"
+      >
+        <v-btn size="small" icon="mdi-chef-hat" @click="goToRecipe"></v-btn>
+      </v-badge>
+
+      <v-btn size="small" icon="mdi-help" @click="helpDialog = true"></v-btn>
+      <v-btn size="small" icon="mdi-magnify" @click="dialog = true"></v-btn>
     </template>    
 
   </v-app-bar>
@@ -68,6 +76,9 @@
 
 <script>
 import logo from '@/assets/images/juan-nutrisyon.png'
+import { ref } from 'vue';
+
+const ingredientCount = ref(0);
 
 export default {
 
@@ -79,8 +90,14 @@ export default {
     logo,
     query: '',
     dialog: false,
-    helpDialog: false
+    helpDialog: false,
+    ingredientCount
   }),
+
+  setup() {
+    const recipe_data = JSON.parse(localStorage.getItem('recipe'));
+    ingredientCount.value = recipe_data.length;
+  },
 
   methods: {
     search() {
@@ -88,6 +105,10 @@ export default {
      
       this.updateItems(this.query);
       this.query = '';
+    },
+
+    goToRecipe() {
+      this.$router.push('/recipe');
     }
   }
 }
