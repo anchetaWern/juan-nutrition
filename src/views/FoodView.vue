@@ -469,8 +469,9 @@ export default {
     
   }),
 
+  emits: ['update-ingredientcount'],
 
-  setup() {
+  setup(props, { emit }) {
 
     const route = useRoute();
 
@@ -571,9 +572,10 @@ export default {
                 }, 
                 { type: 'success', position: 'bottom-right' }
             );
+
+            emit('konto-child');
         } 
-      
-        // todo: update appbar with ingredient count
+    
     }
 
 

@@ -8,12 +8,15 @@
 
     <template v-slot:append>  
       <v-badge
+        v-if="ingredientCount > 0"
         :content="ingredientCount"
         overlap
         color="success"
       >
         <v-btn size="small" icon="mdi-chef-hat" @click="goToRecipe"></v-btn>
       </v-badge>
+
+      <v-btn v-if="ingredientCount == 0" size="small" icon="mdi-chef-hat" @click="goToRecipe"></v-btn>
 
       <v-btn size="small" icon="mdi-help" @click="helpDialog = true"></v-btn>
       <v-btn size="small" icon="mdi-magnify" @click="dialog = true"></v-btn>
@@ -78,12 +81,14 @@
 import logo from '@/assets/images/juan-nutrisyon.png'
 import { ref } from 'vue';
 
-const ingredientCount = ref(0);
-
 export default {
 
   props: {
-    updateItems: Function 
+    updateItems: Function,
+    ingredientCount: {
+      type: Number,
+      default: 0
+    },
   },
 
   data: () => ({
@@ -91,13 +96,7 @@ export default {
     query: '',
     dialog: false,
     helpDialog: false,
-    ingredientCount
   }),
-
-  setup() {
-    const recipe_data = JSON.parse(localStorage.getItem('recipe'));
-    ingredientCount.value = recipe_data.length;
-  },
 
   methods: {
     search() {

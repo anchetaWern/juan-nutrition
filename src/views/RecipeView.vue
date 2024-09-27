@@ -33,7 +33,7 @@ export default {
     },
 
 
-    setup() {
+    setup(props, { emit }) {
       const recipe_data = JSON.parse(localStorage.getItem('recipe'));
       const serving_sizes_data = JSON.parse(localStorage.getItem('serving_sizes'));
       const servingSizes = ref(serving_sizes_data ? serving_sizes_data : {});
@@ -61,7 +61,7 @@ export default {
 
         localStorage.setItem('serving_sizes', JSON.stringify(servingSizes.value));
 
-        // todo: update appbar with ingredient count
+        emit('konto-child');
       }
 
       const updateServingSize = (slug, newServingSize) => {
