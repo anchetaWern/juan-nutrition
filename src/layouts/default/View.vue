@@ -1,5 +1,5 @@
 <template>
-  <router-view @konto-child="kontoChild" />
+  <router-view @update-ingredient-count-child="updateIngredientCountChild" />
   <Loader />
 </template>
 
@@ -7,9 +7,9 @@
 import { ref } from 'vue';
 import Loader from '@/components/Loader.vue';
 
-const emit = defineEmits(['konto']);
+const emit = defineEmits(['update-ingredient-count']);
 
-const kontoChild = () => {
-  emit('konto');
+const updateIngredientCountChild = () => {
+  emit('update-ingredient-count');
 }
 </script>

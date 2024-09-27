@@ -2,7 +2,7 @@
   <v-app>
     <default-bar :updateItems="updateItems" :ingredientCount="ingredientCount" />
 
-    <default-view :items="items" @konto="konto" />
+    <default-view :items="items" @update-ingredient-count="updateIngredientCount" />
   </v-app>
 </template>
 
@@ -24,7 +24,7 @@ onMounted(() => {
   }
 });
 
-const konto = () => {
+const updateIngredientCount = () => {
   const recipe_data = JSON.parse(localStorage.getItem('recipe'));
   if (recipe_data) {
     ingredientCount.value = recipe_data.length;

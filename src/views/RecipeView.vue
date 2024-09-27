@@ -61,7 +61,7 @@ export default {
 
         localStorage.setItem('serving_sizes', JSON.stringify(servingSizes.value));
 
-        emit('konto-child');
+        emit('update-ingredient-count-child');
       }
 
       const updateServingSize = (slug, newServingSize) => {

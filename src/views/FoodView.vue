@@ -469,8 +469,6 @@ export default {
     
   }),
 
-  emits: ['update-ingredientcount'],
-
   setup(props, { emit }) {
 
     const route = useRoute();
@@ -573,7 +571,7 @@ export default {
                 { type: 'success', position: 'bottom-right' }
             );
 
-            emit('konto-child');
+            emit('update-ingredient-count-child');
         } 
     
     }
