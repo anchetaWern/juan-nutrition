@@ -396,9 +396,19 @@ import NutrientsTable from '@/components/NutrientsTable.vue'
 import NutriScore from '@/components/NutriScore.vue'
 import NovaRating from '@/components/NovaRating.vue'
 import { calculatePercentage, formatNumber } from '@/helpers/Numbers';
-import { amountPerContainer } from '@/helpers/Nutrients';
+
 import { getSortedByName, findAgeData } from '@/helpers/Arr';
-import { nutrientUnit, standardizeVitaminD, standardizeVitaminA, standardizeVitaminE, standardizeVitaminB3, standardizeVitaminB9, servingSize } from '@/helpers/Nutrients';
+import { 
+    amountPerContainer, 
+    nutrientUnit, 
+    servingSize,
+    
+    getElements,
+    getMacros,
+    getVitamins,
+    getMinerals,
+    getOthers
+} from '@/helpers/Nutrients';
 
 import { useRoute } from 'vue-router'; 
 
@@ -709,69 +719,11 @@ export default {
                     ],
                 }
 
-                const element_names = ['total ash', 'water'];
-                const macro_names = ['total carbohydrates', 'total fat', 'protein'];
-                const vitamin_names = [
-                    'vitamin a', 'vitamin c', 'vitamin d', 
-                    'vitamin e', 'vitamin k', 'vitamin b1', 
-                    'vitamin b2', 'vitamin b3',
-                    'vitamin b5', 'vitamin b6', 'vitamin b7', 
-                    'vitamin b9', 'vitamin b12'
-                ];
-                const mineral_names = [
-                    'calcium', 'chloride', 'chromium', 'copper', 
-                    'iodine', 'iron', 'magnesium', 'manganese', 'molybdenum', 
-                    'phosphorus', 'potassium', 'selenium', 'sodium', 'zinc'
-                ];
-                const other_names = [
-                    'lactose'
-                ];
-
-                const elements_items = [];
-                const macros_items = [];
-                const vitamins_items = [];
-                const minerals_items = [];
-                const others_items = [];
-
-                res.data.nutrients.forEach((itm) => {
-                    if (element_names.indexOf(itm.name) !== -1) {
-                        elements_items.push(itm);
-                    } else if (macro_names.indexOf(itm.name) !== -1) {
-                        macros_items.push(itm);
-                    } else if (vitamin_names.indexOf(itm.name) !== -1) {
-                     
-                        const standard_unit = nutrientUnit(itm.name);
-                        let updated_itm = itm;
-                        if (itm.name === 'vitamin d') {
-                            const standard_amount = standardizeVitaminD(itm.amount, itm.unit);
-                            updated_itm = {...itm, amount: standard_amount, unit: standard_unit};
-                        } else if (itm.name === 'vitamin a') {
-                            const standard_amount = standardizeVitaminA(itm.amount, itm.unit);
-                            updated_itm = {...itm, amount: standard_amount, unit: standard_unit};
-                        } else if (itm.name === 'vitamin e') {
-                            const standard_amount = standardizeVitaminE(itm.amount, itm.unit);
-                            updated_itm = {...itm, amount: standard_amount, unit: standard_unit};
-                        } else if (itm.name === 'vitamin b3') {
-                            const standard_amount = standardizeVitaminB3(itm.amount, itm.unit);
-                            updated_itm = {...itm, amount: standard_amount, unit: standard_unit};
-                        } else if (itm.name === 'vitamin b9') {
-                            const standard_amount = standardizeVitaminB9(itm.amount, itm.unit);
-                            updated_itm = {...itm, amount: standard_amount, unit: standard_unit};
-                        }
-
-                        vitamins_items.push(updated_itm);
-                    } else if (mineral_names.indexOf(itm.name) !== -1) {
-                        minerals_items.push(itm);
-                    } else if (other_names.indexOf(itm.name) !== -1) {
-                        others_items.push(itm);
-                    }
-                });
-                
-                elements.value = getSortedByName(elements_items);
-                macros.value = getSortedByName(macros_items);
-                vitamins.value = getSortedByName(vitamins_items); 
-                minerals.value = getSortedByName(minerals_items);
-                others.value = getSortedByName(others_items);
+                elements.value = getElements(res.data.nutrients);
+                macros.value = getMacros(res.data.nutrients);
+                vitamins.value = getVitamins(res.data.nutrients); 
+                minerals.value = getMinerals(res.data.nutrients);
+                others.value = getOthers(res.data.nutrients);
                 
 
             })

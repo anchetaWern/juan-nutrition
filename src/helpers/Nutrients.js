@@ -139,3 +139,79 @@ export function servingSize(originalServingSize, newServingSize) {
 function isNumeric(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 }
+
+export function getElements(nutrients)
+{
+    const element_names = ['total ash', 'water'];
+
+    return nutrients.filter((itm) => {
+        return element_names.indexOf(itm.name) !== -1;
+    });
+}
+
+export function getMacros(nutrients) 
+{
+    const macro_names = ['total carbohydrates', 'total fat', 'protein'];
+
+    return nutrients.filter((itm) => {
+        return macro_names.indexOf(itm.name) !== -1;
+    });
+}
+
+export function getVitamins(nutrients)
+{
+    const vitamin_names = [
+        'vitamin a', 'vitamin c', 'vitamin d', 
+        'vitamin e', 'vitamin k', 'vitamin b1', 
+        'vitamin b2', 'vitamin b3',
+        'vitamin b5', 'vitamin b6', 'vitamin b7', 
+        'vitamin b9', 'vitamin b12'
+    ];
+
+    return nutrients
+        .filter((itm) => {
+            return vitamin_names.indexOf(itm.name) !== -1;
+        })
+        .map((itm) => {
+            const standard_unit = nutrientUnit(itm.name);
+            
+            let standard_amount = null;
+            if (itm.name === 'vitamin d') {
+                standard_amount = standardizeVitaminD(itm.amount, itm.unit);
+            } else if (itm.name === 'vitamin a') {
+                standard_amount = standardizeVitaminA(itm.amount, itm.unit);
+            } else if (itm.name === 'vitamin e') {
+                standard_amount = standardizeVitaminE(itm.amount, itm.unit);
+            } else if (itm.name === 'vitamin b3') {
+                standard_amount = standardizeVitaminB3(itm.amount, itm.unit);
+            } else if (itm.name === 'vitamin b9') {
+                standard_amount = standardizeVitaminB9(itm.amount, itm.unit);
+            }
+            
+            return {...itm, amount: standard_amount, unit: standard_unit};
+        });
+}
+
+export function getMinerals(nutrients)
+{
+    const mineral_names = [
+        'calcium', 'chloride', 'chromium', 'copper', 
+        'iodine', 'iron', 'magnesium', 'manganese', 'molybdenum', 
+        'phosphorus', 'potassium', 'selenium', 'sodium', 'zinc'
+    ];
+
+    return nutrients.filter((itm) => {
+        return mineral_names.indexOf(itm.name) !== -1;
+    });
+}
+
+export function getOthers(nutrients)
+{
+    const other_names = [
+        'lactose'
+    ];
+
+    return nutrients.filter((itm) => {
+        return other_names.indexOf(itm.name) !== -1;
+    });
+}
