@@ -6,7 +6,7 @@
       <v-text-field
         v-model="servingCount"
         @input="onInput"
-        label="Serving count"
+        label="Number of servings"
       ></v-text-field>
 
       <div v-for="food in recipe" :key="food.description_slug" class="mb-3">
