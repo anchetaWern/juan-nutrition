@@ -18,27 +18,90 @@
       </div>
       
     </v-container>
- 
+  
+
+    <div class="mt-3" v-if="macros.length">
+      <span class="text-subtitle-2">Macros</span>
+      <NutrientsTable 
+        v-if="macros"
+        :nutrients="macros" 
+        servingsPerContainer="1" 
+        displayValuesPerContainer="false"
+        :recommended_daily_values="recommended_daily_values"
+        :newServingSize="newServingSize"
+        :newServingCount="newServingCount" />
+    </div>
+
+
+    <div class="mt-3" v-if="vitamins.length">
+      <span class="text-subtitle-2">Vitamins</span>
+      <NutrientsTable 
+        :nutrients="vitamins" 
+        :servingsPerContainer="servingsPerContainer" 
+        :displayValuesPerContainer="displayValuesPerContainer"
+        :recommended_daily_values="recommended_daily_values"
+        :newServingSize="newServingSize"
+        :newServingCount="newServingCount" />
+    </div>
+
+    <div class="mt-3" v-if="minerals.length">
+      <span class="text-subtitle-2">Minerals</span>
+      <NutrientsTable 
+        :nutrients="minerals" 
+        :servingsPerContainer="servingsPerContainer" 
+        :displayValuesPerContainer="displayValuesPerContainer"
+        :recommended_daily_values="recommended_daily_values"
+        :newServingSize="newServingSize"
+        :newServingCount="newServingCount" />
+    </div>
+
+    <div class="mt-3" v-if="others.length">
+      <span class="text-subtitle-2">Others</span>
+      <NutrientsTable 
+        :nutrients="others" 
+        :servingsPerContainer="servingsPerContainer" 
+        :displayValuesPerContainer="displayValuesPerContainer"
+        :recommended_daily_values="recommended_daily_values"
+        :newServingSize="newServingSize"
+        :newServingCount="newServingCount" />
+    </div>
+    
+
 </template>
 
-<style scoped>
-#recipe-container {
-  max-width: 450px;
-}
-</style>
+
 
 <script>
 import FoodCard from '@/components/FoodCard.vue';
+import NutrientsTable from '@/components/NutrientsTable.vue'
 import { ref } from 'vue';
+
+import { 
+    aggregateNutrients,
+    getMacros,
+    getVitamins,
+    getMinerals,
+    getOthers,
+} from '@/helpers/Nutrients';
 
 const recipe = ref(null);
 
 const servingCount = ref(1);
 
+const macros = ref([]);
+const vitamins = ref(null);
+const minerals = ref(null);
+const others = ref(null);
+
+// todo: get from api or localstorage
+const recommended_daily_values = ref({"sugar":50,"biotin":30,"calcium":1300,"chloride":2300,"choline":550,"cholesterol":300,"chromium":35,"copper":0.9,"dietary fiber":28,"total fat":78,"vitamin b9":400,"iodine":150,"iron":18,"magnesium":420,"manganese":2.3,"molybdenum":45,"vitamin b3":16,"vitamin b5":5,"phosphorus":1250,"potassium":4700,"protein":50,"vitamin b2":1.3,"saturated fat":20,"selenium":55,"sodium":2300,"vitamin b1":1.2,"total carbohydrates":275,"vitamin a":900,"vitamin b6":1.7,"vitamin b12":2.4,"vitamin c":90,"vitamin d":20,"vitamin e":15,"vitamin k":120,"zinc":11});
+const newServingSize = ref(null);
+const newServingCount = ref(1);
 
 export default {
     components: {
       FoodCard,  
+      NutrientsTable
     },
 
 
@@ -60,6 +123,14 @@ export default {
         servingCount.value = serving_count;
       }
 
+      const aggregated_nutrients = aggregateNutrients(recipe_data, serving_sizes_data);
+      console.log('aggregated nutrients: ', JSON.stringify(aggregated_nutrients));
+
+   
+      macros.value = getMacros(aggregated_nutrients);
+      vitamins.value = getVitamins(aggregated_nutrients);
+      minerals.value = getMinerals(aggregated_nutrients);
+      others.value = getOthers(aggregated_nutrients);
 
       const removeFood = (slug) => {
 
@@ -82,12 +153,10 @@ export default {
         servingSizes.value[slug] = newServingSize;
         localStorage.setItem('serving_sizes', JSON.stringify(servingSizes.value));
 
-        // todo: update nutrients when serving size is updated
-        // inform the parent component so the updated data can trickle back to the nutrients table
+        
         emit('update-serving-size-child');
       }
 
-      
 
       return {
         removeFood,
@@ -99,7 +168,17 @@ export default {
 
     data: () => ({
       recipe,
-      servingCount
+      servingCount,
+
+      macros,
+      vitamins,
+      minerals,
+      others,
+
+      recommended_daily_values,
+      newServingSize,
+      newServingCount
+
     }),
 
     methods: {

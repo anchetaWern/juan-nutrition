@@ -215,3 +215,95 @@ export function getOthers(nutrients)
         return other_names.indexOf(itm.name) !== -1;
     });
 }
+
+export function updateNutrients(nutrients, original_serving_size, new_serving_size) {
+
+    return nutrients.map((nutrient) => {
+        const new_amount = (new_serving_size / original_serving_size) * nutrient.amount;
+        let new_composition = null;
+        if (nutrient.composition) {
+            new_composition = updateNutrients(nutrient.composition, original_serving_size, new_serving_size);
+        }
+        const updated_nutrients = {
+            ...nutrient,
+            amount: new_amount,
+        }
+        if (new_composition) {
+            Object.assign(updated_nutrients, {
+                composition: new_composition
+            });
+        }
+
+        return updated_nutrients;
+    });
+
+}
+
+export function transformNutrientsObjectToArray(nutrientsObject) {
+    return Object.entries(nutrientsObject).map(([name, nutrient]) => {
+      const transformedNutrient = {
+        name,
+        amount: nutrient.amount,
+        unit: nutrient.unit
+      };
+  
+      if (nutrient.hasOwnProperty('composition')) {
+        transformedNutrient.composition = nutrient.composition.map(subNutrient => ({
+          name: subNutrient.name,
+          amount: subNutrient.amount,
+          unit: subNutrient.unit
+        }));
+  
+        transformedNutrient.composition.forEach((subNutrient) => {
+          if (subNutrient.hasOwnProperty('composition')) {
+            subNutrient.composition = subNutrient.composition.map(nestedSubNutrient => ({
+              name: nestedSubNutrient.name,
+              amount: nestedSubNutrient.amount,
+              unit: nestedSubNutrient.unit
+            }));
+          }
+        });
+      }
+  
+      return transformedNutrient;
+    });
+};
+
+export function aggregateNutrients (recipe, serving_sizes) {
+
+    const aggregated_nutrients = {};
+  
+    recipe.forEach((food) => {
+  
+        const new_serving_size = serving_sizes[food.description_slug];
+
+        const updated_nutrients = updateNutrients(food.nutrients, food.serving_size, new_serving_size);
+  
+        updated_nutrients.forEach(nutrient => {
+    
+            const { name, amount, unit, composition } = nutrient;
+    
+            if (!aggregated_nutrients.hasOwnProperty(name)) {
+                aggregated_nutrients[name] = { amount: 0, unit };
+            }
+           
+            aggregated_nutrients[name].amount += amount;
+    
+            if (nutrient.hasOwnProperty('composition')) {
+                if (!aggregated_nutrients[name].hasOwnProperty('composition')) {
+                    aggregated_nutrients[name].composition = composition.map(subNutrient => ({
+                    ...subNutrient,
+                    amount: 0
+                    }));
+                }
+                composition.forEach((subNutrient, index) => {
+                    aggregated_nutrients[name].composition[index].amount += subNutrient.amount;
+                });
+            }
+        });
+  
+    });
+  
+    return transformNutrientsObjectToArray(aggregated_nutrients);
+  
+}
