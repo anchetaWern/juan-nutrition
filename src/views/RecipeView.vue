@@ -2,6 +2,13 @@
  
     <v-container class="mt-5" id="recipe-container" v-if="recipe">
       <div class="text-h6 mb-2">Estimate recipe nutrients</div>
+
+      <v-text-field
+        v-model="servingCount"
+        @input="onInput"
+        label="Serving count"
+      ></v-text-field>
+
       <div v-for="food in recipe" :key="food.description_slug" class="mb-3">
         <FoodCard 
           :food="food" 
@@ -26,6 +33,8 @@ import { ref } from 'vue';
 
 const recipe = ref(null);
 
+const servingCount = ref(1);
+
 
 export default {
     components: {
@@ -44,6 +53,11 @@ export default {
         recipe_data.forEach(food => {
           servingSizes.value[food.description_slug] = food.serving_size;
         });
+      }
+
+      const serving_count = localStorage.getItem('serving_count');
+      if (serving_count) {
+        servingCount.value = serving_count;
       }
 
 
@@ -67,7 +81,13 @@ export default {
       const updateServingSize = (slug, newServingSize) => {
         servingSizes.value[slug] = newServingSize;
         localStorage.setItem('serving_sizes', JSON.stringify(servingSizes.value));
+
+        // todo: update nutrients when serving size is updated
+        // inform the parent component so the updated data can trickle back to the nutrients table
+        emit('update-serving-size-child');
       }
+
+      
 
       return {
         removeFood,
@@ -79,6 +99,13 @@ export default {
 
     data: () => ({
       recipe,
+      servingCount
     }),
+
+    methods: {
+      onInput() {
+        this.$emit('update-serving-count-child', this.servingCount); 
+      }
+    }
 }
 </script>
