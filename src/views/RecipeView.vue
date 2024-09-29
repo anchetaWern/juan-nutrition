@@ -124,7 +124,6 @@ export default {
       }
 
       const aggregated_nutrients = aggregateNutrients(recipe_data, serving_sizes_data);
-      console.log('aggregated nutrients: ', JSON.stringify(aggregated_nutrients));
 
    
       macros.value = getMacros(aggregated_nutrients);
@@ -133,8 +132,8 @@ export default {
       others.value = getOthers(aggregated_nutrients);
 
       const removeFood = (slug) => {
-
-        const updated_recipe = recipe_data.filter((food) => {
+       
+        const updated_recipe = recipe.value.filter((food) => {
           return food.description_slug !== slug;
         }); 
 
@@ -147,14 +146,18 @@ export default {
         localStorage.setItem('serving_sizes', JSON.stringify(servingSizes.value));
 
         emit('update-ingredient-count-child');
+
+        // todo: update estimated nutrients
       }
 
       const updateServingSize = (slug, newServingSize) => {
         servingSizes.value[slug] = newServingSize;
         localStorage.setItem('serving_sizes', JSON.stringify(servingSizes.value));
 
-        
+
         emit('update-serving-size-child');
+
+        // todo: update estimated nutrients
       }
 
 
