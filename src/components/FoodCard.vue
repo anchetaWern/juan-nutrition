@@ -26,7 +26,7 @@
           </div>
         </div>
 
-        <div class="px-3 d-flex">
+        <div class="px-3 d-flex w-50">
           <v-text-field 
               v-model="localServingSize"
               @input="onInput"
