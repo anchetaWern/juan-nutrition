@@ -18,7 +18,10 @@
 
         <div class="d-flex justify-space-between">
           <v-card-text>
-            <div class="text-body-2">{{ food.description }}</div>
+            <div class="text-body-2">
+              <a :href="`/food/${food.description_slug}`">{{ limit(food.description) }}</a>
+
+            </div>
           </v-card-text>
 
           <div>
@@ -46,7 +49,8 @@
 </template>
 
 <script>
-// 
+import { limit } from '@/helpers/Str';
+
 export default {
   props: {
     food: {
@@ -68,6 +72,7 @@ export default {
 
   data() {
     return {
+      limit,
       localServingSize: this.initialServingSize 
     };
   },

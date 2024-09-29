@@ -12,4 +12,11 @@ export function unslugify(slug) {
     let result = slug.replace(/[-_]/g, ' ');
     result = result.replace(/\b\w/g, (char) => char.toUpperCase());
     return result;
-  }
+}
+
+export function limit(str, char_count = 30) {
+    if (str.length > char_count) {
+        return str.substr(0, char_count) + '..';
+    }
+    return str;
+}
