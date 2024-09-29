@@ -216,17 +216,17 @@ export function getOthers(nutrients)
     });
 }
 
-export function updateNutrients(nutrients, original_serving_size, new_serving_size) {
+export function updateNutrients(nutrients, original_serving_size, new_serving_size, serving_count = 1) {
 
     return nutrients.map((nutrient) => {
         const new_amount = (new_serving_size / original_serving_size) * nutrient.amount;
         let new_composition = null;
         if (nutrient.composition) {
-            new_composition = updateNutrients(nutrient.composition, original_serving_size, new_serving_size);
+            new_composition = updateNutrients(nutrient.composition, original_serving_size, new_serving_size, serving_count);
         }
         const updated_nutrients = {
             ...nutrient,
-            amount: new_amount,
+            amount: new_amount / serving_count,
         }
         if (new_composition) {
             Object.assign(updated_nutrients, {
@@ -269,7 +269,7 @@ export function transformNutrientsObjectToArray(nutrientsObject) {
     });
 };
 
-export function aggregateNutrients (recipe, serving_sizes) {
+export function aggregateNutrients (recipe, serving_sizes, serving_count = 1) {
 
     const aggregated_nutrients = {};
   
@@ -277,7 +277,7 @@ export function aggregateNutrients (recipe, serving_sizes) {
   
         const new_serving_size = serving_sizes[food.description_slug];
 
-        const updated_nutrients = updateNutrients(food.nutrients, food.serving_size, new_serving_size);
+        const updated_nutrients = updateNutrients(food.nutrients, food.serving_size, new_serving_size, serving_count);
   
         updated_nutrients.forEach(nutrient => {
     

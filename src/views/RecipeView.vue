@@ -16,7 +16,7 @@
       <div v-if="recipe && recipe.length > 0">
         <v-text-field
           v-model="servingCount"
-          @input="onInput"
+          @input="onUpdateServingCount"
           label="Number of servings"
         ></v-text-field>
 
@@ -33,7 +33,7 @@
 
     <div v-if="recipe && recipe.length > 0">
 
-      <div class="text-subtitle-1 mb-2">Estimated Nutrients</div>
+      <div class="text-subtitle-1 mb-2">Estimated nutrients per serving</div>
 
       <div class="mt-3" v-if="macros.length">
         <span class="text-subtitle-2">Macros</span>
@@ -140,13 +140,23 @@ export default {
         servingCount.value = serving_count;
       }
 
-      const aggregated_nutrients = aggregateNutrients(recipe_data, serving_sizes_data);
+      
 
-   
-      macros.value = getMacros(aggregated_nutrients);
-      vitamins.value = getVitamins(aggregated_nutrients);
-      minerals.value = getMinerals(aggregated_nutrients);
-      others.value = getOthers(aggregated_nutrients);
+
+      const refreshNutrients = () => {
+        const recipe_data = JSON.parse(localStorage.getItem('recipe'));
+        const serving_sizes_data = JSON.parse(localStorage.getItem('serving_sizes'));
+
+        const aggregated_nutrients = aggregateNutrients(recipe_data, serving_sizes_data, servingCount.value);
+
+        macros.value = getMacros(aggregated_nutrients);
+        vitamins.value = getVitamins(aggregated_nutrients);
+        minerals.value = getMinerals(aggregated_nutrients);
+        others.value = getOthers(aggregated_nutrients);
+      }
+
+      refreshNutrients();
+
 
       const removeFood = (slug) => {
        
@@ -164,7 +174,7 @@ export default {
 
         emit('update-ingredient-count-child');
 
-        // todo: update estimated nutrients
+        refreshNutrients();
       }
 
       const updateServingSize = (slug, newServingSize) => {
@@ -174,7 +184,14 @@ export default {
 
         emit('update-serving-size-child');
 
-        // todo: update estimated nutrients
+        refreshNutrients();
+      }
+
+      const onUpdateServingCount = () => {
+        console.log('count: ', servingCount.value);
+        emit('update-serving-count-child', servingCount.value); 
+
+        refreshNutrients();
       }
 
 
@@ -183,6 +200,7 @@ export default {
 
         servingSizes,
         updateServingSize,
+        onUpdateServingCount,
       }
     },
 
@@ -201,10 +219,6 @@ export default {
 
     }),
 
-    methods: {
-      onInput() {
-        this.$emit('update-serving-count-child', this.servingCount); 
-      }
-    }
+   
 }
 </script>
