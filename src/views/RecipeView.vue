@@ -30,52 +30,57 @@
       </div>
 
     </v-container>
-  
 
-    <div class="mt-3" v-if="macros.length">
-      <span class="text-subtitle-2">Macros</span>
-      <NutrientsTable 
-        v-if="macros"
-        :nutrients="macros" 
-        servingsPerContainer="1" 
-        displayValuesPerContainer="false"
-        :recommended_daily_values="recommended_daily_values"
-        :newServingSize="newServingSize"
-        :newServingCount="newServingCount" />
-    </div>
+    <div v-if="recipe && recipe.length > 0">
+
+      <div class="text-subtitle-1 mb-2">Estimated Nutrients</div>
+
+      <div class="mt-3" v-if="macros.length">
+        <span class="text-subtitle-2">Macros</span>
+        <NutrientsTable 
+          v-if="macros"
+          :nutrients="macros" 
+          servingsPerContainer="1" 
+          displayValuesPerContainer="false"
+          :recommended_daily_values="recommended_daily_values"
+          :newServingSize="newServingSize"
+          :newServingCount="newServingCount" />
+      </div>
 
 
-    <div class="mt-3" v-if="vitamins.length">
-      <span class="text-subtitle-2">Vitamins</span>
-      <NutrientsTable 
-        :nutrients="vitamins" 
-        :servingsPerContainer="servingsPerContainer" 
-        :displayValuesPerContainer="displayValuesPerContainer"
-        :recommended_daily_values="recommended_daily_values"
-        :newServingSize="newServingSize"
-        :newServingCount="newServingCount" />
-    </div>
+      <div class="mt-3" v-if="vitamins.length">
+        <span class="text-subtitle-2">Vitamins</span>
+        <NutrientsTable 
+          :nutrients="vitamins" 
+          :servingsPerContainer="servingsPerContainer" 
+          :displayValuesPerContainer="displayValuesPerContainer"
+          :recommended_daily_values="recommended_daily_values"
+          :newServingSize="newServingSize"
+          :newServingCount="newServingCount" />
+      </div>
 
-    <div class="mt-3" v-if="minerals.length">
-      <span class="text-subtitle-2">Minerals</span>
-      <NutrientsTable 
-        :nutrients="minerals" 
-        :servingsPerContainer="servingsPerContainer" 
-        :displayValuesPerContainer="displayValuesPerContainer"
-        :recommended_daily_values="recommended_daily_values"
-        :newServingSize="newServingSize"
-        :newServingCount="newServingCount" />
-    </div>
+      <div class="mt-3" v-if="minerals.length">
+        <span class="text-subtitle-2">Minerals</span>
+        <NutrientsTable 
+          :nutrients="minerals" 
+          :servingsPerContainer="servingsPerContainer" 
+          :displayValuesPerContainer="displayValuesPerContainer"
+          :recommended_daily_values="recommended_daily_values"
+          :newServingSize="newServingSize"
+          :newServingCount="newServingCount" />
+      </div>
 
-    <div class="mt-3" v-if="others.length">
-      <span class="text-subtitle-2">Others</span>
-      <NutrientsTable 
-        :nutrients="others" 
-        :servingsPerContainer="servingsPerContainer" 
-        :displayValuesPerContainer="displayValuesPerContainer"
-        :recommended_daily_values="recommended_daily_values"
-        :newServingSize="newServingSize"
-        :newServingCount="newServingCount" />
+      <div class="mt-3" v-if="others.length">
+        <span class="text-subtitle-2">Others</span>
+        <NutrientsTable 
+          :nutrients="others" 
+          :servingsPerContainer="servingsPerContainer" 
+          :displayValuesPerContainer="displayValuesPerContainer"
+          :recommended_daily_values="recommended_daily_values"
+          :newServingSize="newServingSize"
+          :newServingCount="newServingCount" />
+      </div>
+
     </div>
     
 
