@@ -5,24 +5,24 @@
   >
     <div class="d-flex justify-space-between">
       <div class="flex-grow-1" style="flex-basis: 33%;">
-        <v-img
-          class="align-end text-white"
-          height="100"
-          :src="food.title_image"
-          cover
-        >
-        </v-img>
+        <div style="height: 80px;">
+          <v-img
+            class="text-white"
+            :src="food.title_image"
+            cover
+          >
+          </v-img>
+        </div>
       </div>
 
       <div class="flex-grow-1" style="flex-basis: 67%;">
 
         <div class="d-flex justify-space-between">
-          <v-card-text>
-            <div class="text-body-2">
-              <a :href="`/food/${food.description_slug}`">{{ limit(food.description) }}</a>
+         
+          <div class="pl-2 pt-2 text-body-2">
+            <a :href="`/food/${food.description_slug}`">{{ limit(food.description) }}</a>
 
-            </div>
-          </v-card-text>
+          </div>
 
           <div>
             <v-btn size="x-small" icon="mdi-trash-can" color="red" variant="text" @click="removeFood(food.description_slug)"></v-btn>
