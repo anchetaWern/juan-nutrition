@@ -1,22 +1,34 @@
 <template>
  
     <v-container class="mt-5" id="recipe-container" v-if="recipe">
+    
       <div class="text-h6 mb-2">Estimate recipe nutrients</div>
 
-      <v-text-field
-        v-model="servingCount"
-        @input="onInput"
-        label="Number of servings"
-      ></v-text-field>
+      <v-alert 
+        v-if="!recipe || recipe.length === 0"
+        density="compact"
+        type="warning"
+        variant="outlined"
+      >
+        You haven't added any foods yet. You can click on the 'Add to recipe' button on a food page to add it. 
+      </v-alert>
 
-      <div v-for="food in recipe" :key="food.description_slug" class="mb-3">
-        <FoodCard 
-          :food="food" 
-          :removeFood="removeFood" 
-          :initialServingSize="servingSizes[food.description_slug]"
-          @update-serving-size="updateServingSize" />
+      <div v-if="recipe && recipe.length > 0">
+        <v-text-field
+          v-model="servingCount"
+          @input="onInput"
+          label="Number of servings"
+        ></v-text-field>
+
+        <div v-for="food in recipe" :key="food.description_slug" class="mb-3">
+          <FoodCard 
+            :food="food" 
+            :removeFood="removeFood" 
+            :initialServingSize="servingSizes[food.description_slug]"
+            @update-serving-size="updateServingSize" />
+        </div>
       </div>
-      
+
     </v-container>
   
 
