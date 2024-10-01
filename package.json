@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
+    "@vueuse/head": "^2.0.0",
     "axios": "^1.6.8",
     "chart.js": "^4.4.2",
     "chartjs-plugin-datalabels": "^2.2.0",

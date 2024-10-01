@@ -388,7 +388,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watchEffect } from 'vue';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Pie } from 'vue-chartjs'
 import axios from 'axios'
@@ -414,6 +414,8 @@ import { useRoute } from 'vue-router';
 
 import { createToast, clearToasts } from 'mosha-vue-toastify'
 import 'mosha-vue-toastify/dist/style.css'
+
+import { useHead } from '@vueuse/head'
 
 const API_BASE_URI = import.meta.env.VITE_API_URI;
 
@@ -511,6 +513,29 @@ export default {
     const food_ingredients = ref(null);
 
     const nutriscore = ref(null);
+
+    //
+    const pageTitle = 'Juan Nutrisyon';
+    const pageDescription = 'View more info at app.juanutrisyon.info';
+
+    watchEffect(() => {
+      if (food.value) {
+          console.log('FOOD: ', food.value);
+        const pageTitle = food.value.description;
+        const pageDescription = `${food.value.calories}${food.value.calories_unit}. View more info at app.juanutrisyon.info`;
+
+        useHead({
+          title: pageTitle,
+          meta: [
+            { name: 'description', content: pageDescription },
+            { property: 'og:title', content: `Juan Nutrisyon - ${pageTitle}` },
+            { property: 'og:description', content: pageDescription },
+            { property: 'og:image', content: food.value.title_image },
+          ],
+        });
+      }
+    });
+    //
 
     const getCalorieBgColor = (calories) => {
         if (calories >= 400) {

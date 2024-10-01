@@ -17,6 +17,8 @@ import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import axios from 'axios'
 
+import { createHead } from '@vueuse/head'
+
 const API_BASE_URI = import.meta.env.VITE_API_URI
 
 
@@ -26,6 +28,7 @@ const vuetify = createVuetify({
 })
 
 const app = createApp(App)
+const head = createHead()
 const pinia = createPinia()
 
 app.use({
@@ -48,5 +51,6 @@ app.use({
 app.use(router)
 app.use(vuetify)
 app.use(pinia)
+app.use(head)
 
 app.mount('#app')
