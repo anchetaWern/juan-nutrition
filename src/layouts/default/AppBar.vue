@@ -13,13 +13,13 @@
         overlap
         color="success"
       >
-        <v-btn size="small" icon="mdi-chef-hat" @click="goToRecipe"></v-btn>
+        <v-btn size="x-small" icon="mdi-chef-hat" @click="goToRecipe"></v-btn>
       </v-badge>
 
-      <v-btn v-if="ingredientCount == 0" size="small" icon="mdi-chef-hat" @click="goToRecipe"></v-btn>
+      <v-btn v-if="ingredientCount == 0" size="x-small" icon="mdi-chef-hat" @click="goToRecipe"></v-btn>
 
-      <v-btn size="small" icon="mdi-help" @click="helpDialog = true"></v-btn>
-      <v-btn size="small" icon="mdi-magnify" @click="dialog = true"></v-btn>
+      <v-btn size="x-small" icon="mdi-help" @click="helpDialog = true"></v-btn>
+      <v-btn size="x-small" icon="mdi-magnify" @click="dialog = true"></v-btn>
     </template>    
 
   </v-app-bar>
