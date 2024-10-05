@@ -7,6 +7,7 @@
     </v-app-bar-title>
 
     <template v-slot:append>  
+
       <v-badge
         v-if="ingredientCount > 0"
         :content="ingredientCount"
@@ -16,7 +17,18 @@
         <v-btn size="x-small" icon="mdi-chef-hat" @click="goToRecipe"></v-btn>
       </v-badge>
 
+      <v-badge
+        v-if="analyzeCount > 0"
+        :content="analyzeCount"
+        overlap
+        color="success"
+      >
+        <v-btn size="x-small" icon="mdi-chart-box" @click="goToAnalysis"></v-btn>
+      </v-badge>
+
       <v-btn v-if="ingredientCount == 0" size="x-small" icon="mdi-chef-hat" @click="goToRecipe"></v-btn>
+      <v-btn v-if="analyzeCount == 0" size="x-small" icon="mdi-chart-box" @click="goToAnalysis"></v-btn>
+      
 
       <v-btn size="x-small" icon="mdi-help" @click="helpDialog = true"></v-btn>
       <v-btn size="x-small" icon="mdi-magnify" @click="dialog = true"></v-btn>
@@ -89,6 +101,11 @@ export default {
       type: Number,
       default: 0
     },
+
+    analyzeCount: {
+      type: Number,
+      default: 1
+    },
   },
 
   data: () => ({
@@ -108,6 +125,10 @@ export default {
 
     goToRecipe() {
       this.$router.push('/recipe');
+    },
+
+    goToAnalysis() {
+      this.$router.push('/analyze');
     }
   }
 }

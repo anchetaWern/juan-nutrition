@@ -15,10 +15,12 @@
                 <h1 class="text-body-1">{{ food.description }}</h1>
                 <span v-if="food.alternate_names != 'N/A'" class="text-medium-emphasis text-subtitle-2">{{ food.alternate_names }}</span>
             </div>
-            <div>
-                <v-btn size="small" color="success" variant="outlined" @click="addToRecipe">Add to recipe</v-btn>
+            <div class="w-33">
+                <v-btn size="x-small" color="success" variant="outlined" @click="addToRecipe">Add to recipe</v-btn>
+                <v-btn size="x-small" color="primary" variant="outlined" @click="addForAnalysis">Analyze</v-btn>
             </div>
         </div>
+
     </div>
 
     <div class="mt-5" v-if="food.nutrients.length === 0 || food.calories === null || food.food_type === null || food.serving_size === null">
@@ -590,13 +592,13 @@ export default {
             localStorage.setItem('recipe', JSON.stringify(recipe_data));
 
             let serving_size_data = {};
-            const serving_size = localStorage.getItem('serving_sizes');
+            const serving_size = localStorage.getItem('recipe_serving_sizes');
             if (serving_size) {
                 serving_size_data = JSON.parse(serving_size);
             }
 
             serving_size_data[food.value.description_slug] = food.value.serving_size;
-            localStorage.setItem('serving_sizes', JSON.stringify(serving_size_data));
+            localStorage.setItem('recipe_serving_sizes', JSON.stringify(serving_size_data));
 
             createToast(
                 {
@@ -609,6 +611,40 @@ export default {
             emit('update-ingredient-count-child');
         } 
     
+    }
+
+
+    const addForAnalysis = () => {
+        const analyze = localStorage.getItem('analyze');
+        let analyze_data = [];
+        if (analyze) {
+            analyze_data = JSON.parse(analyze);
+        }
+
+        const index = analyze_data.findIndex(itm => itm.description_slug === food.value.description_slug);
+        if (index === -1) {
+            analyze_data.push(food.value);
+            localStorage.setItem('analyze', JSON.stringify(analyze_data));
+
+            let serving_size_data = {};
+            const serving_size = localStorage.getItem('analyze_serving_sizes');
+            if (serving_size) {
+                serving_size_data = JSON.parse(serving_size);
+            }
+
+            serving_size_data[food.value.description_slug] = food.value.serving_size;
+            localStorage.setItem('analyze_serving_sizes', JSON.stringify(serving_size_data));
+
+            createToast(
+                {
+                    title: 'Added!',
+                    description: 'Food was added for analysis'
+                }, 
+                { type: 'success', position: 'bottom-right' }
+            );
+
+            emit('update-analyze-count-child');
+        } 
     }
 
 
@@ -808,7 +844,8 @@ export default {
         food_ingredients,
         nutriscore,
 
-        addToRecipe
+        addToRecipe,
+        addForAnalysis
     }
 
   },

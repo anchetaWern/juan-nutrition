@@ -48,6 +48,13 @@ const router = createRouter({
           name: 'Recipe',
           component: () => import('@/views/RecipeView.vue'),
         },
+
+
+        {
+          path: '/analyze',
+          name: 'Analyze',
+          component: () => import('@/views/AnalyzeView.vue'),
+        },
       ],
     },
   

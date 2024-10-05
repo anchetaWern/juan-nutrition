@@ -1,6 +1,6 @@
 <template>
  
-    <v-container class="mt-5" id="recipe-container" v-if="recipe">
+    <v-container class="mt-5" id="recipe-container">
     
       <div class="text-h6 mb-2">Estimate recipe nutrients</div>
 
@@ -124,12 +124,14 @@ export default {
 
     setup(props, { emit }) {
       const recipe_data = JSON.parse(localStorage.getItem('recipe'));
-      const serving_sizes_data = JSON.parse(localStorage.getItem('serving_sizes'));
-      const servingSizes = ref(serving_sizes_data ? serving_sizes_data : {});
-     
+
+
+      const recipe_serving_sizes_data = JSON.parse(localStorage.getItem('recipe_serving_sizes'));
+      const servingSizes = ref(recipe_serving_sizes_data ? recipe_serving_sizes_data : {});
+    
       recipe.value = recipe_data;
 
-      if (Object.keys(servingSizes).length === 0) {
+      if (recipe_data && Object.keys(servingSizes).length === 0) {
         recipe_data.forEach(food => {
           servingSizes.value[food.description_slug] = food.serving_size;
         });
@@ -139,20 +141,23 @@ export default {
       if (serving_count) {
         servingCount.value = serving_count;
       }
-
+    
       
 
 
       const refreshNutrients = () => {
         const recipe_data = JSON.parse(localStorage.getItem('recipe'));
-        const serving_sizes_data = JSON.parse(localStorage.getItem('serving_sizes'));
+        const recipe_serving_sizes_data = JSON.parse(localStorage.getItem('recipe_serving_sizes'));
 
-        const aggregated_nutrients = aggregateNutrients(recipe_data, serving_sizes_data, servingCount.value);
+        if (recipe_data) {
+          const aggregated_nutrients = aggregateNutrients(recipe_data, recipe_serving_sizes_data, servingCount.value);
 
-        macros.value = getMacros(aggregated_nutrients);
-        vitamins.value = getVitamins(aggregated_nutrients);
-        minerals.value = getMinerals(aggregated_nutrients);
-        others.value = getOthers(aggregated_nutrients);
+          macros.value = getMacros(aggregated_nutrients);
+          vitamins.value = getVitamins(aggregated_nutrients);
+          minerals.value = getMinerals(aggregated_nutrients);
+          others.value = getOthers(aggregated_nutrients);
+        }
+        
       }
 
       refreshNutrients();
@@ -170,7 +175,7 @@ export default {
 
         delete servingSizes.value[slug];             
 
-        localStorage.setItem('serving_sizes', JSON.stringify(servingSizes.value));
+        localStorage.setItem('recipe_serving_sizes', JSON.stringify(servingSizes.value));
 
         emit('update-ingredient-count-child');
 
@@ -179,17 +184,17 @@ export default {
 
       const updateServingSize = (slug, newServingSize) => {
         servingSizes.value[slug] = newServingSize;
-        localStorage.setItem('serving_sizes', JSON.stringify(servingSizes.value));
+        localStorage.setItem('recipe_serving_sizes', JSON.stringify(servingSizes.value));
 
 
-        emit('update-serving-size-child');
+        emit('update-ingredient-serving-size-child');
 
         refreshNutrients();
       }
 
       const onUpdateServingCount = () => {
         console.log('count: ', servingCount.value);
-        emit('update-serving-count-child', servingCount.value); 
+        emit('update-ingredient-serving-count-child', servingCount.value); 
 
         refreshNutrients();
       }
