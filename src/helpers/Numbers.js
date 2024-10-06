@@ -8,3 +8,10 @@ export function formatNumber(number) {
     }
     return number;
 }
+
+export function wholeNumber(number) {
+    if (number && !Number.isInteger(number)) {
+        return Math.ceil(number);
+    }
+    return number;
+}

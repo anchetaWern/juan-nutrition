@@ -2,7 +2,7 @@
 
   <v-card class="pt-0 pb-2 pl-0 pr-0 card text-center">
     <template v-slot:title>
-      <span :class="`text-body-1 font-weight-bold ${valueColor(nutrient.name, nutrient.amount)}`">{{ formatNumber(nutrient.amount) }}{{ nutrient.unit }}</span>
+      <span :class="`text-body-1 font-weight-bold ${valueColor(nutrient.name, nutrient.amount)}`">{{ wholeNumber(nutrient.amount) }}{{ nutrient.unit }}</span>
     </template>
 
     <v-card-text class="text-body-2 pa-1">
@@ -19,7 +19,7 @@
 </style>
 
 <script>
-import { formatNumber } from '@/helpers/Numbers';
+import { wholeNumber } from '@/helpers/Numbers';
 
 const good_nutrients = ['dietary fiber', 'protein'];
 const bad_nutrients = ['sodium', 'saturated fat', 'cholesterol', 'sugar'];
@@ -75,7 +75,7 @@ export default {
 
   data() {
     return {
-      formatNumber
+      wholeNumber
     };
   },
   
