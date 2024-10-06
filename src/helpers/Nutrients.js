@@ -292,12 +292,14 @@ export function aggregateNutrients (recipe, serving_sizes, serving_count = 1) {
             if (nutrient.hasOwnProperty('composition')) {
                 if (!aggregated_nutrients[name].hasOwnProperty('composition')) {
                     aggregated_nutrients[name].composition = composition.map(subNutrient => ({
-                    ...subNutrient,
-                    amount: 0
+                        ...subNutrient,
+                        amount: 0
                     }));
                 }
                 composition.forEach((subNutrient, index) => {
-                    aggregated_nutrients[name].composition[index].amount += subNutrient.amount;
+                    if (aggregated_nutrients[name].composition[index]) {
+                        aggregated_nutrients[name].composition[index].amount += subNutrient.amount;
+                    }
                 });
             }
         });
@@ -306,4 +308,29 @@ export function aggregateNutrients (recipe, serving_sizes, serving_count = 1) {
   
     return transformNutrientsObjectToArray(aggregated_nutrients);
   
+}
+
+
+export function filterNutrients(nutrients, filterNames) {
+    const filtered_nutrients = [];
+  
+    nutrients.forEach(item => {
+        if (filterNames.includes(item.name)) {
+            filtered_nutrients.push(item);
+        }
+  
+        if (item.composition) {
+            item.composition.forEach(subItem => {
+                if (filterNames.includes(subItem.name)) {
+                    filtered_nutrients.push(subItem);
+                }
+            });
+        }
+    });
+
+    const sorted_nutrients = filtered_nutrients.sort((a, b) => {
+        return filterNames.indexOf(a.name) - filterNames.indexOf(b.name);
+    });
+  
+    return sorted_nutrients;
 }
