@@ -282,26 +282,29 @@ export function aggregateNutrients (recipe, serving_sizes, serving_count = 1) {
         updated_nutrients.forEach(nutrient => {
     
             const { name, amount, unit, composition } = nutrient;
-    
-            if (!aggregated_nutrients.hasOwnProperty(name)) {
-                aggregated_nutrients[name] = { amount: 0, unit };
-            }
-           
-            aggregated_nutrients[name].amount += amount;
-    
-            if (nutrient.hasOwnProperty('composition')) {
-                if (!aggregated_nutrients[name].hasOwnProperty('composition')) {
-                    aggregated_nutrients[name].composition = composition.map(subNutrient => ({
-                        ...subNutrient,
-                        amount: 0
-                    }));
+            
+            if (unit) {
+                if (!aggregated_nutrients.hasOwnProperty(name)) {
+                    aggregated_nutrients[name] = { amount: 0, unit };
                 }
-                composition.forEach((subNutrient, index) => {
-                    if (aggregated_nutrients[name].composition[index]) {
-                        aggregated_nutrients[name].composition[index].amount += subNutrient.amount;
+            
+                aggregated_nutrients[name].amount += amount;
+        
+                if (nutrient.hasOwnProperty('composition')) {
+                    if (!aggregated_nutrients[name].hasOwnProperty('composition')) {
+                        aggregated_nutrients[name].composition = composition.map(subNutrient => ({
+                            ...subNutrient,
+                            amount: 0
+                        }));
                     }
-                });
+                    composition.forEach((subNutrient, index) => {
+                        if (aggregated_nutrients[name].composition[index]) {
+                            aggregated_nutrients[name].composition[index].amount += subNutrient.amount;
+                        }
+                    });
+                }
             }
+
         });
   
     });
