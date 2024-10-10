@@ -38,40 +38,46 @@
           </v-col>
         </v-row>
 
-        <div class="text-subtitle-1 mt-5 mb-2">Deficient Nutrients</div>
-
         <div v-if="deficient_nutrients && deficient_nutrients.length > 0">
-          <NutrientsTable 
-            :nutrients="deficient_nutrients" 
-            servingsPerContainer="1" 
-            displayValuesPerContainer="false"
-            :recommended_daily_values="recommended_daily_values"
-            :newServingSize="newServingSize"
-            :newServingCount="newServingCount" />
-        </div>
+          <div class="text-subtitle-1 mt-5 mb-2">Deficient Nutrients</div>
 
-        <div class="text-subtitle-1 mt-5 mb-2">Over-consumed nutrients</div>
+          <div>
+            <NutrientsTable 
+              :nutrients="deficient_nutrients" 
+              servingsPerContainer="1" 
+              displayValuesPerContainer="false"
+              :recommended_daily_values="recommended_daily_values"
+              :newServingSize="newServingSize"
+              :newServingCount="newServingCount" />
+          </div>
+        </div>
 
         <div v-if="overconsumed_nutrients && overconsumed_nutrients.length > 0">
-          <NutrientsTable 
-            :nutrients="overconsumed_nutrients" 
-            servingsPerContainer="1" 
-            displayValuesPerContainer="false"
-            :recommended_daily_values="recommended_daily_values"
-            :newServingSize="newServingSize"
-            :newServingCount="newServingCount" />
+          <div class="text-subtitle-1 mt-5 mb-2">Over-consumed nutrients</div>
+
+          <div>
+            <NutrientsTable 
+              :nutrients="overconsumed_nutrients" 
+              servingsPerContainer="1" 
+              displayValuesPerContainer="false"
+              :recommended_daily_values="recommended_daily_values"
+              :newServingSize="newServingSize"
+              :newServingCount="newServingCount" />
+          </div>
         </div>
 
-        <div class="text-subtitle-1 mt-5 mb-2">Nutrients with good coverage</div>
-
         <div v-if="good_coverage_nutrients && good_coverage_nutrients.length > 0">
-          <NutrientsTable 
-            :nutrients="good_coverage_nutrients" 
-            servingsPerContainer="1" 
-            displayValuesPerContainer="false"
-            :recommended_daily_values="recommended_daily_values"
-            :newServingSize="newServingSize"
-            :newServingCount="newServingCount" />
+          <div class="text-subtitle-1 mt-5 mb-2">Nutrients with good coverage</div>
+
+          <div>
+            <NutrientsTable 
+              :nutrients="good_coverage_nutrients" 
+              servingsPerContainer="1" 
+              displayValuesPerContainer="false"
+              :recommended_daily_values="recommended_daily_values"
+              :newServingSize="newServingSize"
+              :newServingCount="newServingCount" />
+          </div>
         </div>
 
       </div>
