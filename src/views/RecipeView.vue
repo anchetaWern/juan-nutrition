@@ -52,8 +52,8 @@
         <span class="text-subtitle-2">Vitamins</span>
         <NutrientsTable 
           :nutrients="vitamins" 
-          :servingsPerContainer="servingsPerContainer" 
-          :displayValuesPerContainer="displayValuesPerContainer"
+          servingsPerContainer="1" 
+          displayValuesPerContainer="false"
           :recommended_daily_values="recommended_daily_values"
           :newServingSize="newServingSize"
           :newServingCount="newServingCount" />
@@ -63,8 +63,8 @@
         <span class="text-subtitle-2">Minerals</span>
         <NutrientsTable 
           :nutrients="minerals" 
-          :servingsPerContainer="servingsPerContainer" 
-          :displayValuesPerContainer="displayValuesPerContainer"
+          servingsPerContainer="1" 
+          displayValuesPerContainer="false"
           :recommended_daily_values="recommended_daily_values"
           :newServingSize="newServingSize"
           :newServingCount="newServingCount" />
@@ -74,8 +74,8 @@
         <span class="text-subtitle-2">Others</span>
         <NutrientsTable 
           :nutrients="others" 
-          :servingsPerContainer="servingsPerContainer" 
-          :displayValuesPerContainer="displayValuesPerContainer"
+          servingsPerContainer="1" 
+          displayValuesPerContainer="false"
           :recommended_daily_values="recommended_daily_values"
           :newServingSize="newServingSize"
           :newServingCount="newServingCount" />
