@@ -530,7 +530,7 @@ export function filterOverconsumedNutrients(nutrients, limits) {
                 const sub_limit = limits[subItem.name];
                 let adjusted_limit = sub_limit  * 1.5; // DV + 50%
                 if (excludedNutrients.includes(subItem.name) || moderatedNutrients.includes(subItem.name)) {
-                    adjusted_limit = limit;
+                    adjusted_limit = sub_limit; 
                 }
 
                 if (subItem.amount >= adjusted_limit || subItem.name === 'trans fat') {
