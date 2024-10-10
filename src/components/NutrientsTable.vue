@@ -90,8 +90,11 @@ export default {
       const calculateNutrientPercentage = (nutrient_name, nutrient_value) => {
         if (props.recommended_daily_values.hasOwnProperty(nutrient_name)) {
           const reni_limit = props.recommended_daily_values[nutrient_name];
+          
           const percentage = calculatePercentage(nutrient_value, reni_limit);
-          return percentage > reni_limit ? reni_limit : percentage;
+          
+          return percentage;
+          // return percentage > reni_limit ? reni_limit : percentage;
         }
         return 0; 
       }

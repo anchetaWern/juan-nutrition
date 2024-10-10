@@ -37,6 +37,33 @@ const common_nutrient_units = {
     "saturated fat": "g"
 }  
 
+const essential_nutrients = [
+    'dietary fiber',
+    'protein',
+    'total fat',
+    'cholesterol',
+    'total carbohydrates',
+    'sodium',
+    'potassium',
+    'calcium',
+    'iron',
+    'magnesium',
+    'zinc',
+    'selenium',
+    'vitamin a',
+    'vitamin c',
+    'vitamin d',
+    'vitamin e',
+    'vitamin k',
+    'vitamin b1',
+    'vitamin b2',
+    'vitamin b3',
+    'vitamin b6',
+    'vitamin b9',
+    'vitamin b12',
+    'phosphorus',
+];
+
 export function nutrientUnit(nutrient) {
     return common_nutrient_units[nutrient];
 }
@@ -336,4 +363,276 @@ export function filterNutrients(nutrients, filterNames) {
     });
   
     return sorted_nutrients;
+}
+
+// note: moderated nutrients should only be considered deficient if its less than 50% of the limit
+// exclude: saturated fat, trans fat, sugar
+
+
+const moderatedNutrients = ['cholesterol', 'calcium']; 
+// deficient: Consumption < 60% of DV
+// good coverage: Consumption < 60% of DV
+// over consumed Consumption > DV
+
+const excludedNutrients = ['saturated fat', 'trans fat', 'sugar'];
+// deficient: excluded
+// good coverage: excluded
+// over consumed: if it goes beyond the DV. for trans fat there should be none.
+
+const highPriorityNutrients = [
+    'protein', 'dietary fiber', 'calcium', 'iron', 'magnesium', 
+    'vitamin a', 'vitamin d', 'zinc', 'iodine', 'vitamin b12', 'vitamin b9'
+]; 
+// deficient: Consumption < 90% of DV
+// good coverage: Consumption ≤ 100% to 120% of DV
+// over consumed: Consumption > DV + 50%
+
+const mediumPriorityNutrients = [
+    'total fat', 'total carbohydrates', 'vitamin c', 'vitamin e', 'vitamin k', 'potassium',
+    'vitamin b1', 'vitamin b2', 'vitamin b3', 'vitamin b5', 'vitamin b6', 'phosphorus', 'selenium',
+    'copper', 'manganese', 'chromium', 'molybdenum', 'choline',
+];
+// deficient: Consumption < 80% of DV
+// good coverage: Consumption ≤ 90% to 120% of DV
+// over consumed: Consumption > DV + 50%
+
+const lowPriorityNutrients = ['biotin', 'sodium', 'chloride'];
+// deficient: Consumption < 70% of DV
+// good coverage: Consumption ≤ 80% to 120% of DV
+// over consumed: Consumption > DV + 50%
+
+export function filterDeficientNutrients(nutrients, limits) {
+
+    const deficient_nutrients = [];
+  
+    nutrients.forEach(item => {
+        
+        if (!excludedNutrients.includes(item.name)) {
+
+            const limit = limits[item.name];
+            let new_limit = limit;
+
+            if (moderatedNutrients.includes(item.name)) {
+                
+                new_limit = limit - (limit * 0.6);
+
+            } else if (highPriorityNutrients.includes(item.name)) {
+               
+                new_limit = limit - (limit * 0.9);
+
+            } else if (mediumPriorityNutrients.includes(item.name)) {
+
+                new_limit = limit - (limit * 0.8);
+            
+            } else if (lowPriorityNutrients.includes(item.name)) {
+
+                new_limit = limit - (limit * 0.70);
+            }
+
+
+            if (item.amount < new_limit) {
+                deficient_nutrients.push({
+                    name: item.name,
+                    amount: item.amount,
+                    unit: item.unit,
+                });  
+            }
+
+        }
+        
+        if (item.composition) {
+            item.composition.forEach(subItem => {
+
+                if (!excludedNutrients.includes(subItem.name)) {
+                    const sub_limit = limits[subItem.name];
+
+                    if (moderatedNutrients.includes(subItem.name)) {
+                        const fifty_percent_of_sublimit = sub_limit - (sub_limit * 0.5);
+                        
+                        if (subItem.amount < fifty_percent_of_sublimit) {
+                            deficient_nutrients.push({
+                                name: subItem.name,
+                                amount: subItem.amount,
+                                unit: subItem.unit,
+                            });
+                        }
+                    } else {
+                        if (subItem.amount < sub_limit) {
+                            deficient_nutrients.push({
+                                name: subItem.name,
+                                amount: subItem.amount,
+                                unit: subItem.unit,
+                            });
+                        }
+                    }
+                
+                }
+            });
+        }
+    });
+
+
+    const nutrients_arr = [];
+    nutrients.forEach((itm) => {
+        nutrients_arr.push(itm.name);
+        if (itm.composition) {
+            itm.composition.forEach((sub_item) => {
+                nutrients_arr.push(sub_item.name);
+            });
+        }
+    });
+
+    const non_existent_nutrients = essential_nutrients.filter(item => !nutrients_arr.includes(item));
+
+    const non_existent = non_existent_nutrients.map((itm) => {
+        return { 
+            name: itm,
+            amount: 0,
+            unit: common_nutrient_units[itm]
+        };
+    });
+
+    return [...deficient_nutrients, ...non_existent].reduce((acc, current) => {
+        const x = acc.find(item => item.name === current.name);
+        if (!x) {
+          acc.push(current);
+        }
+        return acc;
+    }, []);
+}
+
+
+export function filterOverconsumedNutrients(nutrients, limits) {
+
+    const overconsumed_nutrients = [];
+  
+    nutrients.forEach(item => {
+        
+        const limit = limits[item.name];
+        let adjusted_limit = limit * 1.5; // DV + 50%
+
+        if (excludedNutrients.includes(item.name) || moderatedNutrients.includes(item.name)) {
+            adjusted_limit = limit;
+        }
+
+        if (item.amount >= adjusted_limit) {
+            overconsumed_nutrients.push({
+                name: item.name,
+                amount: item.amount,
+                unit: item.unit,
+            });  
+        }
+
+        
+        if (item.composition) {
+            item.composition.forEach(subItem => {
+
+                const sub_limit = limits[subItem.name];
+                let adjusted_limit = sub_limit  * 1.5; // DV + 50%
+                if (excludedNutrients.includes(subItem.name) || moderatedNutrients.includes(subItem.name)) {
+                    adjusted_limit = limit;
+                }
+
+                if (subItem.amount >= adjusted_limit || subItem.name === 'trans fat') {
+                    overconsumed_nutrients.push({
+                        name: subItem.name,
+                        amount: subItem.amount,
+                        unit: subItem.unit,
+                    });
+                }
+
+            });
+        }
+    });
+
+    return overconsumed_nutrients;
+}
+
+
+export function filterGoodCoverageNutrients(nutrients, limits, overConsumedNutrients) {
+
+    const good_coverage_nutrients = [];
+  
+    nutrients.forEach(item => {
+        
+        if (!excludedNutrients.includes(item.name) && !overConsumedNutrients.includes(item.name)) {
+
+            const limit = limits[item.name];
+            let condition = false;
+            const upper_limit = limit * 1.2;
+
+            if (moderatedNutrients.includes(item.name)) {
+                condition = item.amount > limit * 0.6;
+        
+            } else if (highPriorityNutrients.includes(item.name)) { // 90 to 120
+
+                const lower_limit = limit * 0.9;
+                condition = item.amount >= lower_limit && item.amount <= upper_limit;
+
+            } else if (mediumPriorityNutrients.includes(item.name)) { // 80 to 120
+
+                const lower_limit = limit * 0.8;
+                condition = item.amount >= lower_limit && item.amount <= upper_limit;
+            
+            } else if (lowPriorityNutrients.includes(item.name)) { // 70 to 120
+
+                const lower_limit = limit * 0.7;
+                condition = item.amount >= lower_limit && item.amount <= upper_limit;
+            }
+
+
+            if (condition) {
+                good_coverage_nutrients.push({
+                    name: item.name,
+                    amount: item.amount,
+                    unit: item.unit,
+                });  
+            }
+
+        }
+        
+        if (item.composition) {
+            item.composition.forEach(subItem => {
+
+                if (!excludedNutrients.includes(subItem.name) && !overConsumedNutrients.includes(subItem.name)) {
+                    const sub_limit = limits[subItem.name];
+
+                    let condition = false;
+                    const upper_limit = sub_limit * 1.2;
+
+                    if (moderatedNutrients.includes(subItem.name)) {
+                        
+                        condition = subItem.amount > sub_limit * 0.6;
+
+                    } else if (highPriorityNutrients.includes(subItem.name)) { // 90 to 120
+
+                        const lower_limit = sub_limit * 0.9;
+                        condition = subItem.amount >= lower_limit && subItem.amount <= upper_limit;
+
+                    } else if (mediumPriorityNutrients.includes(subItem.name)) { // 80 to 120
+
+                        const lower_limit = sub_limit * 0.8;
+                        condition = subItem.amount >= lower_limit && subItem.amount <= upper_limit;
+                    
+                    } else if (lowPriorityNutrients.includes(subItem.name)) { // 70 to 120
+
+                        const lower_limit = sub_limit * 0.7;
+                        condition = subItem.amount >= lower_limit && subItem.amount <= upper_limit;
+                    }
+
+
+                    if (condition) {
+                        good_coverage_nutrients.push({
+                            name: subItem.name,
+                            amount: subItem.amount,
+                            unit: subItem.unit,
+                        });
+                    }
+                
+                }
+            });
+        }
+    });
+
+    return good_coverage_nutrients;
 }

@@ -25,7 +25,7 @@
       </div>
 
       <div v-if="analyze && analyze.length > 0">
-        <div class="text-subtitle-1 mb-2">Summary</div>
+        <div class="text-subtitle-1 mt-5 mb-2">Summary</div>
 
         <v-row justify="space-between" dense>
           <v-col
@@ -37,6 +37,43 @@
             <NutritionCard :nutrient="summary_nut" :limits="recommended_daily_values" />
           </v-col>
         </v-row>
+
+        <div class="text-subtitle-1 mt-5 mb-2">Deficient Nutrients</div>
+
+        <div v-if="deficient_nutrients && deficient_nutrients.length > 0">
+          <NutrientsTable 
+            :nutrients="deficient_nutrients" 
+            servingsPerContainer="1" 
+            displayValuesPerContainer="false"
+            :recommended_daily_values="recommended_daily_values"
+            :newServingSize="newServingSize"
+            :newServingCount="newServingCount" />
+        </div>
+
+        <div class="text-subtitle-1 mt-5 mb-2">Over-consumed nutrients</div>
+
+        <div v-if="overconsumed_nutrients && overconsumed_nutrients.length > 0">
+          <NutrientsTable 
+            :nutrients="overconsumed_nutrients" 
+            servingsPerContainer="1" 
+            displayValuesPerContainer="false"
+            :recommended_daily_values="recommended_daily_values"
+            :newServingSize="newServingSize"
+            :newServingCount="newServingCount" />
+        </div>
+
+        <div class="text-subtitle-1 mt-5 mb-2">Nutrients with good coverage</div>
+
+        <div v-if="good_coverage_nutrients && good_coverage_nutrients.length > 0">
+          <NutrientsTable 
+            :nutrients="good_coverage_nutrients" 
+            servingsPerContainer="1" 
+            displayValuesPerContainer="false"
+            :recommended_daily_values="recommended_daily_values"
+            :newServingSize="newServingSize"
+            :newServingCount="newServingCount" />
+        </div>
+
       </div>
 
     </v-container>
@@ -53,12 +90,18 @@
 <script>
 import FoodCard from '@/components/FoodCard.vue';
 import NutritionCard from '@/components/NutritionCard.vue';
+import NutrientsTable from '@/components/NutrientsTable.vue';
+
 import { ref } from 'vue';
 
 import { 
     aggregateNutrients,
     filterNutrients,
+    filterDeficientNutrients,
+    filterOverconsumedNutrients,
+    filterGoodCoverageNutrients,
 } from '@/helpers/Nutrients';
+
 
 const analyze = ref(null);
 
@@ -68,10 +111,18 @@ const summary_nutrients_values = ['sodium', 'saturated fat', 'cholesterol', 'die
 
 const summary_nutrients = ref(null);
 
+const deficient_nutrients = ref(null);
+const good_coverage_nutrients = ref(null);
+const overconsumed_nutrients = ref(null);
+
+const newServingSize = ref(null);
+const newServingCount = ref(1);
+
 export default {
     components: {
       FoodCard,  
-      NutritionCard
+      NutritionCard,
+      NutrientsTable,
     },
 
 
@@ -121,20 +172,25 @@ export default {
         const analyze_serving_sizes_data = JSON.parse(localStorage.getItem('analyze_serving_sizes'));
 
         if (analyze_data && analyze_serving_sizes_data) {
-          console.log('analyze data: ', analyze_data);
-          console.log('analyze serving sizes: ', analyze_serving_sizes_data);
-
+         
           const aggregated_nutrients = aggregateNutrients(analyze_data, analyze_serving_sizes_data, 1);
-          console.log('AGRO: ', JSON.stringify(aggregated_nutrients));
-
-
+         
           const filtered_nutrients = filterNutrients(aggregated_nutrients, summary_nutrients_values);
-          console.log('filtered: ', filtered_nutrients);
-
+         
+          const filtered_deficient_nutrients = filterDeficientNutrients(aggregated_nutrients, recommended_daily_values.value);
+         
+          const filtered_overconsumed_nutrients = filterOverconsumedNutrients(aggregated_nutrients, recommended_daily_values.value);
+         
+          const overconsumed_nutrient_names = filtered_overconsumed_nutrients.map(itm => itm.name);
+          
+          // exclude overconsumed nutrients
+          const filtered_good_coverage_nutrients = filterGoodCoverageNutrients(aggregated_nutrients, recommended_daily_values.value, overconsumed_nutrient_names);
+         
           summary_nutrients.value = filtered_nutrients;
 
-          // todo: find the sodium, saturated fat, sugars, cholesterol, protein, fiber
-          // push to an array of objects then render it in the summary
+          deficient_nutrients.value = filtered_deficient_nutrients;
+          good_coverage_nutrients.value = filtered_good_coverage_nutrients;
+          overconsumed_nutrients.value = filtered_overconsumed_nutrients;
         
         }
         
@@ -150,6 +206,9 @@ export default {
 
         summary_nutrients,
         recommended_daily_values,
+        deficient_nutrients,
+        overconsumed_nutrients,
+        good_coverage_nutrients,
       }
     },
 
