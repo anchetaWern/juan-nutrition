@@ -99,8 +99,6 @@ export default {
         return 0; 
       }
 
-      const daily_value_colors = ['blue', 'orange', 'red'];
-
       const getBackgroundColor = (value, daily_limit) => {
         // DV percentages: 
         /*
