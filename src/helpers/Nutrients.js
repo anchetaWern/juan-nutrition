@@ -296,6 +296,7 @@ export function transformNutrientsObjectToArray(nutrientsObject) {
     });
 };
 
+
 export function aggregateNutrients (recipe, serving_sizes, serving_count = 1) {
 
     const aggregated_nutrients = {};
@@ -413,7 +414,7 @@ export function filterDeficientNutrients(nutrients, limits) {
             let new_limit = limit;
 
             if (moderatedNutrients.includes(item.name)) {
-                
+
                 new_limit = limit - (limit * 0.6);
 
             } else if (highPriorityNutrients.includes(item.name)) {
@@ -446,24 +447,31 @@ export function filterDeficientNutrients(nutrients, limits) {
                 if (!excludedNutrients.includes(subItem.name)) {
                     const sub_limit = limits[subItem.name];
 
-                    if (moderatedNutrients.includes(subItem.name)) {
-                        const fifty_percent_of_sublimit = sub_limit - (sub_limit * 0.5);
-                        
-                        if (subItem.amount < fifty_percent_of_sublimit) {
-                            deficient_nutrients.push({
-                                name: subItem.name,
-                                amount: subItem.amount,
-                                unit: subItem.unit,
-                            });
-                        }
-                    } else {
-                        if (subItem.amount < sub_limit) {
-                            deficient_nutrients.push({
-                                name: subItem.name,
-                                amount: subItem.amount,
-                                unit: subItem.unit,
-                            });
-                        }
+                    let new_sub_limit = sub_limit;
+
+                    if (moderatedNutrients.includes(item.name)) {
+
+                        new_sub_limit = sub_limit - (sub_limit * 0.6);
+
+                    } else if (highPriorityNutrients.includes(item.name)) {
+                    
+                        new_sub_limit = sub_limit - (sub_limit * 0.9);
+
+                    } else if (mediumPriorityNutrients.includes(item.name)) {
+
+                        new_sub_limit = sub_limit - (sub_limit * 0.8);
+                    
+                    } else if (lowPriorityNutrients.includes(item.name)) {
+
+                        new_sub_limit = sub_limit - (sub_limit * 0.70);
+                    }
+
+                    if (subItem.amount < new_sub_limit) {
+                        deficient_nutrients.push({
+                            name: subItem.name,
+                            amount: subItem.amount,
+                            unit: subItem.unit,
+                        });
                     }
                 
                 }
