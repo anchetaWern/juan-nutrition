@@ -317,25 +317,42 @@ export function aggregateNutrients (recipe, serving_sizes, serving_count = 1) {
                 }
             
                 aggregated_nutrients[name].amount += amount;
-        
-                if (nutrient.hasOwnProperty('composition')) {
+
+                if (composition && composition.length > 0) {
                     if (!aggregated_nutrients[name].hasOwnProperty('composition')) {
                         aggregated_nutrients[name].composition = composition.map(subNutrient => ({
                             ...subNutrient,
-                            amount: 0
+                            amount: 0 // Start with amount 0 to allow for aggregation
                         }));
                     }
+
                     composition.forEach((subNutrient, index) => {
-                        if (aggregated_nutrients[name].composition[index]) {
-                            aggregated_nutrients[name].composition[index].amount += subNutrient.amount;
+                        // Check if the sub-nutrient already exists in the aggregated composition
+                        const aggregatedSubNutrient = aggregated_nutrients[name].composition.find(
+                            sub => sub.name === subNutrient.name
+                        );
+    
+                        // If the sub-nutrient exists, aggregate the amount; otherwise, add it
+                        if (aggregatedSubNutrient) {
+                            aggregatedSubNutrient.amount += subNutrient.amount;
+                        } else {
+                            aggregated_nutrients[name].composition.push({ ...subNutrient });
                         }
                     });
                 }
+        
             }
 
         });
   
     });
+
+    for (const nutrient in aggregated_nutrients) {
+        if (aggregated_nutrients[nutrient].composition && aggregated_nutrients[nutrient].composition.length === 0) {
+            delete aggregated_nutrients[nutrient].composition;
+        }
+    }
+    
   
     return transformNutrientsObjectToArray(aggregated_nutrients);
   
