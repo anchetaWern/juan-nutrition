@@ -145,7 +145,7 @@ export function amountPerContainer(amount, servingsPerContainer, displayValuesPe
     const multiplier = displayValuesPerContainer ? servingCount : 1;
    
     const originalNutrientAmount = amount * multiplier;
-
+    
     if (isNumeric(newServingSize)) {
         return modifyServingSize(100, newServingSize, originalNutrientAmount);
     }
@@ -202,7 +202,7 @@ export function getVitamins(nutrients)
         .map((itm) => {
             const standard_unit = nutrientUnit(itm.name);
             
-            let standard_amount = null;
+            let standard_amount = itm.amount;
             if (itm.name === 'vitamin d') {
                 standard_amount = standardizeVitaminD(itm.amount, itm.unit);
             } else if (itm.name === 'vitamin a') {
