@@ -27,12 +27,13 @@
       <div v-if="analyze && analyze.length > 0">
         <div class="text-subtitle-1 mt-5 mb-2">Summary</div>
 
-        <v-row justify="space-between" dense>
+        <v-row justify="space-between" dense no-gutters>
           <v-col
             v-for="summary_nut in summary_nutrients"
             :key="summary_nut.name"
             sm="4" 
             md="4"
+            class="mb-1"
           >
             <NutritionCard :nutrient="summary_nut" :limits="recommended_daily_values" />
           </v-col>
