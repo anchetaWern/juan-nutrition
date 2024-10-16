@@ -522,7 +522,6 @@ export default {
 
     watchEffect(() => {
       if (food.value) {
-          console.log('FOOD: ', food.value);
         const pageTitle = food.value.description;
         const pageDescription = `${food.value.calories}${food.value.calories_unit}. View more info at app.juanutrisyon.info`;
 
@@ -540,21 +539,16 @@ export default {
     //
 
     const getCalorieBgColor = (calories) => {
-        if (calories >= 400) {
-          return 'red-darken-1';  
-        } else if (calories >= 100 && calories <= 200) {
-          return 'orange-darken-1';
-        }
-        return 'blue-darken-1';
+        return 'grey-lighten-1';
     }
    
     const getCalorieColor = (calories) => {
         if (calories >= 400) {
-          return 'red-darken-3';  
+          return 'deep-purple-lighten-3';  
         } else if (calories >= 100 && calories <= 200) {
-          return 'orange-darken-3';
+          return 'deep-purple-darken-1';
         }
-        return 'blue-darken-3';
+        return 'deep-purple-darken-4';
     }
 
     const openModifyServingCountModal = () => {
@@ -570,7 +564,6 @@ export default {
         const food_slug = route.params.food;
         axios.get(`${API_BASE_URI}/food-ingredients/${food_slug}`)
             .then(async (res) => {
-                console.log('res: ', res.data);
                 food_ingredients.value = res.data;
             });
 
@@ -674,7 +667,6 @@ export default {
         axios.get(`${API_BASE_URI}/nutriscore/${food_slug}`)
             .then(async (res) => {
                 nutriscore.value = res.data;
-                console.log('nutriscore: ', res.data);
             });
 
         axios.get(`${API_BASE_URI}/foods/${food_slug}`)
@@ -686,8 +678,7 @@ export default {
                     }
                 });
                 const fda_daily_nutrient_values = Object.assign({}, ...fda_daily_nutrient_values_arr);
-               
-                
+
                 recommended_daily_values.value = fda_daily_nutrient_values;
                
                 const dv_table = Object.keys(fda_daily_nutrient_values).map((key) => {
@@ -703,6 +694,7 @@ export default {
                 //
                
                 food.value = res.data;
+
                 if (res.data.servings_per_container) {
                     servingsPerContainer.value = res.data.servings_per_container;
 
@@ -779,7 +771,7 @@ export default {
                         }
                     ],
                 }
-
+               
                 elements.value = getElements(res.data.nutrients);
                 macros.value = getMacros(res.data.nutrients);
                 vitamins.value = getVitamins(res.data.nutrients); 

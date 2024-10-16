@@ -90,7 +90,6 @@ export default {
       const calculateNutrientPercentage = (nutrient_name, nutrient_value) => {
         if (props.recommended_daily_values.hasOwnProperty(nutrient_name)) {
           const reni_limit = props.recommended_daily_values[nutrient_name];
-          
           const percentage = calculatePercentage(nutrient_value, reni_limit);
           
           return percentage;
@@ -100,29 +99,19 @@ export default {
       }
 
       const getBackgroundColor = (value, daily_limit) => {
-        // DV percentages: 
-        /*
-        5% and below = blue
-        6 to 19% = orange
-        20% upwards = red
-        */
-        const dv_percent = calculatePercentage(value, daily_limit);
-        if (dv_percent >= 20) {
-          return 'red-darken-1';  
-        } else if (dv_percent >= 6 && dv_percent <= 19) {
-          return 'orange-darken-1';
-        }
-        return 'blue-darken-1';
+       
+        return 'grey-lighten-1';
+        
       };
 
       const getColor = (value, daily_limit) => {
         const dv_percent = calculatePercentage(value, daily_limit);
         if (dv_percent >= 20) {
-          return 'red-darken-3';  
+          return 'deep-purple-lighten-3';  
         } else if (dv_percent >= 6 && dv_percent <= 19) {
-          return 'orange-darken-3';
+          return 'deep-purple-darken-1';
         }
-        return 'blue-darken-3';
+        return 'deep-purple-darken-4';
       };
 
       const getReverse = (value, daily_limit) => {
@@ -130,6 +119,7 @@ export default {
       }
 
       const nutrientsWithPercentage = computed(() => {
+       
         return props.nutrients.map(nutrient => {
           
           const daily_limit = props.recommended_daily_values[nutrient.name];
