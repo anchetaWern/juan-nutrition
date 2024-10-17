@@ -419,8 +419,15 @@ const lowPriorityNutrients = ['biotin', 'sodium', 'chloride'];
 // good coverage: Consumption ≤ 80% to 120% of DV
 // over consumed: Consumption > DV + 50%
 
-export function filterDeficientNutrients(nutrients, limits) {
+/* 
+Excessive = > 125% DV (over-consumed)
+Adequate = 75 to 125% DV (good coverage)
+Fair / Inadequate = 50 to 74% DV (deficient)
+Poor / Starvation = < 50% DV (deficient)
+*/
 
+export function filterDeficientNutrients(nutrients, limits) {
+   // console.log('got called');
     const deficient_nutrients = [];
   
     nutrients.forEach(item => {
@@ -428,27 +435,13 @@ export function filterDeficientNutrients(nutrients, limits) {
         if (!excludedNutrients.includes(item.name)) {
 
             const limit = limits[item.name];
-            let new_limit = limit;
-
-            if (moderatedNutrients.includes(item.name)) {
-
-                new_limit = limit - (limit * 0.6);
-
-            } else if (highPriorityNutrients.includes(item.name)) {
-               
-                new_limit = limit - (limit * 0.9);
-
-            } else if (mediumPriorityNutrients.includes(item.name)) {
-
-                new_limit = limit - (limit * 0.8);
+            let new_limit = limit * .74;
             
-            } else if (lowPriorityNutrients.includes(item.name)) {
-
-                new_limit = limit - (limit * 0.70);
+            if (item.name == 'protein') {
+                console.log('===PROTEIN: ' + item.amount + " -> " + new_limit);
             }
 
-
-            if (item.amount < new_limit) {
+            if (item.amount <= new_limit) {
                 deficient_nutrients.push({
                     name: item.name,
                     amount: item.amount,
@@ -457,6 +450,7 @@ export function filterDeficientNutrients(nutrients, limits) {
             }
 
         }
+ 
         
         if (item.composition) {
             item.composition.forEach(subItem => {
@@ -464,26 +458,9 @@ export function filterDeficientNutrients(nutrients, limits) {
                 if (!excludedNutrients.includes(subItem.name)) {
                     const sub_limit = limits[subItem.name];
 
-                    let new_sub_limit = sub_limit;
+                    let new_sub_limit = sub_limit * .74;
 
-                    if (moderatedNutrients.includes(item.name)) {
-
-                        new_sub_limit = sub_limit - (sub_limit * 0.6);
-
-                    } else if (highPriorityNutrients.includes(item.name)) {
-                    
-                        new_sub_limit = sub_limit - (sub_limit * 0.9);
-
-                    } else if (mediumPriorityNutrients.includes(item.name)) {
-
-                        new_sub_limit = sub_limit - (sub_limit * 0.8);
-                    
-                    } else if (lowPriorityNutrients.includes(item.name)) {
-
-                        new_sub_limit = sub_limit - (sub_limit * 0.70);
-                    }
-
-                    if (subItem.amount < new_sub_limit) {
+                    if (subItem.amount <= new_sub_limit) {
                         deficient_nutrients.push({
                             name: subItem.name,
                             amount: subItem.amount,
@@ -534,13 +511,13 @@ export function filterOverconsumedNutrients(nutrients, limits) {
     nutrients.forEach(item => {
         
         const limit = limits[item.name];
-        let adjusted_limit = limit * 1.5; // DV + 50%
+        let adjusted_limit = limit * 1.25; // DV + 125%
 
         if (excludedNutrients.includes(item.name) || moderatedNutrients.includes(item.name)) {
             adjusted_limit = limit;
         }
 
-        if (item.amount >= adjusted_limit) {
+        if (item.amount > adjusted_limit) {
             overconsumed_nutrients.push({
                 name: item.name,
                 amount: item.amount,
@@ -553,12 +530,12 @@ export function filterOverconsumedNutrients(nutrients, limits) {
             item.composition.forEach(subItem => {
 
                 const sub_limit = limits[subItem.name];
-                let adjusted_limit = sub_limit  * 1.5; // DV + 50%
+                let adjusted_limit = sub_limit  * 1.25; // DV + 125%
                 if (excludedNutrients.includes(subItem.name) || moderatedNutrients.includes(subItem.name)) {
                     adjusted_limit = sub_limit; 
                 }
 
-                if (subItem.amount >= adjusted_limit || subItem.name === 'trans fat') {
+                if (subItem.amount > adjusted_limit || subItem.name === 'trans fat') {
                     overconsumed_nutrients.push({
                         name: subItem.name,
                         amount: subItem.amount,
@@ -583,28 +560,11 @@ export function filterGoodCoverageNutrients(nutrients, limits, overConsumedNutri
         if (!excludedNutrients.includes(item.name) && !overConsumedNutrients.includes(item.name)) {
 
             const limit = limits[item.name];
-            let condition = false;
-            const upper_limit = limit * 1.2;
+           
+            const lower_limit = limit * 0.75;
+            const upper_limit = limit * 1.25;
 
-            if (moderatedNutrients.includes(item.name)) {
-                condition = item.amount > limit * 0.6;
-        
-            } else if (highPriorityNutrients.includes(item.name)) { // 90 to 120
-
-                const lower_limit = limit * 0.9;
-                condition = item.amount >= lower_limit && item.amount <= upper_limit;
-
-            } else if (mediumPriorityNutrients.includes(item.name)) { // 80 to 120
-
-                const lower_limit = limit * 0.8;
-                condition = item.amount >= lower_limit && item.amount <= upper_limit;
-            
-            } else if (lowPriorityNutrients.includes(item.name)) { // 70 to 120
-
-                const lower_limit = limit * 0.7;
-                condition = item.amount >= lower_limit && item.amount <= upper_limit;
-            }
-
+            let condition = item.amount >= lower_limit && item.amount <= upper_limit;
 
             if (condition) {
                 good_coverage_nutrients.push({
@@ -622,29 +582,10 @@ export function filterGoodCoverageNutrients(nutrients, limits, overConsumedNutri
                 if (!excludedNutrients.includes(subItem.name) && !overConsumedNutrients.includes(subItem.name)) {
                     const sub_limit = limits[subItem.name];
 
-                    let condition = false;
-                    const upper_limit = sub_limit * 1.2;
-
-                    if (moderatedNutrients.includes(subItem.name)) {
-                        
-                        condition = subItem.amount > sub_limit * 0.6;
-
-                    } else if (highPriorityNutrients.includes(subItem.name)) { // 90 to 120
-
-                        const lower_limit = sub_limit * 0.9;
-                        condition = subItem.amount >= lower_limit && subItem.amount <= upper_limit;
-
-                    } else if (mediumPriorityNutrients.includes(subItem.name)) { // 80 to 120
-
-                        const lower_limit = sub_limit * 0.8;
-                        condition = subItem.amount >= lower_limit && subItem.amount <= upper_limit;
-                    
-                    } else if (lowPriorityNutrients.includes(subItem.name)) { // 70 to 120
-
-                        const lower_limit = sub_limit * 0.7;
-                        condition = subItem.amount >= lower_limit && subItem.amount <= upper_limit;
-                    }
-
+                  
+                    const lower_limit = sub_limit * 0.75;
+                    const upper_limit = sub_limit * 1.25;
+                    let condition = subItem.amount >= lower_limit && subItem.amount <= upper_limit;
 
                     if (condition) {
                         good_coverage_nutrients.push({

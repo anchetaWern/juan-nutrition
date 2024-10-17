@@ -42,31 +42,40 @@ export default {
   
   },
 
+/* 
+Excessive = > 125% DV (over-consumed)
+Adequate = 75 to 125% DV (good coverage)
+Fair / Inadequate = 50 to 74% DV (deficient)
+Poor / Starvation = < 50% DV (deficient)
+*/
+
   setup(props) {
 
     const arrowColor = (name, amount) => {
       const limit = props.limits[name];
+      const lower_limit = limit * .75;
+      const upper_limit = limit * 1.25;
 
       // deficient: down red arrow
       // over-consumed: up red arrow
       // good coverage: none
 
-      if (good_nutrients.includes(name)) {
-        if (amount <= limit) {
+      if (good_nutrients.includes(name)) { // use adequate criteria
+        if (amount < lower_limit) {
           return 'red'; 
-        } else if (amount > limit && amount <= limit * 1.2) {
+        } else if (amount >= lower_limit && amount <= upper_limit) {
           return ''; 
-        } else if (amount > limit * 1.2) {
+        } else if (amount > upper_limit) {
           return 'red'; 
         }
       }
 
-      if (bad_nutrients.includes(name)) {
-        const bufferAmount = limit * 0.2; 
+      if (bad_nutrients.includes(name)) { // use excessive criteria
+        const bufferAmount = limit * 1.25; 
 
-        if (amount > limit) {
+        if (amount > bufferAmount) {
           return 'red'; 
-        } else if (amount > limit - bufferAmount) {
+        } else if (amount > limit) {
           return 'orange'; 
         } else {
           return ''; 
@@ -78,27 +87,29 @@ export default {
 
     const arrow = (name, amount) => {
       const limit = props.limits[name];
+      const lower_limit = limit * .75;
+      const upper_limit = limit * 1.25;
 
       // deficient: down red arrow
       // over-consumed: up red arrow
       // good coverage: none
 
       if (good_nutrients.includes(name)) {
-        if (amount <= limit) {
+        if (amount < lower_limit) {
           return 'mdi-menu-down'; 
-        } else if (amount > limit && amount <= limit * 1.2) {
+        } else if (amount >= lower_limit && amount <= upper_limit) {
           return ''; 
-        } else if (amount > limit * 1.2) {
+        } else if (amount > upper_limit) {
           return 'mdi-menu-up'; 
         }
       }
 
       if (bad_nutrients.includes(name)) {
-        const bufferAmount = limit * 0.2; 
+        const bufferAmount = limit * 1.25; 
 
-        if (amount > limit) {
+        if (amount > bufferAmount) {
           return 'mdi-menu-up'; 
-        } else if (amount > limit - bufferAmount) {
+        } else if (amount > limit) {
           return 'mdi-menu-up'; 
         } else {
           return ''; 
@@ -110,23 +121,25 @@ export default {
 
     const valueColor = (name, amount) => {
       const limit = props.limits[name];
+      const lower_limit = limit * .75;
+      const upper_limit = limit * 1.25;
 
       if (good_nutrients.includes(name)) {
-        if (amount <= limit) {
+        if (amount < lower_limit) {
           return 'text-red'; 
-        } else if (amount > limit && amount <= limit * 1.2) {
+        } else if (amount >= lower_limit && amount <= upper_limit) {
           return 'text-green'; 
-        } else if (amount > limit * 1.2) {
+        } else if (amount > upper_limit) {
           return 'text-red'; 
         }
       }
 
       if (bad_nutrients.includes(name)) {
-        const bufferAmount = limit * 0.2; 
+        const bufferAmount = limit * 1.25; 
 
-        if (amount > limit) {
+        if (amount > bufferAmount) {
           return 'text-red'; 
-        } else if (amount > limit - bufferAmount) {
+        } else if (amount > limit) {
           return 'text-orange'; 
         } else {
           return ''; 
