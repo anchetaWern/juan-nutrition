@@ -49,7 +49,8 @@
               displayValuesPerContainer="false"
               :recommended_daily_values="recommended_daily_values"
               :newServingSize="newServingSize"
-              :newServingCount="newServingCount" />
+              :newServingCount="newServingCount"
+              :getValueColor="getValueColor"  />
           </div>
         </div>
 
@@ -63,7 +64,8 @@
               displayValuesPerContainer="false"
               :recommended_daily_values="recommended_daily_values"
               :newServingSize="newServingSize"
-              :newServingCount="newServingCount" />
+              :newServingCount="newServingCount"
+              :getValueColor="getValueColor" />
           </div>
         </div>
 
@@ -77,7 +79,8 @@
               displayValuesPerContainer="false"
               :recommended_daily_values="recommended_daily_values"
               :newServingSize="newServingSize"
-              :newServingCount="newServingCount" />
+              :newServingCount="newServingCount"
+              :getValueColor="getValueColor"  />
           </div>
         </div>
 
@@ -108,6 +111,8 @@ import {
     filterOverconsumedNutrients,
     filterGoodCoverageNutrients,
 } from '@/helpers/Nutrients';
+
+import { calculatePercentage } from '@/helpers/Numbers';
 
 
 const analyze = ref(null);
@@ -173,6 +178,23 @@ export default {
         refreshNutrients();
       }
 
+      const getRailColor = (value, daily_limit) => {
+        return 'grey-darken-3';
+      };
+
+      const getValueColor = (value, daily_limit) => {
+        const dv_percent = calculatePercentage(value, daily_limit); 
+        
+        if (dv_percent > 125) {
+          return 'deep-purple-darken-4';
+
+        } else if (dv_percent >= 75 && dv_percent <= 125) {
+          return 'deep-purple-lighten-2';
+        } 
+
+        return 'deep-purple-lighten-3';
+      };
+
 
       const refreshNutrients = () => {
         const analyze_data = JSON.parse(localStorage.getItem('analyze'));
@@ -181,6 +203,7 @@ export default {
         if (analyze_data && analyze_serving_sizes_data) {
          
           const aggregated_nutrients = aggregateNutrients(analyze_data, analyze_serving_sizes_data, 1);
+          //console.log('AGRO: ', aggregated_nutrients);
          
           const filtered_nutrients = filterNutrients(aggregated_nutrients, summary_nutrients_values);
          
@@ -216,6 +239,9 @@ export default {
         deficient_nutrients,
         overconsumed_nutrients,
         good_coverage_nutrients,
+
+        getRailColor,
+        getValueColor,
       }
     },
 

@@ -44,7 +44,8 @@
           displayValuesPerContainer="false"
           :recommended_daily_values="recommended_daily_values"
           :newServingSize="newServingSize"
-          :newServingCount="newServingCount" />
+          :newServingCount="newServingCount"
+          :getValueColor="getValueColor" />
       </div>
 
 
@@ -56,7 +57,8 @@
           displayValuesPerContainer="false"
           :recommended_daily_values="recommended_daily_values"
           :newServingSize="newServingSize"
-          :newServingCount="newServingCount" />
+          :newServingCount="newServingCount"
+          :getValueColor="getValueColor" />
       </div>
 
       <div class="mt-3" v-if="minerals.length">
@@ -67,7 +69,8 @@
           displayValuesPerContainer="false"
           :recommended_daily_values="recommended_daily_values"
           :newServingSize="newServingSize"
-          :newServingCount="newServingCount" />
+          :newServingCount="newServingCount"
+          :getValueColor="getValueColor" />
       </div>
 
       <div class="mt-3" v-if="others.length">
@@ -78,7 +81,8 @@
           displayValuesPerContainer="false"
           :recommended_daily_values="recommended_daily_values"
           :newServingSize="newServingSize"
-          :newServingCount="newServingCount" />
+          :newServingCount="newServingCount"
+          :getValueColor="getValueColor" />
       </div>
 
     </div>
@@ -100,6 +104,8 @@ import {
     getMinerals,
     getOthers,
 } from '@/helpers/Nutrients';
+
+import { calculatePercentage } from '@/helpers/Numbers';
 
 const recipe = ref(null);
 
@@ -143,6 +149,18 @@ export default {
       }
     
       
+      const getValueColor = (value, daily_limit) => {
+        const dv_percent = calculatePercentage(value, daily_limit); 
+        
+        if (dv_percent > 125) {
+          return 'deep-purple-darken-4';
+
+        } else if (dv_percent >= 75 && dv_percent <= 125) {
+          return 'deep-purple-lighten-2';
+        } 
+
+        return 'deep-purple-lighten-3';
+      };
 
 
       const refreshNutrients = () => {
@@ -193,7 +211,6 @@ export default {
       }
 
       const onUpdateServingCount = () => {
-        console.log('count: ', servingCount.value);
         emit('update-ingredient-serving-count-child', servingCount.value); 
 
         refreshNutrients();
@@ -206,6 +223,7 @@ export default {
         servingSizes,
         updateServingSize,
         onUpdateServingCount,
+        getValueColor
       }
     },
 
@@ -220,7 +238,7 @@ export default {
 
       recommended_daily_values,
       newServingSize,
-      newServingCount
+      newServingCount,
 
     }),
 

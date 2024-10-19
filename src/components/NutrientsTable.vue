@@ -27,7 +27,8 @@
                       :displayValuesPerContainer="displayValuesPerContainer" 
                       :recommended_daily_values="recommended_daily_values"
                       :newServingSize="newServingSize"
-                      :newServingCount="newServingCount" />
+                      :newServingCount="newServingCount"
+                      :getValueColor="getValueColor" />
                 </td>
             </tr>
         </template>
@@ -73,7 +74,11 @@ export default {
       type: Number,
       required: false,
       default: null,
-    }
+    },
+    getValueColor: {
+      type: Function,
+      required: true,
+    },
   },
 
 
@@ -98,22 +103,6 @@ export default {
         return 0; 
       }
 
-      const getBackgroundColor = (value, daily_limit) => {
-       
-        return 'grey-darken-3';
-        
-      };
-
-      const getColor = (value, daily_limit) => {
-        const dv_percent = calculatePercentage(value, daily_limit);
-        if (dv_percent >= 20) {
-          return 'deep-purple-lighten-3';  
-        } else if (dv_percent >= 6 && dv_percent <= 19) {
-          return 'deep-purple-darken-1';
-        }
-        return 'deep-purple-darken-4';
-      };
-
       const getReverse = (value, daily_limit) => {
         return value > daily_limit ? true : false;
       }
@@ -122,7 +111,7 @@ export default {
        
         return props.nutrients.map(nutrient => {
           
-          const daily_limit = props.recommended_daily_values[nutrient.name];
+          const daily_limit = props.recommended_daily_values[nutrient.name]; 
           const multiplier = props.displayValuesPerContainer ? props.servingsPerContainer : 1;
           const total_amount = amountPerContainer(nutrient.amount, props.servingsPerContainer, props.displayValuesPerContainer, props.newServingSize, props.newServingCount); // nutrient.amount * multiplier;
           const percentage = calculateNutrientPercentage(nutrient.name, total_amount);
@@ -131,8 +120,8 @@ export default {
           return {
             ...nutrient,
             percentage,
-            bgColor: getBackgroundColor(total_amount, daily_limit),
-            color: getColor(total_amount, daily_limit),
+            bgColor: 'grey-darken-3', // props.getRailColor(total_amount, daily_limit),
+            color: props.getValueColor(total_amount, daily_limit),
             reverse: getReverse(total_amount, daily_limit), 
             hasRecommendedDailyValues: hasRecommendedDailyValues,
             dailyLimit: hasRecommendedDailyValues && props.recommended_daily_values[nutrient.name] ? props.recommended_daily_values[nutrient.name].toFixed(0) : null,

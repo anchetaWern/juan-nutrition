@@ -96,7 +96,8 @@
                 :displayValuesPerContainer="displayValuesPerContainer"
                 :recommended_daily_values="recommended_daily_values"
                 :newServingSize="newServingSize"
-                :newServingCount="newServingCount" />
+                :newServingCount="newServingCount"
+                :getValueColor="getValueColor" />
         </div>
 
         <div class="mt-3" v-if="macros.length">
@@ -107,7 +108,8 @@
                 :displayValuesPerContainer="displayValuesPerContainer"
                 :recommended_daily_values="recommended_daily_values"
                 :newServingSize="newServingSize"
-                :newServingCount="newServingCount" />
+                :newServingCount="newServingCount"
+                :getValueColor="getValueColor" />
         </div>
 
         <div class="mt-3" v-if="vitamins.length">
@@ -118,7 +120,8 @@
                 :displayValuesPerContainer="displayValuesPerContainer"
                 :recommended_daily_values="recommended_daily_values"
                 :newServingSize="newServingSize"
-                :newServingCount="newServingCount" />
+                :newServingCount="newServingCount"
+                :getValueColor="getValueColor" />
         </div>
 
         <div class="mt-3" v-if="minerals.length">
@@ -129,7 +132,8 @@
                 :displayValuesPerContainer="displayValuesPerContainer"
                 :recommended_daily_values="recommended_daily_values"
                 :newServingSize="newServingSize"
-                :newServingCount="newServingCount" />
+                :newServingCount="newServingCount"
+                :getValueColor="getValueColor" />
         </div>
 
         <div class="mt-3" v-if="others.length">
@@ -140,7 +144,8 @@
                 :displayValuesPerContainer="displayValuesPerContainer"
                 :recommended_daily_values="recommended_daily_values"
                 :newServingSize="newServingSize"
-                :newServingCount="newServingCount" />
+                :newServingCount="newServingCount"
+                :getValueColor="getValueColor" />
         </div>
     </div>
 
@@ -559,6 +564,20 @@ export default {
         ingredientsInfoDialog.value = true;
     }
 
+    const getValueColor = (value, daily_limit) => {
+        const dv_percent = calculatePercentage(value, daily_limit); 
+        
+        if (dv_percent > 125) {
+            return 'deep-purple-darken-4';
+
+        } else if (dv_percent >= 75 && dv_percent <= 125) {
+            return 'deep-purple-lighten-2';
+        } 
+
+        return 'deep-purple-lighten-3';
+    };
+
+
     
     const addToRecipe = () => {
        
@@ -637,6 +656,9 @@ export default {
     const modifyServingCount = () => {
         modifyServingCountDialog.value = false;
     }
+
+   
+    
 
     const fetchData = async () => {
       
@@ -821,7 +843,10 @@ export default {
         food_ingredients,
 
         addToRecipe,
-        addForAnalysis
+        addForAnalysis,
+
+        getValueColor
+
     }
 
   },
