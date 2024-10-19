@@ -119,7 +119,7 @@ const analyze = ref(null);
 
 const recommended_daily_values = ref({"sugar":50,"biotin":30,"calcium":1300,"chloride":2300,"choline":550,"cholesterol":300,"chromium":35,"copper":0.9,"dietary fiber":28,"total fat":78,"vitamin b9":400,"iodine":150,"iron":18,"magnesium":420,"manganese":2.3,"molybdenum":45,"vitamin b3":16,"vitamin b5":5,"phosphorus":1250,"potassium":4700,"protein":50,"vitamin b2":1.3,"saturated fat":20,"selenium":55,"sodium":2300,"vitamin b1":1.2,"total carbohydrates":275,"vitamin a":900,"vitamin b6":1.7,"vitamin b12":2.4,"vitamin c":90,"vitamin d":20,"vitamin e":15,"vitamin k":120,"zinc":11});
 
-const summary_nutrients_values = ['sodium', 'saturated fat', 'cholesterol', 'dietary fiber', 'sugar', 'protein']; 
+const summary_nutrients_values = ['water', 'protein', 'dietary fiber', 'sodium', 'saturated fat', 'cholesterol', 'sugar', 'total carbohydrates', 'total fat']; 
 
 const summary_nutrients = ref(null);
 

@@ -9,7 +9,7 @@
 
 
     <v-card-text class="text-caption pa-1">
-    {{ nutrient.name }}
+    {{ nutrient_short_names.hasOwnProperty(nutrient.name) ? nutrient_short_names[nutrient.name] : nutrient.name }}
     </v-card-text>
 
   </v-card>
@@ -25,7 +25,7 @@
 <script>
 import { wholeNumber } from '@/helpers/Numbers';
 
-const good_nutrients = ['dietary fiber', 'protein'];
+const good_nutrients = ['dietary fiber', 'protein', 'total carbohydrates', 'total fat'];
 const bad_nutrients = ['sodium', 'saturated fat', 'cholesterol', 'sugar'];
 
 export default {
@@ -50,6 +50,10 @@ Poor / Starvation = < 50% DV (deficient)
 */
 
   setup(props) {
+
+    const nutrient_short_names = {
+      'total carbohydrates': 'total carbs',
+    };
 
     const arrowColor = (name, amount) => {
       const limit = props.limits[name];
@@ -152,7 +156,9 @@ Poor / Starvation = < 50% DV (deficient)
     return {
       valueColor,
       arrow,
-      arrowColor
+      arrowColor,
+
+      nutrient_short_names,
     }
   },
 
