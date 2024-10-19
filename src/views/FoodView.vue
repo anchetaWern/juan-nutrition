@@ -528,7 +528,7 @@ export default {
     //
 
     const getCalorieBgColor = (calories) => {
-        return 'grey-lighten-1';
+        return 'grey-darken-3';
     }
    
     const getCalorieColor = (calories) => {

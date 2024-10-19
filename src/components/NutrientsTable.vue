@@ -100,7 +100,7 @@ export default {
 
       const getBackgroundColor = (value, daily_limit) => {
        
-        return 'grey-lighten-1';
+        return 'grey-darken-3';
         
       };
 
