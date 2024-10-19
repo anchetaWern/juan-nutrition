@@ -535,7 +535,7 @@ export function filterOverconsumedNutrients(nutrients, limits) {
                     adjusted_limit = sub_limit; 
                 }
 
-                if (subItem.amount > adjusted_limit || subItem.name === 'trans fat') {
+                if (subItem.amount > adjusted_limit || (subItem.name === 'trans fat' && subItem.amount > 0)) {
                     overconsumed_nutrients.push({
                         name: subItem.name,
                         amount: subItem.amount,
