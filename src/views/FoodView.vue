@@ -538,11 +538,11 @@ export default {
    
     const getCalorieColor = (calories) => {
         if (calories >= 400) {
-          return 'deep-purple-lighten-3';  
+          return 'deep-purple-darken-4'; 
         } else if (calories >= 100 && calories <= 200) {
           return 'deep-purple-darken-1';
         }
-        return 'deep-purple-darken-4';
+        return 'deep-purple-lighten-3';
     }
 
     const openModifyServingCountModal = () => {
@@ -567,10 +567,10 @@ export default {
     const getValueColor = (value, daily_limit) => {
         const dv_percent = calculatePercentage(value, daily_limit); 
         
-        if (dv_percent > 125) {
+        if (dv_percent > 20) {
             return 'deep-purple-darken-4';
 
-        } else if (dv_percent >= 75 && dv_percent <= 125) {
+        } else if (dv_percent >= 6 && dv_percent <= 19) {
             return 'deep-purple-lighten-2';
         } 
 
@@ -662,14 +662,14 @@ export default {
 
     const fetchData = async () => {
       
-        // fda daily values (for adults)
-        let fda_daily_nutrient_dv = null;
-        if (localStorage.getItem('fda_daily_nutrient_dv')) {
-            fda_daily_nutrient_dv = JSON.parse(localStorage.getItem('fda_daily_nutrient_dv'));
+        // 
+        let consolidated_daily_nutrient_dv = null;
+        if (localStorage.getItem('consolidated_daily_nutrient_dv')) {
+            consolidated_daily_nutrient_dv = JSON.parse(localStorage.getItem('consolidated_daily_nutrient_dv'));
         } else {
-            const fda_daily_nutrient_values_res = await axios.get(`${API_BASE_URI}/fda-daily-nutrient-values`);
-            fda_daily_nutrient_dv = fda_daily_nutrient_values_res.data;
-            localStorage.setItem('fda_daily_nutrient_dv', JSON.stringify(fda_daily_nutrient_dv));
+            const fda_daily_nutrient_values_res = await axios.get(`${API_BASE_URI}/consolidated-recommended-daily-nutrient-intake?gender=male&age=19`);
+            consolidated_daily_nutrient_dv = fda_daily_nutrient_values_res.data;
+            localStorage.setItem('consolidated_daily_nutrient_dv', JSON.stringify(consolidated_daily_nutrient_dv));
         }
         //
 
@@ -679,7 +679,7 @@ export default {
         axios.get(`${API_BASE_URI}/foods/${food_slug}`)
             .then(async (res) => {
 
-                const fda_daily_nutrient_values_arr = fda_daily_nutrient_dv.map((itm) => {
+                const fda_daily_nutrient_values_arr = consolidated_daily_nutrient_dv.map((itm) => {
                     return {
                         [itm.nutrient]: itm.daily_value,
                     }
@@ -696,6 +696,8 @@ export default {
                         value: `${val}${unit}`
                    }
                 });
+
+                console.log('DV table: ', JSON.stringify(dv_table));
                 
                 daily_values_table.value = dv_table;
                 //
