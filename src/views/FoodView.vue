@@ -324,22 +324,29 @@
                 <template v-slot:text>
                     <div class="text-body-2">
                         <p>
-                        The Daily Values are the recommended amounts of nutrients to consume or not to exceed each day. 
-                        These values are from the<a href="https://www.fda.gov/food/nutrition-facts-label/daily-value-nutrition-and-supplement-facts-labels" target="_blank">
-                        U.S. Food and Drug Administration.</a> 
-                        5% DV or less of a nutrient per serving is considered low. 20% DV or more of a nutrient is considered high.
+                        The daily recommended nutrient intake is adapted from multiple sources. It's primarily based from PDRI's (Philippine Dietary Reference Intakes) Estimated Average Requirements (EAR).
                         </p>
                         <p class="mt-2">
-                        The values are color coded: <span class="text-blue">blue</span> for low, <span class="text-orange">orange</span> for moderate, <span class="text-red">red</span> for high.
+                        Nutrients that aren't covered by the EAR is adapted from the Recommended Nutrient Intakes for macronutrients, vitamins and minerals. It's based on a 2,530kcal per day requirement for 19 to 29 year old males.
                         </p>
-                        <p>
-                        For nutrients that are generally good for everyone: protein, dietary fiber, vitamins and minerals. You want to aim for foods that are orange or red color.
-                        </p>
-                        <p>
-                        For nutrients that are generally bad for everyone (when consumed in large amounts): sodium, saturated fat. You want to aim for foods that have blue color.
-                        </p>
+                        
                         <p class="mt-2">
-                        Do note that these values are only meant to serve as a general reference for the nutritional needs of the average person. 
+                        Total fat and total carbohydrates are computed from PDRI's Acceptable Macronutrient Distribution Ranges based on a 2,530kcal per day requirement.
+                        </p>
+
+                        <p class="mt-2">
+                        Anything else that hasn't been covered by PDRI's recommendations are adapted from the <a href="https://www.fda.gov/food/nutrition-facts-label/daily-value-nutrition-and-supplement-facts-labels" target="_blank">United States' Food and Drug Administration Daily Values</a>. 
+                        </p>
+
+                        <p class="mt-2">
+                        The nutritional values are color-coded to easily determine whether a food is high, moderate, or low on a specific nutrient: <span class="text-deep-purple-lighten-4">light purple</span> for low, <span class="text-deep-purple-lighten-2">mid purple</span> for moderate, <span class="text-deep-purple-darken-4">deep purple</span> for high.
+                        </p>
+                        <p>
+                        For nutrients that are generally good for everyone: protein, dietary fiber, vitamins and minerals. You want to aim for foods that has the deepest shade of purple. 
+                        </p>
+                       
+                        <p class="mt-2">
+                        Do note that these values are only meant to serve as a general guideline for the nutritional needs of the average person. 
                         Individual needs may vary depending on various factors such as age, gender, activity level, health status, body size and composition, metabolic rate, genetic factors, lifestyle and dietary habits, and environmental factors.
                         </p>
 
@@ -362,7 +369,7 @@
                             </thead>
                             <tbody>
                                 <tr
-                                    v-for="item in daily_values_table"
+                                    v-for="item in daily_values_table.filter(item => item.nutrient !== 'calories')"
                                     :key="item.nutrient"
                                 >
                                 <td>{{ item.nutrient }}</td>
@@ -542,7 +549,7 @@ export default {
         } else if (calories >= 100 && calories <= 200) {
           return 'deep-purple-darken-1';
         }
-        return 'deep-purple-lighten-3';
+        return 'deep-purple-lighten-4';
     }
 
     const openModifyServingCountModal = () => {
@@ -574,7 +581,7 @@ export default {
             return 'deep-purple-lighten-2';
         } 
 
-        return 'deep-purple-lighten-3';
+        return 'deep-purple-lighten-4';
     };
 
 

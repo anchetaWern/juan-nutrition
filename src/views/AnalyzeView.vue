@@ -192,7 +192,7 @@ export default {
           return 'deep-purple-lighten-2';
         } 
 
-        return 'deep-purple-lighten-3';
+        return 'deep-purple-lighten-4';
       };
 
 

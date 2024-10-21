@@ -8,6 +8,7 @@ const common_nutrient_units = {
     "sodium": "mg",
     "potassium": "mg",
     "calcium": "mg",
+    "fluoride": "mg",
     "iron": "mg",
     "magnesium": "mg",
     "zinc": "mg",
