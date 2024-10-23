@@ -139,9 +139,9 @@ export default {
 
 
     setup(props, { emit }) {
-      const analyze_data = JSON.parse(localStorage.getItem('analyze'));
+      const analyze_data = JSON.parse(sessionStorage.getItem('analyze'));
 
-      const analyze_serving_sizes_data = JSON.parse(localStorage.getItem('analyze_serving_sizes'));
+      const analyze_serving_sizes_data = JSON.parse(sessionStorage.getItem('analyze_serving_sizes'));
       const servingSizes = ref(analyze_serving_sizes_data ? analyze_serving_sizes_data : {});
     
       analyze.value = analyze_data;
@@ -159,7 +159,7 @@ export default {
           return food.description_slug !== slug;
         }); 
 
-        localStorage.setItem('analyze', JSON.stringify(updated_analyze));
+        sessionStorage.setItem('analyze', JSON.stringify(updated_analyze));
 
         analyze.value = updated_analyze;   
 
@@ -171,7 +171,7 @@ export default {
 
       const updateServingSize = (slug, newServingSize) => {
         servingSizes.value[slug] = newServingSize;
-        localStorage.setItem('analyze_serving_sizes', JSON.stringify(servingSizes.value));
+        sessionStorage.setItem('analyze_serving_sizes', JSON.stringify(servingSizes.value));
 
         emit('update-analyze-serving-size-child');
 
@@ -197,8 +197,8 @@ export default {
 
 
       const refreshNutrients = () => {
-        const analyze_data = JSON.parse(localStorage.getItem('analyze'));
-        const analyze_serving_sizes_data = JSON.parse(localStorage.getItem('analyze_serving_sizes'));
+        const analyze_data = JSON.parse(sessionStorage.getItem('analyze'));
+        const analyze_serving_sizes_data = JSON.parse(sessionStorage.getItem('analyze_serving_sizes'));
 
         if (analyze_data && analyze_serving_sizes_data) {
          

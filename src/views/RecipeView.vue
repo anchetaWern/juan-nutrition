@@ -129,10 +129,10 @@ export default {
 
 
     setup(props, { emit }) {
-      const recipe_data = JSON.parse(localStorage.getItem('recipe'));
+      const recipe_data = JSON.parse(sessionStorage.getItem('recipe'));
 
 
-      const recipe_serving_sizes_data = JSON.parse(localStorage.getItem('recipe_serving_sizes'));
+      const recipe_serving_sizes_data = JSON.parse(sessionStorage.getItem('recipe_serving_sizes'));
       const servingSizes = ref(recipe_serving_sizes_data ? recipe_serving_sizes_data : {});
     
       recipe.value = recipe_data;
@@ -143,7 +143,7 @@ export default {
         });
       }
 
-      const serving_count = localStorage.getItem('serving_count');
+      const serving_count = sessionStorage.getItem('serving_count');
       if (serving_count) {
         servingCount.value = serving_count;
       }
@@ -164,8 +164,8 @@ export default {
 
 
       const refreshNutrients = () => {
-        const recipe_data = JSON.parse(localStorage.getItem('recipe'));
-        const recipe_serving_sizes_data = JSON.parse(localStorage.getItem('recipe_serving_sizes'));
+        const recipe_data = JSON.parse(sessionStorage.getItem('recipe'));
+        const recipe_serving_sizes_data = JSON.parse(sessionStorage.getItem('recipe_serving_sizes'));
 
         if (recipe_data) {
           const aggregated_nutrients = aggregateNutrients(recipe_data, recipe_serving_sizes_data, servingCount.value);
@@ -187,13 +187,13 @@ export default {
           return food.description_slug !== slug;
         }); 
 
-        localStorage.setItem('recipe', JSON.stringify(updated_recipe));
+        sessionStorage.setItem('recipe', JSON.stringify(updated_recipe));
 
         recipe.value = updated_recipe;   
 
         delete servingSizes.value[slug];             
 
-        localStorage.setItem('recipe_serving_sizes', JSON.stringify(servingSizes.value));
+        sessionStorage.setItem('recipe_serving_sizes', JSON.stringify(servingSizes.value));
 
         emit('update-ingredient-count-child');
 
@@ -202,7 +202,7 @@ export default {
 
       const updateServingSize = (slug, newServingSize) => {
         servingSizes.value[slug] = newServingSize;
-        localStorage.setItem('recipe_serving_sizes', JSON.stringify(servingSizes.value));
+        sessionStorage.setItem('recipe_serving_sizes', JSON.stringify(servingSizes.value));
 
 
         emit('update-ingredient-serving-size-child');

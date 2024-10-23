@@ -84,7 +84,7 @@ export default defineComponent({
     
     let search_summary = '';
 
-    const categories = JSON.parse(localStorage.getItem('food_types'));
+    const categories = JSON.parse(sessionStorage.getItem('food_types'));
 
     function getCategory(slug) {
       if (categories) {

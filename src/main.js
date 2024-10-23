@@ -21,6 +21,8 @@ import { createHead } from '@vueuse/head'
 
 const API_BASE_URI = import.meta.env.VITE_API_URI
 
+localStorage.clear();
+
 
 const vuetify = createVuetify({
   components,
@@ -34,11 +36,11 @@ const pinia = createPinia()
 app.use({
   install() {
 
-    if (!localStorage.getItem('food_types')) {
+    if (!sessionStorage.getItem('food_types')) {
       const food_types_url = `${API_BASE_URI}/food-types`;
       axios.get(food_types_url)
         .then((res) => {
-          localStorage.setItem('food_types', JSON.stringify(res.data));
+          sessionStorage.setItem('food_types', JSON.stringify(res.data));
         })
         .catch((err) => {
           console.log('err: ', err);

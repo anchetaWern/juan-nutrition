@@ -588,7 +588,7 @@ export default {
     
     const addToRecipe = () => {
        
-        const recipe = localStorage.getItem('recipe');
+        const recipe = sessionStorage.getItem('recipe');
         let recipe_data = [];
         if (recipe) {
             recipe_data = JSON.parse(recipe);
@@ -597,16 +597,16 @@ export default {
         const index = recipe_data.findIndex(itm => itm.description_slug === food.value.description_slug);
         if (index === -1) {
             recipe_data.push(food.value);
-            localStorage.setItem('recipe', JSON.stringify(recipe_data));
+            sessionStorage.setItem('recipe', JSON.stringify(recipe_data));
 
             let serving_size_data = {};
-            const serving_size = localStorage.getItem('recipe_serving_sizes');
+            const serving_size = sessionStorage.getItem('recipe_serving_sizes');
             if (serving_size) {
                 serving_size_data = JSON.parse(serving_size);
             }
 
             serving_size_data[food.value.description_slug] = food.value.serving_size;
-            localStorage.setItem('recipe_serving_sizes', JSON.stringify(serving_size_data));
+            sessionStorage.setItem('recipe_serving_sizes', JSON.stringify(serving_size_data));
 
             createToast(
                 {
@@ -623,7 +623,7 @@ export default {
 
 
     const addForAnalysis = () => {
-        const analyze = localStorage.getItem('analyze');
+        const analyze = sessionStorage.getItem('analyze');
         let analyze_data = [];
         if (analyze) {
             analyze_data = JSON.parse(analyze);
@@ -632,16 +632,16 @@ export default {
         const index = analyze_data.findIndex(itm => itm.description_slug === food.value.description_slug);
         if (index === -1) {
             analyze_data.push(food.value);
-            localStorage.setItem('analyze', JSON.stringify(analyze_data));
+            sessionStorage.setItem('analyze', JSON.stringify(analyze_data));
 
             let serving_size_data = {};
-            const serving_size = localStorage.getItem('analyze_serving_sizes');
+            const serving_size = sessionStorage.getItem('analyze_serving_sizes');
             if (serving_size) {
                 serving_size_data = JSON.parse(serving_size);
             }
 
             serving_size_data[food.value.description_slug] = food.value.serving_size;
-            localStorage.setItem('analyze_serving_sizes', JSON.stringify(serving_size_data));
+            sessionStorage.setItem('analyze_serving_sizes', JSON.stringify(serving_size_data));
 
             createToast(
                 {
@@ -671,12 +671,12 @@ export default {
       
         // 
         let consolidated_daily_nutrient_dv = null;
-        if (localStorage.getItem('consolidated_daily_nutrient_dv')) {
-            consolidated_daily_nutrient_dv = JSON.parse(localStorage.getItem('consolidated_daily_nutrient_dv'));
+        if (sessionStorage.getItem('consolidated_daily_nutrient_dv')) {
+            consolidated_daily_nutrient_dv = JSON.parse(sessionStorage.getItem('consolidated_daily_nutrient_dv'));
         } else {
             const fda_daily_nutrient_values_res = await axios.get(`${API_BASE_URI}/consolidated-recommended-daily-nutrient-intake?gender=male&age=19`);
             consolidated_daily_nutrient_dv = fda_daily_nutrient_values_res.data;
-            localStorage.setItem('consolidated_daily_nutrient_dv', JSON.stringify(consolidated_daily_nutrient_dv));
+            sessionStorage.setItem('consolidated_daily_nutrient_dv', JSON.stringify(consolidated_daily_nutrient_dv));
         }
         //
 
