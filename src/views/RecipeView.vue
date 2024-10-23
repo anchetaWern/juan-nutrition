@@ -116,8 +116,6 @@ const vitamins = ref(null);
 const minerals = ref(null);
 const others = ref(null);
 
-// todo: get from api or localstorage
-const recommended_daily_values = ref({"sugar":50,"biotin":30,"calcium":1300,"chloride":2300,"choline":550,"cholesterol":300,"chromium":35,"copper":0.9,"dietary fiber":28,"total fat":78,"vitamin b9":400,"iodine":150,"iron":18,"magnesium":420,"manganese":2.3,"molybdenum":45,"vitamin b3":16,"vitamin b5":5,"phosphorus":1250,"potassium":4700,"protein":50,"vitamin b2":1.3,"saturated fat":20,"selenium":55,"sodium":2300,"vitamin b1":1.2,"total carbohydrates":275,"vitamin a":900,"vitamin b6":1.7,"vitamin b12":2.4,"vitamin c":90,"vitamin d":20,"vitamin e":15,"vitamin k":120,"zinc":11});
 const newServingSize = ref(null);
 const newServingCount = ref(1);
 
@@ -130,7 +128,6 @@ export default {
 
     setup(props, { emit }) {
       const recipe_data = JSON.parse(sessionStorage.getItem('recipe'));
-
 
       const recipe_serving_sizes_data = JSON.parse(sessionStorage.getItem('recipe_serving_sizes'));
       const servingSizes = ref(recipe_serving_sizes_data ? recipe_serving_sizes_data : {});
@@ -147,8 +144,32 @@ export default {
       if (serving_count) {
         servingCount.value = serving_count;
       }
+
+      const recommended_daily_values = ref(null);
+
+      const fetchDailyValues = async () => {
+        let consolidated_daily_nutrient_dv = null;
+
+        if (sessionStorage.getItem('consolidated_daily_nutrient_dv')) {
+            consolidated_daily_nutrient_dv = JSON.parse(sessionStorage.getItem('consolidated_daily_nutrient_dv'));
+        } else {
+            const fda_daily_nutrient_values_res = await axios.get(`${API_BASE_URI}/consolidated-recommended-daily-nutrient-intake?gender=male&age=19`);
+            consolidated_daily_nutrient_dv = fda_daily_nutrient_values_res.data;
+            sessionStorage.setItem('consolidated_daily_nutrient_dv', JSON.stringify(consolidated_daily_nutrient_dv));
+        }
+
+        const fda_daily_nutrient_values_arr = consolidated_daily_nutrient_dv.map((itm) => {
+            return {
+                [itm.nutrient]: itm.daily_value,
+            }
+        });
+        const fda_daily_nutrient_values = Object.assign({}, ...fda_daily_nutrient_values_arr);
+        recommended_daily_values.value = fda_daily_nutrient_values;
+      }
+
+      fetchDailyValues();
+
     
-      
       const getValueColor = (value, daily_limit) => {
         const dv_percent = calculatePercentage(value, daily_limit); 
         
@@ -219,7 +240,7 @@ export default {
 
       return {
         removeFood,
-
+        recommended_daily_values,
         servingSizes,
         updateServingSize,
         onUpdateServingCount,
@@ -236,7 +257,6 @@ export default {
       minerals,
       others,
 
-      recommended_daily_values,
       newServingSize,
       newServingCount,
 

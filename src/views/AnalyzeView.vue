@@ -117,8 +117,6 @@ import { calculatePercentage } from '@/helpers/Numbers';
 
 const analyze = ref(null);
 
-const recommended_daily_values = ref({"sugar":50,"biotin":30,"calcium":1300,"chloride":2300,"choline":550,"cholesterol":300,"chromium":35,"copper":0.9,"dietary fiber":28,"total fat":78,"vitamin b9":400,"iodine":150,"iron":18,"magnesium":420,"manganese":2.3,"molybdenum":45,"vitamin b3":16,"vitamin b5":5,"phosphorus":1250,"potassium":4700,"protein":50,"vitamin b2":1.3,"saturated fat":20,"selenium":55,"sodium":2300,"vitamin b1":1.2,"total carbohydrates":275,"vitamin a":900,"vitamin b6":1.7,"vitamin b12":2.4,"vitamin c":90,"vitamin d":20,"vitamin e":15,"vitamin k":120,"zinc":11});
-
 const summary_nutrients_values = ['water', 'protein', 'dietary fiber', 'sodium', 'saturated fat', 'cholesterol', 'sugar', 'total carbohydrates', 'total fat']; 
 
 const summary_nutrients = ref(null);
@@ -143,7 +141,9 @@ export default {
 
       const analyze_serving_sizes_data = JSON.parse(sessionStorage.getItem('analyze_serving_sizes'));
       const servingSizes = ref(analyze_serving_sizes_data ? analyze_serving_sizes_data : {});
-    
+
+      const recommended_daily_values = ref(null);
+
       analyze.value = analyze_data;
 
       if (analyze_data && Object.keys(servingSizes).length === 0) {
@@ -151,6 +151,29 @@ export default {
           servingSizes.value[food.description_slug] = food.serving_size;
         });
       }
+
+
+      const fetchDailyValues = async () => {
+        let consolidated_daily_nutrient_dv = null;
+
+        if (sessionStorage.getItem('consolidated_daily_nutrient_dv')) {
+            consolidated_daily_nutrient_dv = JSON.parse(sessionStorage.getItem('consolidated_daily_nutrient_dv'));
+        } else {
+            const fda_daily_nutrient_values_res = await axios.get(`${API_BASE_URI}/consolidated-recommended-daily-nutrient-intake?gender=male&age=19`);
+            consolidated_daily_nutrient_dv = fda_daily_nutrient_values_res.data;
+            sessionStorage.setItem('consolidated_daily_nutrient_dv', JSON.stringify(consolidated_daily_nutrient_dv));
+        }
+
+        const fda_daily_nutrient_values_arr = consolidated_daily_nutrient_dv.map((itm) => {
+            return {
+                [itm.nutrient]: itm.daily_value,
+            }
+        });
+        const fda_daily_nutrient_values = Object.assign({}, ...fda_daily_nutrient_values_arr);
+        recommended_daily_values.value = fda_daily_nutrient_values;
+      }
+
+      fetchDailyValues();
 
 
       const removeFood = (slug) => {
@@ -203,8 +226,7 @@ export default {
         if (analyze_data && analyze_serving_sizes_data) {
          
           const aggregated_nutrients = aggregateNutrients(analyze_data, analyze_serving_sizes_data, 1);
-          //console.log('AGRO: ', aggregated_nutrients);
-         
+        
           const filtered_nutrients = filterNutrients(aggregated_nutrients, summary_nutrients_values);
          
           const filtered_deficient_nutrients = filterDeficientNutrients(aggregated_nutrients, recommended_daily_values.value);
@@ -242,6 +264,8 @@ export default {
 
         getRailColor,
         getValueColor,
+
+        recommended_daily_values
       }
     },
 
