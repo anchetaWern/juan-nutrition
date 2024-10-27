@@ -9,7 +9,12 @@
                   <span class="small-text">{{ capitalizeWords(nutrient.name) }}</span>
                 </td>
                 <td class="text-grey-darken-3">
-                    <span v-if="nutrient.unit" class="tiny-text">{{ formatNumber(amountPerContainer(nutrient.amount, servingsPerContainer, displayValuesPerContainer, newServingSize, newServingCount)) }}{{ nutrient.unit }}</span> <span v-if="nutrient.unit == null" class="tiny-text">-</span> <span v-if="nutrient.hasRecommendedDailyValues" class="tiny-text">/ {{ nutrient.dailyLimit }}{{ nutrient.unit }}</span><span v-if="nutrient.hasRecommendedDailyValues" class="small-text"> ({{ formatNumber(nutrient.percentage) }}%)</span>
+                    <span v-if="nutrient.unit" class="tiny-text">
+                    {{ formatNumber(amountPerContainer(nutrient.amount, servingsPerContainer, displayValuesPerContainer, newServingSize, newServingCount)) }}
+                    {{ nutrient.unit }}</span> 
+                    <span v-if="nutrient.unit == null" class="tiny-text">-</span> 
+                    <span v-if="nutrient.hasRecommendedDailyValues" class="tiny-text">/ {{ nutrient.dailyLimit }}{{ nutrient.unit }}</span>
+                    <span v-if="nutrient.hasRecommendedDailyValues" class="small-text"> ({{ formatNumber(nutrient.percentage) }}%)</span>
                     <v-progress-linear 
                       v-if="recommended_daily_values && nutrient.hasRecommendedDailyValues" 
                       :model-value="nutrient.percentage" 

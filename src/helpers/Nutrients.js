@@ -90,6 +90,7 @@ export function standardizeVitaminA(value, unit) {
         'IU': 0.3, // note: this is for retinol. the conversion factor for beta-carotene (a precursor of vit A) it's 0.6 µg. no way of distinguishing between the two yet in the database though
         'µg': 0.05,
         'μgre': 1, // can be used interchangeably
+        'mcg RAE': 1,
     };
 
     if (unit !== standard_unit) {
