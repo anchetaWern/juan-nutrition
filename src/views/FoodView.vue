@@ -669,6 +669,12 @@ export default {
 
     const fetchData = async () => {
       
+        const food_slug = route.params.food;
+
+        const res = await axios.get(`${API_BASE_URI}/foods/${food_slug}`);
+        food.value = res.data;
+        console.log('FOOD: ', res.data);
+
         // 
         let consolidated_daily_nutrient_dv = null;
         if (sessionStorage.getItem('consolidated_daily_nutrient_dv')) {
@@ -680,125 +686,115 @@ export default {
         }
         //
 
-        const food_slug = route.params.food;
+        const fda_daily_nutrient_values_arr = consolidated_daily_nutrient_dv.map((itm) => {
+            return {
+                [itm.nutrient]: itm.daily_value,
+            }
+        });
+        const fda_daily_nutrient_values = Object.assign({}, ...fda_daily_nutrient_values_arr);
 
+        recommended_daily_values.value = fda_daily_nutrient_values;
+        
+        const dv_table = Object.keys(fda_daily_nutrient_values).map((key) => {
+            const val = fda_daily_nutrient_values[key];
+            const unit = nutrientUnit(key);
+            return {
+                nutrient: key, 
+                value: `${val}${unit}`
+            }
+        });
 
-        axios.get(`${API_BASE_URI}/foods/${food_slug}`)
-            .then(async (res) => {
+        console.log('DV table: ', JSON.stringify(dv_table));
+        
+        daily_values_table.value = dv_table;
+        //
+        
+        
 
-                const fda_daily_nutrient_values_arr = consolidated_daily_nutrient_dv.map((itm) => {
-                    return {
-                        [itm.nutrient]: itm.daily_value,
-                    }
-                });
-                const fda_daily_nutrient_values = Object.assign({}, ...fda_daily_nutrient_values_arr);
+        if (res.data.servings_per_container) {
+            servingsPerContainer.value = res.data.servings_per_container;
 
-                recommended_daily_values.value = fda_daily_nutrient_values;
-               
-                const dv_table = Object.keys(fda_daily_nutrient_values).map((key) => {
-                    const val = fda_daily_nutrient_values[key];
-                    const unit = nutrientUnit(key);
-                    return {
-                        nutrient: key, 
-                        value: `${val}${unit}`
-                   }
-                });
+            if (res.data.servings_per_container > 1) {
+                hasValuesPerContainerToggle.value = true;
+            }
+        }
+        
+    
+        const images_arr = [
+            {
+                title: 'Food',
+                src: res.data.title_image,
+            },
+        ];
 
-                console.log('DV table: ', JSON.stringify(dv_table));
-                
-                daily_values_table.value = dv_table;
-                //
-               
-                food.value = res.data;
-
-                if (res.data.servings_per_container) {
-                    servingsPerContainer.value = res.data.servings_per_container;
-
-                    if (res.data.servings_per_container > 1) {
-                        hasValuesPerContainerToggle.value = true;
-                    }
-                }
-                
-            
-                const images_arr = [
-                    {
-                        title: 'Food',
-                        src: res.data.title_image,
-                    },
-                ];
-
-                if (res.data.nutrition_label_image) {
-                    images_arr.push({
-                        title: 'Nutrition label',
-                        src: res.data.nutrition_label_image,
-                    })
-                }
-
-                if (res.data.barcode_image) {
-                    images_arr.push({
-                        title: 'Barcode',
-                        src: res.data.barcode_image,
-                    });
-                }   
-
-                if (res.data.ingredients_image) {
-                    images_arr.push({
-                        title: 'Ingredients',
-                        src: res.data.ingredients_image,
-                    });
-                }
-
-                images.value = images_arr;
-
-            
-                const macros_keys = ['total carbohydrates', 'protein', 'total fat'];
-                
-                const macros_data = {};
-
-                res.data.nutrients.forEach((itm) => {
-                    if (macros_keys.indexOf(itm.name) !== -1) {
-                        macros_data[itm.name] = itm.amount;
-                    }
-                });
-
-                const macros_numbers = Object.values(macros_data);
-                const total = macros_numbers.reduce((sum, num) => sum + num, 0);
-
-                const macros_percentages = {};
-                for (const [key, value] of Object.entries(macros_data)) {
-                    const percent = calculatePercentage(value, total);
-                    macros_percentages[key] = percent.toFixed(2);
-                }
-
-                if (Object.values(macros_data).filter(itm => itm).length === 0) {
-                    hasMacros.value = false;
-                }
-
-                chartData.value = {
-                    labels: [`Protein: ${macros_percentages.protein}%`, `Fat: ${macros_percentages['total fat']}%`, `Carbs: ${macros_percentages['total carbohydrates']}%`],
-                    datasets: [
-                        {
-                            backgroundColor: ['#2ecc71', '#d35400', '#f39c12'],
-                            data: [
-                                macros_percentages['protein'],
-                                macros_percentages['total fat'],
-                                macros_percentages['total carbohydrates']
-                            ] 
-                        }
-                    ],
-                }
-               
-                elements.value = getElements(res.data.nutrients);
-                macros.value = getMacros(res.data.nutrients);
-                vitamins.value = getVitamins(res.data.nutrients); 
-                minerals.value = getMinerals(res.data.nutrients);
-                others.value = getOthers(res.data.nutrients);
-                
-
+        if (res.data.nutrition_label_image) {
+            images_arr.push({
+                title: 'Nutrition label',
+                src: res.data.nutrition_label_image,
             })
-            .catch((err) => {
-                console.log('err: ', err);
+        }
+
+        if (res.data.barcode_image) {
+            images_arr.push({
+                title: 'Barcode',
+                src: res.data.barcode_image,
             });
+        }   
+
+        if (res.data.ingredients_image) {
+            images_arr.push({
+                title: 'Ingredients',
+                src: res.data.ingredients_image,
+            });
+        }
+
+        images.value = images_arr;
+
+    
+        const macros_keys = ['total carbohydrates', 'protein', 'total fat'];
+        
+        const macros_data = {};
+
+        res.data.nutrients.forEach((itm) => {
+            if (macros_keys.indexOf(itm.name) !== -1) {
+                macros_data[itm.name] = itm.amount;
+            }
+        });
+
+        const macros_numbers = Object.values(macros_data);
+        const total = macros_numbers.reduce((sum, num) => sum + num, 0);
+
+        const macros_percentages = {};
+        for (const [key, value] of Object.entries(macros_data)) {
+            const percent = calculatePercentage(value, total);
+            macros_percentages[key] = percent.toFixed(2);
+        }
+
+        if (Object.values(macros_data).filter(itm => itm).length === 0) {
+            hasMacros.value = false;
+        }
+
+        chartData.value = {
+            labels: [`Protein: ${macros_percentages.protein}%`, `Fat: ${macros_percentages['total fat']}%`, `Carbs: ${macros_percentages['total carbohydrates']}%`],
+            datasets: [
+                {
+                    backgroundColor: ['#2ecc71', '#d35400', '#f39c12'],
+                    data: [
+                        macros_percentages['protein'],
+                        macros_percentages['total fat'],
+                        macros_percentages['total carbohydrates']
+                    ] 
+                }
+            ],
+        }
+        
+        elements.value = getElements(res.data.nutrients);
+        macros.value = getMacros(res.data.nutrients);
+        vitamins.value = getVitamins(res.data.nutrients); 
+        minerals.value = getMinerals(res.data.nutrients);
+        others.value = getOthers(res.data.nutrients);
+
+
     }
 
     onMounted(fetchData);
