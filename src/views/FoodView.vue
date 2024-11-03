@@ -209,16 +209,30 @@
             v-model="modifyServingSizeDialog"
             width="300"
         >
-            <v-card>
-                <v-text-field
-                    hide-details="auto"
-                    label="Serving size in grams"
-                    placeholder="50"
-                    v-model="newServingSize"
-                    autofocus
-                ></v-text-field>
-            
-                <v-btn color="primary" block @click="modifyServingSize" rounded="0">Modify serving size</v-btn>
+            <v-card title="Modify Serving Size">
+                <div class="px-5 py-2">
+                    <div v-if="custom_serving_sizes">
+                        <v-radio-group v-model="selected_custom_serving">
+                            <v-radio :label="cs.name" :value="cs.weight" v-for="cs in custom_serving_sizes"></v-radio>
+                        </v-radio-group>
+
+                        <div class="text-medium-emphasis">Quantity</div>
+                        <v-number-input
+                            control-variant="split"
+                            inset
+                            v-model="selected_serving_qty"
+                        ></v-number-input>
+                    </div>
+
+                    <div class="text-medium-emphasis">Manually input serving size</div>
+                    <v-text-field
+                        label="Serving size in grams"
+                        placeholder="50"
+                        v-model="newServingSize"
+                    ></v-text-field>
+
+                    <v-btn color="primary" block @click="modifyServingSize" rounded="0">Modify serving size</v-btn>
+                </div>
             </v-card>
 
         </v-dialog>
@@ -397,7 +411,8 @@
 </template>
 
 <script>
-import { ref, onMounted, watchEffect } from 'vue';
+import { VNumberInput } from 'vuetify/labs/VNumberInput'
+import { ref, onMounted, watchEffect, watch } from 'vue';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Pie } from 'vue-chartjs'
 import axios from 'axios'
@@ -476,6 +491,7 @@ export default {
   components: {
     Pie,
     NutrientsTable,
+    VNumberInput,
   },
     
   data: () => ({
@@ -492,6 +508,9 @@ export default {
 
     const food = ref(null);
     const images = ref([]);
+    const custom_serving_sizes = ref(null);
+    const selected_custom_serving = ref(null);
+    const selected_serving_qty = ref(1);
 
     const hasMacros = ref(true);
     const chartData = ref(null);
@@ -520,6 +539,20 @@ export default {
     //
     const pageTitle = 'Juan Nutrisyon';
     const pageDescription = 'View more info at app.juanutrisyon.info';
+
+    watch(selected_custom_serving, (new_custom_serving, old_custom_serving) => {
+        console.log('selected_custom_serving changed from', old_custom_serving, 'to', new_custom_serving);
+        selected_serving_qty.value = 1;
+        newServingSize.value = parseFloat(new_custom_serving);
+        
+    });
+    
+    watch(selected_serving_qty, (new_serving_qty, old_serving_qty) => {
+        console.log('serving qty changed: ', new_serving_qty);
+        if (selected_custom_serving.value) {
+            newServingSize.value = parseFloat(selected_custom_serving.value) * parseInt(new_serving_qty);
+        }
+    });
 
     watchEffect(() => {
       if (food.value) {
@@ -553,10 +586,12 @@ export default {
     }
 
     const openModifyServingCountModal = () => {
+        
         modifyServingCountDialog.value = true;
     }
 
-    const openModifyServingSizeModal = () => {
+    const openModifyServingSizeModal = async () => {
+    
         modifyServingSizeDialog.value = true;
     }
 
@@ -640,7 +675,7 @@ export default {
                 serving_size_data = JSON.parse(serving_size);
             }
 
-            serving_size_data[food.value.description_slug] = food.value.serving_size;
+            serving_size_data[food.value.description_slug] = newServingSize.value; // food.value.serving_size;
             sessionStorage.setItem('analyze_serving_sizes', JSON.stringify(serving_size_data));
 
             createToast(
@@ -657,15 +692,17 @@ export default {
 
 
     const modifyServingSize = () => {
+        
+
         modifyServingSizeDialog.value = false;
     }
 
+
     const modifyServingCount = () => {
+
         modifyServingCountDialog.value = false;
     }
 
-   
-    
 
     const fetchData = async () => {
       
@@ -674,6 +711,40 @@ export default {
         const res = await axios.get(`${API_BASE_URI}/foods/${food_slug}`);
         food.value = res.data;
         console.log('FOOD: ', res.data);
+
+        if (food.value.custom_servings_category) {
+            const serving_units = food.value.custom_servings_category.serving_units.map(itm => {
+                return {
+                    'name': itm.name,
+                    'weight': itm.weight,
+                    'unit': itm.weight_unit,
+                }
+            });
+
+            if (serving_units && serving_units.length > 0) {
+                custom_serving_sizes.value = serving_units;
+            }
+        }
+
+        // todo: fill out the custom servings value to be outputted for modal
+        /*
+         "custom_servings_category": {
+        "id": 15,
+        "name": "Eggs",
+        "slug": "eggs",
+        "serving_units": [
+            {
+                "id": 26,
+                "name": "pewee egg",
+                "long_name": null,
+                "weight": 41,
+                "weight_unit": "g",
+                "pivot": {
+                    "custom_servings_category_id": 15,
+                    "serving_unit_id": 26
+                }
+            },
+        */
 
         // 
         let consolidated_daily_nutrient_dv = null;
@@ -801,6 +872,10 @@ export default {
 
     return {
         food,
+        custom_serving_sizes,
+        selected_custom_serving,
+        selected_serving_qty,
+
         nutrients,
         elements,
         macros,
