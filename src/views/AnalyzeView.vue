@@ -20,7 +20,9 @@
             :food="food" 
             :removeFood="removeFood"
             :initialServingSize="servingSizes[food.description_slug]"
-            @update-serving-size="updateServingSize" />
+            @update-serving-size="updateServingSize"
+            :openModifyServingSizeModal="openModifyServingSizeModal"
+            :key="food_card_key" />
         </div>
       </div>
 
@@ -86,6 +88,39 @@
 
       </div>
 
+
+      <v-dialog
+          v-model="modifyServingSizeDialog"
+          width="300"
+      >
+          <v-card title="Modify Serving Size">
+              <div class="px-5 py-2">
+                  <div v-if="custom_serving_sizes">
+                      <v-radio-group v-model="selected_custom_serving">
+                          <v-radio :label="cs.name" :value="cs.weight" v-for="cs in custom_serving_sizes"></v-radio>
+                      </v-radio-group>
+
+                      <div class="text-medium-emphasis">Quantity</div>
+                      <v-number-input
+                          control-variant="split"
+                          inset
+                          v-model="selected_serving_qty"
+                      ></v-number-input>
+                  </div>
+
+                  <div class="text-medium-emphasis">Manually input serving size</div>
+                  <v-text-field
+                      label="Serving size in grams"
+                      placeholder="50"
+                      v-model="current_food_serving_size"
+                  ></v-text-field>
+
+                  <v-btn color="primary" block @click="modifyServingSize" rounded="0">Modify serving size</v-btn>
+              </div>
+          </v-card>
+
+      </v-dialog>
+
     </v-container>
     
 
@@ -98,11 +133,12 @@
 </style>
 
 <script>
+import { VNumberInput } from 'vuetify/labs/VNumberInput'
 import FoodCard from '@/components/FoodCard.vue';
 import NutritionCard from '@/components/NutritionCard.vue';
 import NutrientsTable from '@/components/NutrientsTable.vue';
 
-import { ref } from 'vue';
+import { ref, watch, onMounted, nextTick } from 'vue';
 
 import { 
     aggregateNutrients,
@@ -128,11 +164,15 @@ const overconsumed_nutrients = ref(null);
 const newServingSize = ref(null);
 const newServingCount = ref(1);
 
+
+//
+
 export default {
     components: {
       FoodCard,  
       NutritionCard,
       NutrientsTable,
+      VNumberInput
     },
 
 
@@ -144,6 +184,22 @@ export default {
 
       const recommended_daily_values = ref(null);
 
+
+      const current_food_slug = ref(null);
+      const modifyServingSizeDialog = ref(false);
+
+      const custom_serving_sizes = ref(null);
+      const selected_custom_serving = ref(null);
+      const selected_serving_qty = ref(1);
+
+      const custom_servings_ref = ref(null);
+
+      const food_card_key = ref(1);
+
+      const current_food_serving_size = ref(null); // the serving size set for the food being currently updated
+
+      let isProgrammaticUpdate = false;
+
       analyze.value = analyze_data;
 
       if (analyze_data && Object.keys(servingSizes).length === 0) {
@@ -151,6 +207,37 @@ export default {
           servingSizes.value[food.description_slug] = food.serving_size;
         });
       }
+
+     
+      watch(selected_custom_serving, (new_custom_serving, old_custom_serving) => {
+        if (isProgrammaticUpdate) return;
+        console.log('is programmatic update: ', isProgrammaticUpdate);
+        console.log('===selected_custom_serving changed from', old_custom_serving, 'to', new_custom_serving);
+        selected_serving_qty.value = 1;
+        current_food_serving_size.value = parseFloat(new_custom_serving);  
+      });
+
+      watch(selected_serving_qty, (new_serving_qty, old_serving_qty) => {
+        if (isProgrammaticUpdate) return;
+        console.log('is programmatic update: ', isProgrammaticUpdate);
+        console.log('====serving qty changed: ', new_serving_qty);
+        if (selected_custom_serving.value) {
+            current_food_serving_size.value = parseFloat(selected_custom_serving.value) * parseInt(new_serving_qty);
+        }
+      });
+    
+
+      const loadData = () => {
+        // load custom servings data
+        console.log('now loading data');
+        const stored_cs = sessionStorage.getItem('custom_servings');
+        if (stored_cs) {
+          console.log('stored cs: ', stored_cs);
+          custom_servings_ref.value = JSON.parse(stored_cs); 
+        }
+      }
+
+      onMounted(loadData);
 
 
       const fetchDailyValues = async () => {
@@ -175,6 +262,85 @@ export default {
 
       fetchDailyValues();
 
+      const openModifyServingSizeModal = (food_slug, custom_servings_category) => {
+        console.log('slug: ', food_slug);
+        console.log('custom servings: ',  custom_servings_category);
+
+        const serving_units = custom_servings_category.serving_units.map(itm => {
+          return {
+            'name': itm.name,
+            'weight': itm.weight,
+            'unit': itm.weight_unit,
+          }
+        });
+
+        console.log('custom servings: ', serving_units);
+
+        if (serving_units && serving_units.length > 0) {
+            custom_serving_sizes.value = serving_units;
+        }
+
+        current_food_slug.value = food_slug;
+        
+
+        // load corresponding custom serving and fill the field if available
+        
+
+        const current_custom_serving = custom_servings_ref.value[food_slug];
+
+        if (current_custom_serving) {
+          isProgrammaticUpdate = true;
+
+          console.log('current custom serving: ', custom_servings_ref.value[food_slug]);
+          const current_serving_size = current_custom_serving.weight * current_custom_serving.qty;
+          console.log('current serving size: ', current_serving_size);
+          
+          selected_custom_serving.value = current_custom_serving.weight;
+          selected_serving_qty.value = current_custom_serving.qty;
+          current_food_serving_size.value = current_serving_size; // custom_servings_ref.value[food_slug].weight;
+
+          nextTick(() => {
+            isProgrammaticUpdate = false;
+          });
+          
+        }
+        
+        
+        modifyServingSizeDialog.value = true;
+
+      }
+
+      const modifyServingSize = () => {
+        console.log('modify serving size: ');
+      
+        modifyServingSizeDialog.value = false;
+
+        updateServingSize(current_food_slug.value, current_food_serving_size.value);
+
+      
+        food_card_key.value += 1; // works!
+
+        // issue: the custom serving size for each food is not being stored anywhere else.
+        // user must be able to see what they previously selected. with all the details pre-filled
+
+        // todo: store: custom serving, qty to session storage
+        let stored_custom_servings = {};
+        const stored_cs = sessionStorage.getItem('custom_servings');
+        if (stored_cs) {
+          stored_custom_servings = JSON.parse(stored_cs);
+        }
+
+        stored_custom_servings[current_food_slug.value] = {
+          'weight': selected_custom_serving.value,
+          'qty': selected_serving_qty.value, 
+        }
+        console.log('stored custom servings: ', stored_custom_servings);
+
+        custom_servings_ref.value = stored_custom_servings;
+
+        sessionStorage.setItem('custom_servings', JSON.stringify(stored_custom_servings));
+      }
+
 
       const removeFood = (slug) => {
        
@@ -188,11 +354,30 @@ export default {
 
         emit('update-analyze-count-child');
 
+        // TODO: delete corresponding custom_servings
+        const stored_cs = sessionStorage.getItem('custom_servings');
+        if (stored_cs) {
+          const stored_custom_servings = JSON.parse(stored_cs);
+          delete stored_custom_servings[slug];
+
+          console.log('--UPDATED: ', stored_custom_servings);
+
+          if (Object.keys(stored_custom_servings).length > 0) {
+            console.log('has something: ', stored_custom_servings);
+            sessionStorage.setItem('custom_servings', JSON.stringify(stored_custom_servings));
+          } else {
+            console.log('no more');
+            sessionStorage.removeItem('custom_servings');
+          }
+      
+        }
+
         refreshNutrients();
       }
 
 
       const updateServingSize = (slug, newServingSize) => {
+        console.log('new serbing siyzu: ', newServingSize); 
         servingSizes.value[slug] = newServingSize;
         sessionStorage.setItem('analyze_serving_sizes', JSON.stringify(servingSizes.value));
 
@@ -265,7 +450,21 @@ export default {
         getRailColor,
         getValueColor,
 
-        recommended_daily_values
+        recommended_daily_values,
+
+        openModifyServingSizeModal,
+
+        current_food_slug,
+        modifyServingSizeDialog,
+        custom_serving_sizes,
+
+        custom_servings_ref,
+        selected_custom_serving,
+        selected_serving_qty,
+        current_food_serving_size,
+        modifyServingSize,
+
+        food_card_key,
       }
     },
 

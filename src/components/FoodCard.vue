@@ -29,19 +29,25 @@
           </div>
         </div>
 
-        <div class="px-3 d-flex w-50">
-          <v-text-field 
+        <div class="px-3 d-flex flex-row w-50 align-center">
+          <div>
+            <v-text-field 
               v-model="localServingSize"
               @input="onInput"
-              hide-details
+              
               placeholder="Serving size" 
               variant="underlined" 
               dense 
               :suffix="food.serving_size_unit"
               height="10px"
               width="50px"
-              single-line class="shrink">
-          </v-text-field>
+              single-line>
+            </v-text-field>
+          </div>
+
+          <div>
+            <v-btn size="x-small" icon="mdi-scale" variant="text" @click="openModifyServingSizeModal(food.description_slug, food.custom_servings_category)"></v-btn>
+          </div>
         </div>
       </div>
     </div>
@@ -66,6 +72,11 @@ export default {
     initialServingSize: {
       type: String,
       required: true
+    },
+
+    openModifyServingSizeModal: {
+      type: Function,
+      required: true,
     }
     
   },
@@ -80,7 +91,8 @@ export default {
   methods: {
     onInput() {
       this.$emit('update-serving-size', this.food.description_slug, this.localServingSize); 
-    }
+    },
+
   }
 }
 </script>

@@ -675,8 +675,29 @@ export default {
                 serving_size_data = JSON.parse(serving_size);
             }
 
-            serving_size_data[food.value.description_slug] = newServingSize.value; // food.value.serving_size;
+            serving_size_data[food.value.description_slug] = newServingSize.value ? newServingSize.value : food.value.serving_size; 
             sessionStorage.setItem('analyze_serving_sizes', JSON.stringify(serving_size_data));
+
+            // TODO: store custom servings data in session storage
+            //
+          
+            console.log('HAS CUSTOM SERVING SIZE!');
+            let stored_custom_servings = {};
+            const stored_cs = sessionStorage.getItem('custom_servings');
+            if (stored_cs) {
+                stored_custom_servings = JSON.parse(stored_cs);
+            }
+
+            stored_custom_servings[food.value.description_slug] = {
+                // todo: this needs to be the individual weight of the custom serving.
+                // its currently the weight * qty
+                'weight': selected_custom_serving.value ? selected_custom_serving.value : food.value.serving_size, 
+                'qty': selected_serving_qty.value ? selected_serving_qty.value : 1, 
+            }
+
+            sessionStorage.setItem('custom_servings', JSON.stringify(stored_custom_servings));
+            
+            //
 
             createToast(
                 {
