@@ -46,6 +46,7 @@
 <script>
 
 import vegetablesImage from '@/assets/images/vegetables.jpg';
+import aquaticFoodsImage from '@/assets/images/aquatic-foods.jpg';
 import fruitsImage from '@/assets/images/fruits.jpg';
 import dairyProductsImage from '@/assets/images/dairy-products.jpg';
 import cerealsAndGrainsImage from '@/assets/images/cereals-and-grains.jpg';
@@ -63,6 +64,7 @@ export default {
     data: () => ({
         cards: [
             { id: 2, slug: 'vegetables', title: 'Vegetables', src: vegetablesImage, flex: 12 },
+            { id: 4, slug: 'aquatic-foods', title: 'Aquatic Foods', src: aquaticFoodsImage, flex: 6 },
             { id: 4, slug: 'meat-and-poultry', title: 'Meat and Poultry', src: meatAndPoultryImage, flex: 6 },
             { id: 7, slug: 'legumes-nuts-and-seeds', title: 'Legumes, nuts, and seeds', src: legumesNutsSeedsImage, flex: 6 },
             { id: 8, slug: 'fats-and-oils', title: 'Fats and Oils', src: fatsAndOilsImage, flex: 6 },
@@ -78,7 +80,7 @@ export default {
             
             { id: 12, slug: 'prepared-and-processed', title: 'Prepared and Processed', src: preparedAndProcessedImage, flex: 6 },
             { id: 9, slug: 'sugars-and-sweets', title: 'Sugars and Sweets', src: sugarsAndSweetsImage, flex: 6 },
-            { id: 9, slug: 'foraged-foods', title: 'Foraged Foods', src: foragedFoodsImage, flex: 12 },
+            { id: 9, slug: 'foraged-foods', title: 'Foraged Foods', src: foragedFoodsImage, flex: 6 },
         ],
     }),
 
