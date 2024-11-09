@@ -224,8 +224,6 @@
                         ></v-number-input>
                     </div>
 
-                    <div class="text-medium-emphasis">Manually input serving size</div>
-
                     <v-switch 
                         v-if="hasValuesPerContainerToggle"
                         label="Use values per container" 
