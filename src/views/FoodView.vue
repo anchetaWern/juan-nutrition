@@ -235,6 +235,7 @@
                     </v-switch>
 
                     <v-text-field
+                        v-if="!useValuesPerContainer"
                         label="Serving size in grams"
                         placeholder="50"
                         v-model="newServingSize"
