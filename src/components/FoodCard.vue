@@ -46,7 +46,7 @@
           </div>
 
           <div>
-            <v-btn size="x-small" icon="mdi-scale" variant="text" @click="openModifyServingSizeModal(food.description_slug, food.custom_servings_category)"></v-btn>
+            <v-btn size="x-small" icon="mdi-scale" variant="text" @click="openModifyServingSizeModal(food.description_slug, food.custom_servings)"></v-btn>
           </div>
         </div>
       </div>
