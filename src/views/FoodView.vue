@@ -733,8 +733,8 @@ export default {
         food.value = res.data;
         console.log('FOOD: ', res.data);
 
-        if (food.value.custom_servings_category) {
-            const serving_units = food.value.custom_servings_category.serving_units.map(itm => {
+        if (food.value.custom_servings) {
+            const serving_units = food.value.custom_servings.serving_units.map(itm => {
                 return {
                     'name': itm.name,
                     'weight': itm.weight,
@@ -749,7 +749,7 @@ export default {
 
         // todo: fill out the custom servings value to be outputted for modal
         /*
-         "custom_servings_category": {
+         "custom_servings": {
         "id": 15,
         "name": "Eggs",
         "slug": "eggs",
