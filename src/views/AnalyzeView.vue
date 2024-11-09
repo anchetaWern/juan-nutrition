@@ -108,6 +108,7 @@
                       ></v-number-input>
                   </div>
 
+
                   <div class="text-medium-emphasis">Manually input serving size</div>
                   <v-text-field
                       label="Serving size in grams"
@@ -197,6 +198,7 @@ export default {
       const food_card_key = ref(1);
 
       const current_food_serving_size = ref(null); // the serving size set for the food being currently updated
+      
 
       let isProgrammaticUpdate = false;
 
@@ -265,7 +267,10 @@ export default {
       const openModifyServingSizeModal = (food_slug, custom_servings_category) => {
         console.log('slug: ', food_slug);
 
+        current_food_slug.value = food_slug;
+
         if (custom_servings_category) {
+         
           console.log('custom servings: ',  custom_servings_category);
 
           const serving_units = custom_servings_category.serving_units.map(itm => {
@@ -282,12 +287,8 @@ export default {
               custom_serving_sizes.value = serving_units;
           }
 
-          current_food_slug.value = food_slug;
-          
-
           // load corresponding custom serving and fill the field if available
           
-
           const current_custom_serving = custom_servings_ref.value[food_slug];
 
           if (current_custom_serving) {
@@ -307,6 +308,20 @@ export default {
             
           }
 
+        } else {
+          console.log('there are no custom servings');
+          const current_food = analyze.value.find(itm => itm.description_slug === food_slug);
+
+          const current_serving_size = parseFloat(servingSizes.value[food_slug]);
+
+          console.log('current food serving size: ', current_serving_size);
+          custom_serving_sizes.value = null;
+          selected_custom_serving.value = current_serving_size;
+          selected_serving_qty.value = 1;
+
+          current_food_serving_size.value = current_serving_size;
+
+          console.log('current food: ', current_food);
         }
         
         
@@ -315,7 +330,7 @@ export default {
       }
 
       const modifyServingSize = () => {
-        console.log('modify serving size: ');
+        console.log('modify serving size: ', current_food_serving_size.value);
       
         modifyServingSizeDialog.value = false;
 
@@ -466,6 +481,7 @@ export default {
         selected_custom_serving,
         selected_serving_qty,
         current_food_serving_size,
+        
         modifyServingSize,
 
         food_card_key,
