@@ -264,45 +264,49 @@ export default {
 
       const openModifyServingSizeModal = (food_slug, custom_servings_category) => {
         console.log('slug: ', food_slug);
-        console.log('custom servings: ',  custom_servings_category);
 
-        const serving_units = custom_servings_category.serving_units.map(itm => {
-          return {
-            'name': itm.name,
-            'weight': itm.weight,
-            'unit': itm.weight_unit,
-          }
-        });
+        if (custom_servings_category) {
+          console.log('custom servings: ',  custom_servings_category);
 
-        console.log('custom servings: ', serving_units);
-
-        if (serving_units && serving_units.length > 0) {
-            custom_serving_sizes.value = serving_units;
-        }
-
-        current_food_slug.value = food_slug;
-        
-
-        // load corresponding custom serving and fill the field if available
-        
-
-        const current_custom_serving = custom_servings_ref.value[food_slug];
-
-        if (current_custom_serving) {
-          isProgrammaticUpdate = true;
-
-          console.log('current custom serving: ', custom_servings_ref.value[food_slug]);
-          const current_serving_size = current_custom_serving.weight * current_custom_serving.qty;
-          console.log('current serving size: ', current_serving_size);
-          
-          selected_custom_serving.value = current_custom_serving.weight;
-          selected_serving_qty.value = current_custom_serving.qty;
-          current_food_serving_size.value = current_serving_size; // custom_servings_ref.value[food_slug].weight;
-
-          nextTick(() => {
-            isProgrammaticUpdate = false;
+          const serving_units = custom_servings_category.serving_units.map(itm => {
+            return {
+              'name': itm.name,
+              'weight': itm.weight,
+              'unit': itm.weight_unit,
+            }
           });
+
+          console.log('custom servings: ', serving_units);
+
+          if (serving_units && serving_units.length > 0) {
+              custom_serving_sizes.value = serving_units;
+          }
+
+          current_food_slug.value = food_slug;
           
+
+          // load corresponding custom serving and fill the field if available
+          
+
+          const current_custom_serving = custom_servings_ref.value[food_slug];
+
+          if (current_custom_serving) {
+            isProgrammaticUpdate = true;
+
+            console.log('current custom serving: ', custom_servings_ref.value[food_slug]);
+            const current_serving_size = current_custom_serving.weight * current_custom_serving.qty;
+            console.log('current serving size: ', current_serving_size);
+            
+            selected_custom_serving.value = current_custom_serving.weight;
+            selected_serving_qty.value = current_custom_serving.qty;
+            current_food_serving_size.value = current_serving_size; // custom_servings_ref.value[food_slug].weight;
+
+            nextTick(() => {
+              isProgrammaticUpdate = false;
+            });
+            
+          }
+
         }
         
         
