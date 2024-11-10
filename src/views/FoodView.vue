@@ -224,15 +224,15 @@
                         ></v-number-input>
                     </div>
                     
-                    <div v-if="food.custom_serving_size">
+                    <div v-if="food.custom_serving_size" class="text-body-2 text-medium-emphasis py-1">
                     {{ food.custom_serving_size }} = {{ food.serving_size }}{{ food.serving_size_unit }}
                     </div>
 
-                    <div v-else-if="food.serving_size">
+                    <div v-else-if="food.serving_size" class="text-body-2 text-medium-emphasis py-1">
                     Original serving size: {{ food.serving_size }}{{ food.serving_size_unit }}
                     </div>
 
-                    <div v-if="food.servings_per_container">
+                    <div v-if="food.servings_per_container" class="text-body-2 text-medium-emphasis py-1">
                     Servings per container: {{ food.servings_per_container }} 
                     </div>
 
