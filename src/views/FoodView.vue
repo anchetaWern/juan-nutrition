@@ -223,6 +223,14 @@
                             v-model="selected_serving_qty"
                         ></v-number-input>
                     </div>
+                    
+                    <div v-if="food.custom_serving_size">
+                        {{ food.custom_serving_size }} = {{ food.serving_size }}{{ food.serving_size_unit }}
+                    </div>
+
+                    <div v-if="food.servings_per_container">
+                        {{ food.servings_per_container }} servings per container
+                    </div>
 
                     <v-switch 
                         v-if="hasValuesPerContainerToggle"
