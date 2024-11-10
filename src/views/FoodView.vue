@@ -236,18 +236,7 @@
                     Servings per container: {{ food.servings_per_container }} 
                     </div>
 
-                    <v-switch 
-                        v-if="hasValuesPerContainerToggle"
-                        label="Use values per container" 
-                        v-model="useValuesPerContainer" 
-                        color="success"
-                        hide-details
-                        inset
-                    >
-                    </v-switch>
-
                     <v-text-field
-                        v-if="!useValuesPerContainer"
                         label="Serving size in grams"
                         placeholder="50"
                         v-model="newServingSize"
@@ -557,24 +546,9 @@ export default {
 
     const food_ingredients = ref(null);
 
-    const useValuesPerContainer = ref(false);
-
     //
     const pageTitle = 'Juan Nutrisyon';
     const pageDescription = 'View more info at app.juanutrisyon.info';
-
-    watch(useValuesPerContainer, (values_per_container_enabled, old_value) => {
-        console.log('use values per container: ', values_per_container_enabled);
-
-        // todo: multiply the food's serving size by the servings per container then set it as the serving size
-
-        const multiplier = values_per_container_enabled ? food.value.servings_per_container : 1;
-
-        console.log('servings per container: ', food.value.servings_per_container);
-        console.log('serving size: ', food.value.serving_size);
-
-        newServingSize.value = food.value.serving_size * multiplier;
-    });
 
     watch(selected_custom_serving, (new_custom_serving, old_custom_serving) => {
         console.log('selected_custom_serving changed from', old_custom_serving, 'to', new_custom_serving);
@@ -985,7 +959,6 @@ export default {
 
         getValueColor,
 
-        useValuesPerContainer
 
     }
 

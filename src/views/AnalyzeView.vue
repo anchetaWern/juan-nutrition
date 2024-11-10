@@ -120,18 +120,7 @@
                     Servings per container: {{ current_food.servings_per_container }} 
                   </div>
 
-                  <v-switch 
-                      v-if="hasValuesPerContainerToggle"
-                      label="Use values per container" 
-                      v-model="useValuesPerContainer" 
-                      color="success"
-                      hide-details
-                      inset
-                  >
-                  </v-switch>
-
                   <v-text-field
-                      v-if="!useValuesPerContainer"
                       label="Serving size in grams"
                       placeholder="50"
                       v-model="current_food_serving_size"
@@ -221,7 +210,6 @@ export default {
 
       const current_food_serving_size = ref(null); // the serving size set for the food being currently updated
       const hasValuesPerContainerToggle = ref(false);
-      const useValuesPerContainer = ref(false);
       
 
       let isProgrammaticUpdate = false;
@@ -233,26 +221,6 @@ export default {
           servingSizes.value[food.description_slug] = food.serving_size;
         });
       }
-
-      watch(useValuesPerContainer, (use_values_per_container_enabled, old_value) => {
-        console.log('use values per container: ', use_values_per_container_enabled);
-        console.log('current food slug: ', current_food_slug.value);
-        // todo: get the currently viewed food
-
-        const current_food = analyze.value.find(itm => itm.description_slug === current_food_slug.value);
-        console.log('current food: ', current_food);
-
-        if (current_food.servings_per_container && use_values_per_container_enabled) {
-       
-          const new_serving_size = current_food.serving_size * current_food.servings_per_container;
-          
-          console.log('new serving size: ', new_serving_size);
-      
-          selected_custom_serving.value = new_serving_size;
-          current_food_serving_size.value = new_serving_size;
-
-        }
-      });
      
       watch(selected_custom_serving, (new_custom_serving, old_custom_serving) => {
         if (isProgrammaticUpdate) return;
@@ -533,7 +501,6 @@ export default {
         current_food_serving_size,
         
         hasValuesPerContainerToggle,
-        useValuesPerContainer,
         modifyServingSize,
 
         food_card_key,
