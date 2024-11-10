@@ -225,11 +225,15 @@
                     </div>
                     
                     <div v-if="food.custom_serving_size">
-                        {{ food.custom_serving_size }} = {{ food.serving_size }}{{ food.serving_size_unit }}
+                    {{ food.custom_serving_size }} = {{ food.serving_size }}{{ food.serving_size_unit }}
+                    </div>
+
+                    <div v-else-if="food.serving_size">
+                    Original serving size: {{ food.serving_size }}{{ food.serving_size_unit }}
                     </div>
 
                     <div v-if="food.servings_per_container">
-                        {{ food.servings_per_container }} servings per container
+                    Servings per container: {{ food.servings_per_container }} 
                     </div>
 
                     <v-switch 
