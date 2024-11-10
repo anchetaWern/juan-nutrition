@@ -108,6 +108,14 @@
                       ></v-number-input>
                   </div>
 
+                  <div v-if="current_food.custom_serving_size">
+                      {{ current_food.custom_serving_size }} = {{ current_food.serving_size }}{{ current_food.serving_size_unit }}
+                  </div>
+
+                  <div v-if="current_food.servings_per_container">
+                      {{ current_food.servings_per_container }} servings per container
+                  </div>
+
                   <v-switch 
                       v-if="hasValuesPerContainerToggle"
                       label="Use values per container" 
@@ -196,6 +204,7 @@ export default {
 
 
       const current_food_slug = ref(null);
+      const current_food = ref(null);
       const modifyServingSizeDialog = ref(false);
 
       const custom_serving_sizes = ref(null);
@@ -298,6 +307,7 @@ export default {
         console.log('slug: ', food_slug);
 
         current_food_slug.value = food_slug;
+        current_food.value = analyze.value.find(itm => itm.description_slug === food_slug);
 
         if (custom_servings_category) {
           hasValuesPerContainerToggle.value = false;
@@ -509,6 +519,7 @@ export default {
         openModifyServingSizeModal,
 
         current_food_slug,
+        current_food,
         modifyServingSizeDialog,
         custom_serving_sizes,
 
