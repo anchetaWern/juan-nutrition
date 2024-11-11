@@ -96,8 +96,9 @@
           <v-card title="Modify Serving Size">
               <div class="px-5 py-2">
                   <div v-if="custom_serving_sizes">
+                  
                       <v-radio-group v-model="selected_custom_serving">
-                          <v-radio :label="cs.name" :value="cs.weight" v-for="cs in custom_serving_sizes"></v-radio>
+                        <v-radio :label="cs.name" :value="cs.weight ? cs.weight : convertWeight(100, current_food.density.density, cs.name)" v-for="cs in custom_serving_sizes"></v-radio>
                       </v-radio-group>
 
                       <div class="text-medium-emphasis">Quantity</div>
@@ -157,6 +158,7 @@ import {
     filterDeficientNutrients,
     filterOverconsumedNutrients,
     filterGoodCoverageNutrients,
+    convertWeight,
 } from '@/helpers/Nutrients';
 
 import { calculatePercentage } from '@/helpers/Numbers';
@@ -504,6 +506,7 @@ export default {
         modifyServingSize,
 
         food_card_key,
+        convertWeight
       }
     },
 
