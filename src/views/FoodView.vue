@@ -213,7 +213,7 @@
                 <div class="px-5 py-2">
                     <div v-if="custom_serving_sizes">
                         <v-radio-group v-model="selected_custom_serving">
-                            <v-radio :label="cs.name" :value="cs.weight" v-for="cs in custom_serving_sizes"></v-radio>
+                            <v-radio :label="cs.name" :value="cs.weight ? cs.weight : convertWeight(100, food.density.density, cs.name)" v-for="cs in custom_serving_sizes"></v-radio>
                         </v-radio-group>
 
                         <div class="text-medium-emphasis">Quantity</div>
@@ -429,6 +429,7 @@ import { Pie } from 'vue-chartjs'
 import axios from 'axios'
 import NutrientsTable from '@/components/NutrientsTable.vue'
 import { calculatePercentage, formatNumber } from '@/helpers/Numbers';
+import { convertWeight } from '@/helpers/Nutrients';
 
 import { getSortedByName, findAgeData } from '@/helpers/Arr';
 import { 
@@ -929,6 +930,7 @@ export default {
 
         calculatePercentage,
         formatNumber,
+        convertWeight,
 
         getCalorieBgColor,
         getCalorieColor,
