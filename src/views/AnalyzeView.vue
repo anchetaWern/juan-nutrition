@@ -285,7 +285,8 @@ export default {
         console.log('slug: ', food_slug);
 
         current_food_slug.value = food_slug;
-        current_food.value = analyze.value.find(itm => itm.description_slug === food_slug);
+        const found_food = analyze.value.find(itm => itm.description_slug === food_slug);
+        current_food.value = found_food;
 
         if (custom_servings_category) {
           hasValuesPerContainerToggle.value = false;
@@ -298,6 +299,9 @@ export default {
               'unit': itm.weight_unit,
               'volume_in_ml': itm.volume_in_ml,
             }
+          })
+          .filter((itm) => {
+            return itm.volume_in_ml && found_food.density || itm.weight;
           });
 
           console.log('custom servings: ', serving_units);

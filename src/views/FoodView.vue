@@ -745,7 +745,8 @@ export default {
         const food_slug = route.params.food;
 
         const res = await axios.get(`${API_BASE_URI}/foods/${food_slug}`);
-        food.value = res.data;
+        const current_food = res.data;
+        food.value = current_food;
         newServingSize.value = res.data.serving_size;
         console.log('FOOD: ', res.data);
 
@@ -757,6 +758,9 @@ export default {
                     'unit': itm.weight_unit,
                     'volume_in_ml': itm.volume_in_ml,
                 }
+            })
+            .filter((itm) => {
+                return itm.volume_in_ml && current_food.density || itm.weight;
             });
 
             console.log("SERVING UNITS: ", serving_units);
