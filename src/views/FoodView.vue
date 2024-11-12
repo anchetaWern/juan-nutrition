@@ -213,7 +213,11 @@
                 <div class="px-5 py-2">
                     <div v-if="custom_serving_sizes">
                         <v-radio-group v-model="selected_custom_serving">
-                            <v-radio :label="cs.name" :value="cs.weight ? cs.weight : convertWeight(100, food.density.density, cs.name)" v-for="cs in custom_serving_sizes"></v-radio>
+                            <v-radio 
+                                :label="cs.name" 
+                                :value="cs.volume_in_ml ? convertWeight(food.density.density, cs.volume_in_ml) : cs.weight" 
+                                v-for="cs in custom_serving_sizes">
+                            </v-radio>
                         </v-radio-group>
 
                         <div class="text-medium-emphasis">Quantity</div>
@@ -751,8 +755,11 @@ export default {
                     'name': itm.name,
                     'weight': itm.weight,
                     'unit': itm.weight_unit,
+                    'volume_in_ml': itm.volume_in_ml,
                 }
             });
+
+            console.log("SERVING UNITS: ", serving_units);
 
             if (serving_units && serving_units.length > 0) {
                 custom_serving_sizes.value = serving_units;

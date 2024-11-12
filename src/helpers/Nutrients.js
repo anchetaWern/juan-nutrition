@@ -605,25 +605,11 @@ export function filterGoodCoverageNutrients(nutrients, limits, overConsumedNutri
     return good_coverage_nutrients;
 }
 
-const household_units_in_ml = {
-    'tsp': 5,
-    'tbsp': 15,
-    'cup': 240,
-    '1/4 cup': 60,
-    '1/3 cup': 80,
-    '1/2 cup': 120,
-    '3/4 cup': 180,
-    'scoop': 50,
-    'small cup': 120,
-    'medium cup': 200,
-    'large cup': 350,
-};
 
-export function convertWeight(weight, density, household_unit = null)
+export function convertWeight(density, household_weight)
 {
     // household units has a direct equivalent
-    if (household_units_in_ml.hasOwnProperty(household_unit)) {
-        const household_weight = household_units_in_ml[household_unit];
+    if (density && household_weight) {
         const weight_in_grams = household_weight * density;
         return Math.ceil(weight_in_grams);
     }
