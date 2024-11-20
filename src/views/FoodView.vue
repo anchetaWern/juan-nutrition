@@ -592,12 +592,7 @@ export default {
     }
    
     const getCalorieColor = (calories) => {
-        if (calories >= 400) {
-          return 'deep-purple-darken-4'; 
-        } else if (calories >= 100 && calories <= 200) {
-          return 'deep-purple-darken-1';
-        }
-        return 'deep-purple-lighten-4';
+        return 'deep-purple-lighten-2';
     }
 
     const openModifyServingCountModal = () => {
@@ -622,16 +617,8 @@ export default {
     }
 
     const getValueColor = (value, daily_limit) => {
-        const dv_percent = calculatePercentage(value, daily_limit); 
-        
-        if (dv_percent > 20) {
-            return 'deep-purple-darken-4';
 
-        } else if (dv_percent >= 6 && dv_percent <= 19) {
-            return 'deep-purple-lighten-2';
-        } 
-
-        return 'deep-purple-lighten-4';
+        return 'deep-purple-lighten-2';
     };
 
 
