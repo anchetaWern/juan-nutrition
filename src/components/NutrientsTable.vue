@@ -10,7 +10,7 @@
                 </td>
                 <td class="text-grey-darken-3">
                     <span v-if="nutrient.unit" class="tiny-text">
-                    {{ formatNumber(amountPerContainer(nutrient.amount, servingsPerContainer, displayValuesPerContainer, newServingSize, newServingCount)) }}
+                    {{ formatNumber(amountPerContainer(nutrient.amount, servingsPerContainer, displayValuesPerContainer, originalServingSize, newServingSize, newServingCount)) }}
                     {{ nutrient.unit }}</span> 
                     <span v-if="nutrient.unit == null" class="tiny-text">-</span> 
                     <span v-if="nutrient.hasRecommendedDailyValues" class="tiny-text">/ {{ nutrient.dailyLimit }}{{ nutrient.unit }}</span>
@@ -31,6 +31,7 @@
                       :servingsPerContainer="servingsPerContainer" 
                       :displayValuesPerContainer="displayValuesPerContainer" 
                       :recommended_daily_values="recommended_daily_values"
+                      :originalServingSize="originalServingSize"
                       :newServingSize="newServingSize"
                       :newServingCount="newServingCount"
                       :getValueColor="getValueColor" />
@@ -70,6 +71,11 @@ export default {
       required: true,
       default: true,
     },
+    originalServingSize: {
+      type: Number,
+      required: false,
+      default: null,
+    },
     newServingSize: {
       type: Number,
       required: false,
@@ -103,7 +109,6 @@ export default {
           const percentage = calculatePercentage(nutrient_value, reni_limit);
           
           return percentage;
-          // return percentage > reni_limit ? reni_limit : percentage;
         }
         return 0; 
       }
@@ -118,7 +123,7 @@ export default {
           
           const daily_limit = props.recommended_daily_values[nutrient.name]; 
           const multiplier = props.displayValuesPerContainer ? props.servingsPerContainer : 1;
-          const total_amount = amountPerContainer(nutrient.amount, props.servingsPerContainer, props.displayValuesPerContainer, props.newServingSize, props.newServingCount); // nutrient.amount * multiplier;
+          const total_amount = amountPerContainer(nutrient.amount, props.servingsPerContainer, props.displayValuesPerContainer, props.originalServingSize, props.newServingSize, props.newServingCount); // nutrient.amount * multiplier;
           const percentage = calculateNutrientPercentage(nutrient.name, total_amount);
           const hasRecommendedDailyValues = nutrients_with_recommended_daily_values.indexOf(nutrient.name) !== -1;
 

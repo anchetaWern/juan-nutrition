@@ -141,7 +141,8 @@ export function standardizeVitaminB9(value, unit) {
     return value;
 }
 
-export function amountPerContainer(amount, servingsPerContainer, displayValuesPerContainer, newServingSize = 100, newServingCount = null) {
+export function amountPerContainer(amount, servingsPerContainer, displayValuesPerContainer, originalServingSize, newServingSize = 100, newServingCount = null) {
+   
     const servingCount = newServingCount ? newServingCount : servingsPerContainer;
    
     const multiplier = displayValuesPerContainer ? servingCount : 1;
@@ -149,7 +150,7 @@ export function amountPerContainer(amount, servingsPerContainer, displayValuesPe
     const originalNutrientAmount = amount * multiplier;
     
     if (isNumeric(newServingSize)) {
-        return modifyServingSize(100, newServingSize, originalNutrientAmount);
+        return modifyServingSize(originalServingSize, newServingSize, originalNutrientAmount); // fix: 100 should be the original serving size
     }
     return originalNutrientAmount;
 }

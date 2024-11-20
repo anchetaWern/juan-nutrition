@@ -75,11 +75,11 @@
                 </tr>
                 <tr v-if="food.calories">
                     <td class="text-grey-darken-3">
-                        Calories: {{ formatNumber(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, newServingSize, newServingCount)) }}{{ food.calories_unit }} / {{ calorie_req_in_kcal }}{{ food.calories_unit }} ({{ formatNumber(calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, newServingSize, newServingCount), calorie_req_in_kcal)) }}%)
+                        Calories: {{ formatNumber(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount)) }}{{ food.calories_unit }} / {{ calorie_req_in_kcal }}{{ food.calories_unit }} ({{ formatNumber(calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount), calorie_req_in_kcal)) }}%)
                         <v-progress-linear 
-                            :model-value="calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, newServingSize, newServingCount), calorie_req_in_kcal)" 
-                            :bg-color="getCalorieBgColor(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, newServingSize, newServingCount))" 
-                            :color="getCalorieColor(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, newServingSize, newServingCount))">
+                            :model-value="calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount), calorie_req_in_kcal)" 
+                            :bg-color="getCalorieBgColor(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount))" 
+                            :color="getCalorieColor(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount))">
                         </v-progress-linear>
                     </td>
                 </tr>
@@ -95,6 +95,7 @@
                 :servingsPerContainer="servingsPerContainer" 
                 :displayValuesPerContainer="displayValuesPerContainer"
                 :recommended_daily_values="recommended_daily_values"
+                :originalServingSize="food.serving_size"
                 :newServingSize="newServingSize"
                 :newServingCount="newServingCount"
                 :getValueColor="getValueColor" />
@@ -107,6 +108,7 @@
                 :servingsPerContainer="servingsPerContainer" 
                 :displayValuesPerContainer="displayValuesPerContainer"
                 :recommended_daily_values="recommended_daily_values"
+                :originalServingSize="food.serving_size"
                 :newServingSize="newServingSize"
                 :newServingCount="newServingCount"
                 :getValueColor="getValueColor" />
@@ -119,6 +121,7 @@
                 :servingsPerContainer="servingsPerContainer" 
                 :displayValuesPerContainer="displayValuesPerContainer"
                 :recommended_daily_values="recommended_daily_values"
+                :originalServingSize="food.serving_size"
                 :newServingSize="newServingSize"
                 :newServingCount="newServingCount"
                 :getValueColor="getValueColor" />
@@ -131,6 +134,7 @@
                 :servingsPerContainer="servingsPerContainer" 
                 :displayValuesPerContainer="displayValuesPerContainer"
                 :recommended_daily_values="recommended_daily_values"
+                :originalServingSize="food.serving_size"
                 :newServingSize="newServingSize"
                 :newServingCount="newServingCount"
                 :getValueColor="getValueColor" />
@@ -143,6 +147,7 @@
                 :servingsPerContainer="servingsPerContainer" 
                 :displayValuesPerContainer="displayValuesPerContainer"
                 :recommended_daily_values="recommended_daily_values"
+                :originalServingSize="food.serving_size"
                 :newServingSize="newServingSize"
                 :newServingCount="newServingCount"
                 :getValueColor="getValueColor" />
