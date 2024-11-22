@@ -75,8 +75,11 @@
                 </tr>
                 <tr v-if="food.calories">
                     <td class="text-grey-darken-3">
-                        Calories: {{ formatNumber(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount)) }}{{ food.calories_unit }} / {{ calorie_req_in_kcal }}{{ food.calories_unit }} ({{ formatNumber(calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount), calorie_req_in_kcal)) }}%)
+                        Calories: 
+                        {{ formatNumber(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount)) }}{{ food.calories_unit }} / {{ calorie_req_in_kcal }}{{ food.calories_unit }} ({{ formatNumber(calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount), calorie_req_in_kcal)) }}%) 
+                        <v-chip size="small" density="compact" v-if="FAONutrientContentClaim(food.calories, food.serving_size, 'energy', food.state.name)">{{ FAONutrientContentClaim(food.calories, food.serving_size, 'energy', food.state.name) }}</v-chip>
                         <v-progress-linear 
+                            class="mt-1"
                             :model-value="calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount), calorie_req_in_kcal)" 
                             :bg-color="getCalorieBgColor(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount))" 
                             :color="getCalorieColor(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount))">
@@ -438,7 +441,7 @@ import { Pie } from 'vue-chartjs'
 import axios from 'axios'
 import NutrientsTable from '@/components/NutrientsTable.vue'
 import { calculatePercentage, formatNumber } from '@/helpers/Numbers';
-import { convertWeight } from '@/helpers/Nutrients';
+import { convertWeight, FAONutrientContentClaim } from '@/helpers/Nutrients';
 
 import { getSortedByName, findAgeData } from '@/helpers/Arr';
 import { 
@@ -934,7 +937,8 @@ export default {
         calculatePercentage,
         formatNumber,
         convertWeight,
-
+        FAONutrientContentClaim,
+        
         getCalorieBgColor,
         getCalorieColor,
 

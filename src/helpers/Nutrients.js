@@ -150,7 +150,7 @@ export function amountPerContainer(amount, servingsPerContainer, displayValuesPe
     const originalNutrientAmount = amount * multiplier;
     
     if (isNumeric(newServingSize)) {
-        return modifyServingSize(originalServingSize, newServingSize, originalNutrientAmount); // fix: 100 should be the original serving size
+        return modifyServingSize(originalServingSize, newServingSize, originalNutrientAmount); 
     }
     return originalNutrientAmount;
 }
@@ -613,5 +613,35 @@ export function convertWeight(density, household_weight)
     if (density && household_weight) {
         const weight_in_grams = household_weight * density;
         return Math.ceil(weight_in_grams);
+    }
+}
+
+export function normalizeFoodState(foodState)
+{
+    if (foodState === 'Liquids') {
+        return 'liquid';
+    }
+    return 'solid';
+}
+
+
+// originalNutrientAmount = original nutrient value as per nutrition label
+// component = energy, fat, saturated fat, cholesterol, sugars, sodium, protein, vitamins and minerals, dietary fiber
+// foodState = Solids, Liquids, Powdered, Semi-solid, Frozen (the last 3 are considered Solids so effectively there are only two states)
+export function FAONutrientContentClaim(originalNutrientAmount, originalServingSize, component, foodState)
+{
+    const normalized_food_state = normalizeFoodState(foodState);
+    const newServingSize = 100; // 100g
+    const normalized_nutrient_amount = modifyServingSize(originalServingSize, newServingSize, originalNutrientAmount);
+
+    if (component === 'energy') {
+        const low_energy_condition = normalized_food_state === 'solid' ? 40 : 20; // kcal
+        if (normalized_nutrient_amount <= low_energy_condition) {
+            return 'low';
+        }
+
+        if (normalized_food_state === 'liquid' && normalized_nutrient_amount <= 4) {
+            return 'free';
+        }
     }
 }
