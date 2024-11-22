@@ -77,7 +77,7 @@
                     <td class="text-grey-darken-3">
                         Calories: 
                         {{ formatNumber(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount)) }}{{ food.calories_unit }} / {{ calorie_req_in_kcal }}{{ food.calories_unit }} ({{ formatNumber(calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount), calorie_req_in_kcal)) }}%) 
-                        <v-chip size="small" density="compact" v-if="FAONutrientContentClaim(food.calories, food.serving_size, 'energy', food.state.name)">{{ FAONutrientContentClaim(food.calories, food.serving_size, 'energy', food.state.name) }}</v-chip>
+                        <v-chip size="small" density="compact" v-if="FAONutrientContentClaim('energy', food.calories, calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount), calorie_req_in_kcal), food.serving_size, food.state.name)">{{ FAONutrientContentClaim('energy', food.calories, calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount), calorie_req_in_kcal), food.serving_size, food.state.name) }}</v-chip>
                         <v-progress-linear 
                             class="mt-1"
                             :model-value="calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount), calorie_req_in_kcal)" 
@@ -101,7 +101,8 @@
                 :originalServingSize="food.serving_size"
                 :newServingSize="newServingSize"
                 :newServingCount="newServingCount"
-                :getValueColor="getValueColor" />
+                :getValueColor="getValueColor"
+                :foodState="food.state.name"  />
         </div>
 
         <div class="mt-3" v-if="macros.length">
@@ -114,7 +115,8 @@
                 :originalServingSize="food.serving_size"
                 :newServingSize="newServingSize"
                 :newServingCount="newServingCount"
-                :getValueColor="getValueColor" />
+                :getValueColor="getValueColor"
+                :foodState="food.state.name"  />
         </div>
 
         <div class="mt-3" v-if="vitamins.length">
@@ -127,7 +129,8 @@
                 :originalServingSize="food.serving_size"
                 :newServingSize="newServingSize"
                 :newServingCount="newServingCount"
-                :getValueColor="getValueColor" />
+                :getValueColor="getValueColor"
+                :foodState="food.state.name"  />
         </div>
 
         <div class="mt-3" v-if="minerals.length">
@@ -140,7 +143,8 @@
                 :originalServingSize="food.serving_size"
                 :newServingSize="newServingSize"
                 :newServingCount="newServingCount"
-                :getValueColor="getValueColor" />
+                :getValueColor="getValueColor"
+                :foodState="food.state.name"  />
         </div>
 
         <div class="mt-3" v-if="others.length">
@@ -153,7 +157,8 @@
                 :originalServingSize="food.serving_size"
                 :newServingSize="newServingSize"
                 :newServingCount="newServingCount"
-                :getValueColor="getValueColor" />
+                :getValueColor="getValueColor"
+                :foodState="food.state.name"  />
         </div>
     </div>
 

@@ -15,6 +15,7 @@
                     <span v-if="nutrient.unit == null" class="tiny-text">-</span> 
                     <span v-if="nutrient.hasRecommendedDailyValues" class="tiny-text">/ {{ nutrient.dailyLimit }}{{ nutrient.unit }}</span>
                     <span v-if="nutrient.hasRecommendedDailyValues" class="small-text"> ({{ formatNumber(nutrient.percentage) }}%)</span>
+                    <v-chip size="x-small" density="compact" v-if="FAONutrientContentClaim(nutrient.name, nutrient.amount, nutrient.percentage_per_100g, originalServingSize, foodState)">{{ FAONutrientContentClaim(nutrient.name, nutrient.amount, nutrient.percentage, originalServingSize, foodState) }}</v-chip>
                     <v-progress-linear 
                       v-if="recommended_daily_values && nutrient.hasRecommendedDailyValues" 
                       :model-value="nutrient.percentage" 
@@ -34,7 +35,8 @@
                       :originalServingSize="originalServingSize"
                       :newServingSize="newServingSize"
                       :newServingCount="newServingCount"
-                      :getValueColor="getValueColor" />
+                      :getValueColor="getValueColor"
+                      :foodState="foodState" />
                 </td>
             </tr>
         </template>
@@ -49,7 +51,7 @@
 import { computed } from 'vue';
 import { capitalizeWords } from '@/helpers/Str';
 import { calculatePercentage, formatNumber } from '@/helpers/Numbers';
-import { amountPerContainer } from '@/helpers/Nutrients';
+import { amountPerContainer, FAONutrientContentClaim } from '@/helpers/Nutrients';
 
 export default {
   props: {
@@ -90,6 +92,12 @@ export default {
       type: Function,
       required: true,
     },
+
+    foodState: {
+      type: String,
+      required: true,
+    }
+
   },
 
 
@@ -124,12 +132,16 @@ export default {
           const daily_limit = props.recommended_daily_values[nutrient.name]; 
           const multiplier = props.displayValuesPerContainer ? props.servingsPerContainer : 1;
           const total_amount = amountPerContainer(nutrient.amount, props.servingsPerContainer, props.displayValuesPerContainer, props.originalServingSize, props.newServingSize, props.newServingCount); // nutrient.amount * multiplier;
+          const total_amount_per_100g = amountPerContainer(nutrient.amount, props.servingsPerContainer, props.displayValuesPerContainer, props.originalServingSize, 100, 1);
           const percentage = calculateNutrientPercentage(nutrient.name, total_amount);
+          const percentage_per_100g = calculateNutrientPercentage(nutrient.name, total_amount_per_100g);
           const hasRecommendedDailyValues = nutrients_with_recommended_daily_values.indexOf(nutrient.name) !== -1;
 
           return {
             ...nutrient,
             percentage,
+            total_amount_per_100g,
+            percentage_per_100g,
             bgColor: 'grey-darken-3', // props.getRailColor(total_amount, daily_limit),
             color: props.getValueColor(total_amount, daily_limit),
             reverse: getReverse(total_amount, daily_limit), 
@@ -145,6 +157,7 @@ export default {
           nutrients_with_recommended_daily_values,
           nutrientsWithPercentage,
           amountPerContainer,
+          FAONutrientContentClaim
       }
   }
   

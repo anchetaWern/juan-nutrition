@@ -222,14 +222,14 @@ export function getVitamins(nutrients)
         });
 }
 
+const mineral_names = [
+    'calcium', 'chloride', 'chromium', 'copper', 
+    'iodine', 'iron', 'magnesium', 'manganese', 'molybdenum', 
+    'phosphorus', 'potassium', 'selenium', 'sodium', 'zinc'
+];
+
 export function getMinerals(nutrients)
 {
-    const mineral_names = [
-        'calcium', 'chloride', 'chromium', 'copper', 
-        'iodine', 'iron', 'magnesium', 'manganese', 'molybdenum', 
-        'phosphorus', 'potassium', 'selenium', 'sodium', 'zinc'
-    ];
-
     return nutrients.filter((itm) => {
         return mineral_names.indexOf(itm.name) !== -1;
     });
@@ -628,7 +628,7 @@ export function normalizeFoodState(foodState)
 // originalNutrientAmount = original nutrient value as per nutrition label
 // component = energy, fat, saturated fat, cholesterol, sugars, sodium, protein, vitamins and minerals, dietary fiber
 // foodState = Solids, Liquids, Powdered, Semi-solid, Frozen (the last 3 are considered Solids so effectively there are only two states)
-export function FAONutrientContentClaim(originalNutrientAmount, originalServingSize, component, foodState)
+export function FAONutrientContentClaim(component, originalNutrientAmount, nutrientPercentage, originalServingSize, foodState)
 {
     const normalized_food_state = normalizeFoodState(foodState);
     const newServingSize = 100; // 100g
@@ -642,6 +642,72 @@ export function FAONutrientContentClaim(originalNutrientAmount, originalServingS
 
         if (normalized_food_state === 'liquid' && normalized_nutrient_amount <= 4) {
             return 'free';
+        }
+    } else if (component === 'total fat') {
+        
+        const low_fat_condition = normalized_food_state === 'solid' ? 3 : 1.5; 
+        if (normalized_nutrient_amount <= low_fat_condition) {
+            return 'low';
+        }
+
+        const free_fat_condition = 0.5;
+        if (normalized_nutrient_amount <= free_fat_condition) {
+            return 'free';
+        }
+    } else if (component === 'sugar') {
+        const free_sugar_condition = 0.5;
+        if (normalized_nutrient_amount <= free_sugar_condition) {
+            return 'free';
+        }
+    } else if (component === 'sodium') {
+        const low_sodium_condition = 0.12;
+        if (normalized_nutrient_amount <= low_sodium_condition) {
+            return 'low';
+        }
+
+        const very_low_sodium_condition = 0.04;
+        if (normalized_nutrient_amount <= very_low_sodium_condition) {
+            return 'very low';
+        }
+
+        const free_sodium_condition = 0.005;
+        if (normalized_nutrient_amount <= free_sodium_condition) {
+            return 'free';
+        } 
+    } else if (component.startsWith('vitamin') || mineral_names.indexOf(component) !== -1) {
+        const source_of_vitamins_condition = normalized_food_state === 'solid' ? 15 : 5;
+        const high_in_vitamins_condition = source_of_vitamins_condition * 2;
+
+        if (nutrientPercentage > high_in_vitamins_condition) {
+            return 'high';
+        }
+        
+        // if nutrientPercentage is used, how to ensure that the percentage is expressed in 100g serving
+        if (nutrientPercentage > source_of_vitamins_condition) {
+            return 'source';
+        }
+
+    } else if (component === 'dietary fiber') {
+        const source_of_fiber_condition = 3;
+        const high_in_fiber_condition = 6;
+
+        if (normalized_nutrient_amount > high_in_fiber_condition) {
+            return 'high';
+        }
+
+        if (normalized_nutrient_amount > source_of_fiber_condition) {
+            return 'source';
+        }
+    } else if (component === 'protein') {
+        const source_of_protein_condition = 10;
+        const high_in_protein_condition = source_of_protein_condition * 2;
+
+        if (nutrientPercentage > high_in_protein_condition) {
+            return 'high';
+        }  
+
+        if (nutrientPercentage > source_of_protein_condition) {
+            return 'source';
         }
     }
 }
