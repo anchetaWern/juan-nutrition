@@ -709,5 +709,20 @@ export function FAONutrientContentClaim(component, originalNutrientAmount, nutri
         if (nutrientPercentage > source_of_protein_condition) {
             return 'source';
         }
+    } else if (component === 'saturated fat') {
+
+        const free_of_saturated_fat_condition = 0.1;
+        
+        if (normalized_nutrient_amount <= free_of_saturated_fat_condition) {
+            return 'free';
+        }
+
+    } else if (component === 'cholesterol') {
+
+        const low_cholesterol_condition = normalized_food_state === 'solid' ? 0.02 : 0.01;
+        
+        if (normalized_nutrient_amount <= low_cholesterol_condition) {
+            return 'low';
+        }
     }
 }
