@@ -19,10 +19,10 @@
                     <span class="ml-1">
                     <v-chip 
                       size="x-small" 
-                      :color="getFAOColor(FAONutrientContentClaim(nutrient.name, nutrient.amount, nutrient.percentage_per_100g, originalServingSize, foodState))" 
+                      :color="nutrient.fao_claim_color" 
                       density="comfortable" 
-                      v-if="FAONutrientContentClaim(nutrient.name, nutrient.amount, nutrient.percentage_per_100g, originalServingSize, foodState)">
-                      {{ FAONutrientContentClaim(nutrient.name, nutrient.amount, nutrient.percentage_per_100g, originalServingSize, foodState) }}
+                      v-if="nutrient.fao_claim">
+                      {{ nutrient.fao_claim }}
                     </v-chip>
                     </span>
                     <v-progress-linear
@@ -45,7 +45,8 @@
                       :newServingSize="newServingSize"
                       :newServingCount="newServingCount"
                       :getValueColor="getValueColor"
-                      :foodState="foodState" />
+                      :foodState="foodState"
+                      :foodCalories="foodCalories" />
                 </td>
             </tr>
         </template>
@@ -105,6 +106,11 @@ export default {
     foodState: {
       type: String,
       required: true,
+    },
+
+    foodCalories: {
+      type: Number,
+      required: true,
     }
 
   },
@@ -157,6 +163,17 @@ export default {
           const percentage_per_100g = calculateNutrientPercentage(nutrient.name, total_amount_per_100g);
           const hasRecommendedDailyValues = nutrients_with_recommended_daily_values.indexOf(nutrient.name) !== -1;
 
+          // issue: saturated fat is nested
+          let saturated_fat_value = null;
+      
+          if (nutrient.name === 'cholesterol') {
+            const saturated_fat = props.nutrients.find(itm => itm.name === 'saturated fat');
+            saturated_fat_value = saturated_fat ? saturated_fat.amount : null;
+          }
+
+          const fao_claim = FAONutrientContentClaim(nutrient.name, total_amount_per_100g, percentage_per_100g, props.originalServingSize, props.foodState, props.foodCalories, saturated_fat_value);
+          const fao_claim_color = getFAOColor(fao_claim);
+
           return {
             ...nutrient,
             percentage,
@@ -167,6 +184,8 @@ export default {
             reverse: getReverse(total_amount, daily_limit), 
             hasRecommendedDailyValues: hasRecommendedDailyValues,
             dailyLimit: hasRecommendedDailyValues && props.recommended_daily_values[nutrient.name] ? props.recommended_daily_values[nutrient.name].toFixed(0) : null,
+            fao_claim,
+            fao_claim_color,
           };
         });
       });

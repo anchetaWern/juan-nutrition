@@ -106,7 +106,8 @@
                 :newServingSize="newServingSize"
                 :newServingCount="newServingCount"
                 :getValueColor="getValueColor"
-                :foodState="food.state.name"  />
+                :foodState="food.state.name"
+                :foodCalories="food.calories"  />
         </div>
 
         <div class="mt-3" v-if="macros.length">
@@ -120,7 +121,9 @@
                 :newServingSize="newServingSize"
                 :newServingCount="newServingCount"
                 :getValueColor="getValueColor"
-                :foodState="food.state.name"  />
+                :foodState="food.state.name" 
+                :foodCalories="food.calories"
+            />
         </div>
 
         <div class="mt-3" v-if="vitamins.length">
@@ -134,7 +137,8 @@
                 :newServingSize="newServingSize"
                 :newServingCount="newServingCount"
                 :getValueColor="getValueColor"
-                :foodState="food.state.name"  />
+                :foodState="food.state.name"
+                :foodCalories="food.calories"  />
         </div>
 
         <div class="mt-3" v-if="minerals.length">
@@ -148,7 +152,8 @@
                 :newServingSize="newServingSize"
                 :newServingCount="newServingCount"
                 :getValueColor="getValueColor"
-                :foodState="food.state.name"  />
+                :foodState="food.state.name"
+                :foodCalories="food.calories"  />
         </div>
 
         <div class="mt-3" v-if="others.length">
@@ -162,7 +167,8 @@
                 :newServingSize="newServingSize"
                 :newServingCount="newServingCount"
                 :getValueColor="getValueColor"
-                :foodState="food.state.name"  />
+                :foodState="food.state.name"
+                :foodCalories="food.calories"  />
         </div>
     </div>
 

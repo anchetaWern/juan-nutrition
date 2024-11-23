@@ -628,7 +628,7 @@ export function normalizeFoodState(foodState)
 // originalNutrientAmount = original nutrient value as per nutrition label
 // component = energy, fat, saturated fat, cholesterol, sugars, sodium, protein, vitamins and minerals, dietary fiber
 // foodState = Solids, Liquids, Powdered, Semi-solid, Frozen (the last 3 are considered Solids so effectively there are only two states)
-export function FAONutrientContentClaim(component, originalNutrientAmount, nutrientPercentage, originalServingSize, foodState)
+export function FAONutrientContentClaim(component, originalNutrientAmount, nutrientPercentage, originalServingSize, foodState, calories = null, saturated_fat = null)
 {
     const normalized_food_state = normalizeFoodState(foodState);
     const newServingSize = 100; // 100g
@@ -713,14 +713,45 @@ export function FAONutrientContentClaim(component, originalNutrientAmount, nutri
 
         const free_of_saturated_fat_condition = 0.1;
         
+        // get 10% of energy per 100g serving
+        // multiply by 9 to get the kcal equivalent (there are 9 calories per gram of fat)
+        // compare the two
+        const calories_per_100g = modifyServingSize(originalServingSize, 100, calories);
+        const ten_percent_of_total_energy = calories_per_100g * .10;
+        const calories_per_gram_of_fat = 9;
+        const saturated_fat_energy = normalized_nutrient_amount * calories_per_gram_of_fat;
+
+        const low_saturated_fat_condition = normalized_food_state === 'solid' ? 1.5 : 0.75;
+        const low_saturated_fat_condition_two = ten_percent_of_total_energy > saturated_fat_energy;
+        
         if (normalized_nutrient_amount <= free_of_saturated_fat_condition) {
             return 'free';
         }
 
+        if (normalized_nutrient_amount <= low_saturated_fat_condition && low_saturated_fat_condition_two) {
+            return 'low';
+        }
+
     } else if (component === 'cholesterol') {
 
+        const free_of_cholesterol_condition = 0.005;
+        const low_saturated_fat_condition = normalized_food_state === 'solid' ? 1.5 : 0.75;
+        const normalized_saturated_fat_amount = modifyServingSize(originalServingSize, 100, saturated_fat);
+
+        const calories_per_100g = modifyServingSize(originalServingSize, 100, calories);
+        const ten_percent_of_total_energy = calories_per_100g * .10;
+
+        const calories_per_gram_of_fat = 9;
+        const saturated_fat_energy = normalized_saturated_fat_amount * calories_per_gram_of_fat;
+       
+        const saturated_fat_condition = normalized_saturated_fat_amount <= low_saturated_fat_condition;
+        const saturated_fat_condition_two = ten_percent_of_total_energy > saturated_fat_energy;
+
+        if (normalized_nutrient_amount <= free_of_cholesterol_condition && saturated_fat_condition && saturated_fat_condition_two) {
+            return 'free';
+        }
+
         const low_cholesterol_condition = normalized_food_state === 'solid' ? 0.02 : 0.01;
-        
         if (normalized_nutrient_amount <= low_cholesterol_condition) {
             return 'low';
         }
