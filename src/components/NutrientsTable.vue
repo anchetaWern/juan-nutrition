@@ -15,14 +15,17 @@
                     <span v-if="nutrient.unit == null" class="tiny-text">-</span> 
                     <span v-if="nutrient.hasRecommendedDailyValues" class="tiny-text">/ {{ nutrient.dailyLimit }}{{ nutrient.unit }}</span>
                     <span v-if="nutrient.hasRecommendedDailyValues" class="small-text"> ({{ formatNumber(nutrient.percentage) }}%)</span>
+
+                    <span class="ml-1">
                     <v-chip 
                       size="x-small" 
-                      :color="getFAOColor(FAONutrientContentClaim(nutrient.name, nutrient.amount, nutrient.percentage, originalServingSize, foodState))" 
+                      :color="getFAOColor(FAONutrientContentClaim(nutrient.name, nutrient.amount, nutrient.percentage_per_100g, originalServingSize, foodState))" 
                       density="comfortable" 
                       v-if="FAONutrientContentClaim(nutrient.name, nutrient.amount, nutrient.percentage_per_100g, originalServingSize, foodState)">
-                      {{ FAONutrientContentClaim(nutrient.name, nutrient.amount, nutrient.percentage, originalServingSize, foodState) }}
+                      {{ FAONutrientContentClaim(nutrient.name, nutrient.amount, nutrient.percentage_per_100g, originalServingSize, foodState) }}
                     </v-chip>
-                    <v-progress-linear 
+                    </span>
+                    <v-progress-linear
                       v-if="recommended_daily_values && nutrient.hasRecommendedDailyValues" 
                       :model-value="nutrient.percentage" 
                       :bg-color="nutrient.bgColor" 
