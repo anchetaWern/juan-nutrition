@@ -77,7 +77,11 @@
                     <td class="text-grey-darken-3">
                         Calories: 
                         {{ formatNumber(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount)) }}{{ food.calories_unit }} / {{ calorie_req_in_kcal }}{{ food.calories_unit }} ({{ formatNumber(calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount), calorie_req_in_kcal)) }}%) 
-                        <v-chip size="small" density="compact" v-if="FAONutrientContentClaim('energy', food.calories, calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount), calorie_req_in_kcal), food.serving_size, food.state.name)">{{ FAONutrientContentClaim('energy', food.calories, calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount), calorie_req_in_kcal), food.serving_size, food.state.name) }}</v-chip>
+                        <v-chip 
+                            size="small" 
+                            density="compact" 
+                            :color="getFAOColor(FAONutrientContentClaim('energy', food.calories, calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount), calorie_req_in_kcal), food.serving_size, food.state.name))"
+                            v-if="FAONutrientContentClaim('energy', food.calories, calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount), calorie_req_in_kcal), food.serving_size, food.state.name)">{{ FAONutrientContentClaim('energy', food.calories, calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount), calorie_req_in_kcal), food.serving_size, food.state.name) }}</v-chip>
                         <v-progress-linear 
                             class="mt-1"
                             :model-value="calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount), calorie_req_in_kcal)" 
@@ -600,6 +604,17 @@ export default {
     });
     //
 
+    const getFAOColor = (value) => {
+        const fao_colors = {
+            'free': 'blue-grey-lighten-1',
+            'very low': 'blue-grey-darken-1',
+            'low': 'blue',
+            'source': 'yellow',
+            'high': 'red'
+        };
+        return fao_colors[value];
+    }
+
     const getCalorieBgColor = (calories) => {
         return 'grey-darken-3';
     }
@@ -946,6 +961,8 @@ export default {
         
         getCalorieBgColor,
         getCalorieColor,
+
+        getFAOColor,
 
         amountPerContainer,
 

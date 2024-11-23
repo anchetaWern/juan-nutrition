@@ -15,7 +15,13 @@
                     <span v-if="nutrient.unit == null" class="tiny-text">-</span> 
                     <span v-if="nutrient.hasRecommendedDailyValues" class="tiny-text">/ {{ nutrient.dailyLimit }}{{ nutrient.unit }}</span>
                     <span v-if="nutrient.hasRecommendedDailyValues" class="small-text"> ({{ formatNumber(nutrient.percentage) }}%)</span>
-                    <v-chip size="x-small" density="compact" v-if="FAONutrientContentClaim(nutrient.name, nutrient.amount, nutrient.percentage_per_100g, originalServingSize, foodState)">{{ FAONutrientContentClaim(nutrient.name, nutrient.amount, nutrient.percentage, originalServingSize, foodState) }}</v-chip>
+                    <v-chip 
+                      size="x-small" 
+                      :color="getFAOColor(FAONutrientContentClaim(nutrient.name, nutrient.amount, nutrient.percentage, originalServingSize, foodState))" 
+                      density="comfortable" 
+                      v-if="FAONutrientContentClaim(nutrient.name, nutrient.amount, nutrient.percentage_per_100g, originalServingSize, foodState)">
+                      {{ FAONutrientContentClaim(nutrient.name, nutrient.amount, nutrient.percentage, originalServingSize, foodState) }}
+                    </v-chip>
                     <v-progress-linear 
                       v-if="recommended_daily_values && nutrient.hasRecommendedDailyValues" 
                       :model-value="nutrient.percentage" 
@@ -125,6 +131,17 @@ export default {
         return value > daily_limit ? true : false;
       }
 
+      const getFAOColor = (value) => {
+        const fao_colors = {
+            'free': 'blue-grey-lighten-1',
+            'very low': 'blue-grey-darken-1',
+            'low': 'blue',
+            'source': 'orange-darken-2',
+            'high': 'red'
+        };
+        return fao_colors[value];
+      }
+
       const nutrientsWithPercentage = computed(() => {
        
         return props.nutrients.map(nutrient => {
@@ -142,7 +159,7 @@ export default {
             percentage,
             total_amount_per_100g,
             percentage_per_100g,
-            bgColor: 'grey-darken-3', // props.getRailColor(total_amount, daily_limit),
+            bgColor: 'grey-darken-3',
             color: props.getValueColor(total_amount, daily_limit),
             reverse: getReverse(total_amount, daily_limit), 
             hasRecommendedDailyValues: hasRecommendedDailyValues,
@@ -157,7 +174,8 @@ export default {
           nutrients_with_recommended_daily_values,
           nutrientsWithPercentage,
           amountPerContainer,
-          FAONutrientContentClaim
+          FAONutrientContentClaim,
+          getFAOColor,
       }
   }
   
