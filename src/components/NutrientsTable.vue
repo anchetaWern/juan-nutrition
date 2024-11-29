@@ -171,7 +171,7 @@ export default {
             saturated_fat_value = saturated_fat ? saturated_fat.amount : null;
           }
 
-          const fao_claim = FAONutrientContentClaim(nutrient.name, total_amount_per_100g, percentage_per_100g, props.originalServingSize, props.foodState, props.foodCalories, saturated_fat_value);
+          const fao_claim = FAONutrientContentClaim(nutrient.name, total_amount, percentage_per_100g, props.originalServingSize, props.foodState, props.foodCalories, saturated_fat_value);
           const fao_claim_color = getFAOColor(fao_claim);
 
           return {
