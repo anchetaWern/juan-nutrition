@@ -46,7 +46,8 @@
                       :newServingCount="newServingCount"
                       :getValueColor="getValueColor"
                       :foodState="foodState"
-                      :foodCalories="foodCalories" />
+                      :foodCalories="foodCalories"
+                      :faoNutrientContentClaims="faoNutrientContentClaims" />
                 </td>
             </tr>
         </template>
@@ -111,6 +112,11 @@ export default {
     foodCalories: {
       type: Number,
       required: true,
+    },
+
+    faoNutrientContentClaims: {
+      type: Array,
+      required: true,
     }
 
   },
@@ -160,7 +166,11 @@ export default {
           const total_amount = amountPerContainer(nutrient.amount, props.servingsPerContainer, props.displayValuesPerContainer, props.originalServingSize, props.newServingSize, props.newServingCount); // nutrient.amount * multiplier;
           const total_amount_per_100g = amountPerContainer(nutrient.amount, props.servingsPerContainer, props.displayValuesPerContainer, props.originalServingSize, 100, 1);
           const percentage = calculateNutrientPercentage(nutrient.name, total_amount);
-          const percentage_per_100g = calculateNutrientPercentage(nutrient.name, total_amount_per_100g);
+
+          // todo: update this so it comes from the FAO NRV
+          // or leave the calculation to the Nutrients helper
+          const percentage_per_100g = calculateNutrientPercentage(nutrient.name, total_amount_per_100g); 
+          
           const hasRecommendedDailyValues = nutrients_with_recommended_daily_values.indexOf(nutrient.name) !== -1;
 
           // issue: saturated fat is nested
@@ -171,7 +181,12 @@ export default {
             saturated_fat_value = saturated_fat ? saturated_fat.amount : null;
           }
 
-          const fao_claim = FAONutrientContentClaim(nutrient.name, total_amount, percentage_per_100g, props.originalServingSize, props.foodState, props.foodCalories, saturated_fat_value);
+          const fao_claim = FAONutrientContentClaim(
+            nutrient.name, total_amount, percentage_per_100g, 
+            props.originalServingSize, props.foodState, 
+            props.faoNutrientContentClaims,
+            props.foodCalories, saturated_fat_value
+          );
           const fao_claim_color = getFAOColor(fao_claim);
 
           return {

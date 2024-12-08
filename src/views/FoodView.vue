@@ -80,8 +80,8 @@
                         <v-chip 
                             size="small" 
                             density="compact" 
-                            :color="getFAOColor(FAONutrientContentClaim('energy', food.calories, calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, 100, newServingCount), calorie_req_in_kcal), food.serving_size, food.state.name))"
-                            v-if="FAONutrientContentClaim('energy', food.calories, calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, 100, newServingCount), calorie_req_in_kcal), food.serving_size, food.state.name)">{{ FAONutrientContentClaim('energy', food.calories, calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount), calorie_req_in_kcal), food.serving_size, food.state.name) }}</v-chip>
+                            :color="getFAOColor(FAONutrientContentClaim('energy', food.calories, calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, 100, newServingCount), calorie_req_in_kcal), food.serving_size, food.state.name, fao_nutrient_claims))"
+                            v-if="FAONutrientContentClaim('energy', food.calories, calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, 100, newServingCount), calorie_req_in_kcal), food.serving_size, food.state.name, fao_nutrient_claims)">{{ FAONutrientContentClaim('energy', food.calories, calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount), calorie_req_in_kcal), food.serving_size, food.state.name, fao_nutrient_claims) }}</v-chip>
                         <v-progress-linear 
                             class="mt-1"
                             :model-value="calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount), calorie_req_in_kcal)" 
@@ -107,7 +107,8 @@
                 :newServingCount="newServingCount"
                 :getValueColor="getValueColor"
                 :foodState="food.state.name"
-                :foodCalories="food.calories"  />
+                :foodCalories="food.calories"
+                :faoNutrientContentClaims="fao_nutrient_claims"  />
         </div>
 
         <div class="mt-3" v-if="macros.length">
@@ -123,6 +124,7 @@
                 :getValueColor="getValueColor"
                 :foodState="food.state.name" 
                 :foodCalories="food.calories"
+                :faoNutrientContentClaims="fao_nutrient_claims"
             />
         </div>
 
@@ -138,7 +140,8 @@
                 :newServingCount="newServingCount"
                 :getValueColor="getValueColor"
                 :foodState="food.state.name"
-                :foodCalories="food.calories"  />
+                :foodCalories="food.calories"
+                :faoNutrientContentClaims="fao_nutrient_claims"  />
         </div>
 
         <div class="mt-3" v-if="minerals.length">
@@ -153,7 +156,8 @@
                 :newServingCount="newServingCount"
                 :getValueColor="getValueColor"
                 :foodState="food.state.name"
-                :foodCalories="food.calories"  />
+                :foodCalories="food.calories"
+                :faoNutrientContentClaims="fao_nutrient_claims"  />
         </div>
 
         <div class="mt-3" v-if="others.length">
@@ -168,7 +172,8 @@
                 :newServingCount="newServingCount"
                 :getValueColor="getValueColor"
                 :foodState="food.state.name"
-                :foodCalories="food.calories"  />
+                :foodCalories="food.calories"
+                :faoNutrientContentClaims="fao_nutrient_claims"  />
         </div>
     </div>
 
@@ -456,7 +461,7 @@ import { Pie } from 'vue-chartjs'
 import axios from 'axios'
 import NutrientsTable from '@/components/NutrientsTable.vue'
 import { calculatePercentage, formatNumber } from '@/helpers/Numbers';
-import { convertWeight, FAONutrientContentClaim } from '@/helpers/Nutrients';
+import { convertWeight, FAONutrientContentClaim, normalizeFoodState } from '@/helpers/Nutrients';
 
 import { getSortedByName, findAgeData } from '@/helpers/Arr';
 import { 
@@ -549,6 +554,8 @@ export default {
     const custom_serving_sizes = ref(null);
     const selected_custom_serving = ref(null);
     const selected_serving_qty = ref(1);
+
+    const fao_nutrient_claims = ref(null);
 
     const hasMacros = ref(true);
     const chartData = ref(null);
@@ -930,6 +937,26 @@ export default {
         minerals.value = getMinerals(res.data.nutrients);
         others.value = getOthers(res.data.nutrients);
 
+        // get fao claims
+
+        let fao_nutrient_content_claims = null;
+        if (sessionStorage.getItem('fao_nutrient_content_claims')) {
+            fao_nutrient_content_claims = JSON.parse(sessionStorage.getItem('fao_nutrient_content_claims'));
+        } else {
+            const fda_daily_nutrient_values_res = await axios.get(`${API_BASE_URI}/fao-nutrient-content-claims`);
+            fao_nutrient_content_claims = fda_daily_nutrient_values_res.data;
+            sessionStorage.setItem('fao_nutrient_content_claims', JSON.stringify(fao_nutrient_content_claims));
+        }
+
+        // filter using the current food state
+        const normalized_food_state = normalizeFoodState(food.value.state.name);
+        const filtered_fao_nutrient_content_claims = fao_nutrient_content_claims.filter((itm) => {
+            return itm.food_state === normalized_food_state;
+        });
+
+        console.log('filtered: ', filtered_fao_nutrient_content_claims);
+       
+        fao_nutrient_claims.value = filtered_fao_nutrient_content_claims;
 
     }
 
@@ -940,6 +967,7 @@ export default {
         custom_serving_sizes,
         selected_custom_serving,
         selected_serving_qty,
+        fao_nutrient_claims,
 
         nutrients,
         elements,
