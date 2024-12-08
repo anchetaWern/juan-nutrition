@@ -626,14 +626,17 @@ export function normalizeFoodState(foodState)
 
 
 export function extractFAOClaimReferenceValue(fao_nutrient_content_claims, component, claim)
-{
-    const match = fao_nutrient_content_claims.find(itm => itm.component === component && itm.claim === claim);
-    if (match) {
-        if (match.condition_type === 'amount') {
-            return getValueAndUnit(match.condition);   
+{   
+    if (fao_nutrient_content_claims) {
+        const match = fao_nutrient_content_claims.find(itm => itm.component === component && itm.claim === claim);
+        if (match) {
+            if (match.condition_type === 'amount') {
+                return getValueAndUnit(match.condition);   
+            }
+            return match.condition;
         }
-        return match.condition;
     }
+    
     return {
         value: null,
         unit: null

@@ -95,7 +95,7 @@
         
         <v-divider></v-divider>
 
-        <div class="mt-3" v-if="elements.length">
+        <div class="mt-3" v-if="elements && elements.length">
             <span class="text-subtitle-2">Elements</span>
             <NutrientsTable 
                 :nutrients="elements" 
@@ -111,7 +111,7 @@
                 :faoNutrientContentClaims="fao_nutrient_claims"  />
         </div>
 
-        <div class="mt-3" v-if="macros.length">
+        <div class="mt-3" v-if="macros && macros.length">
             <span class="text-subtitle-2">Macros</span>
             <NutrientsTable 
                 :nutrients="macros" 
@@ -128,7 +128,7 @@
             />
         </div>
 
-        <div class="mt-3" v-if="vitamins.length">
+        <div class="mt-3" v-if="vitamins && vitamins.length">
             <span class="text-subtitle-2">Vitamins</span>
             <NutrientsTable 
                 :nutrients="vitamins" 
@@ -144,7 +144,7 @@
                 :faoNutrientContentClaims="fao_nutrient_claims"  />
         </div>
 
-        <div class="mt-3" v-if="minerals.length">
+        <div class="mt-3" v-if="minerals && minerals.length">
             <span class="text-subtitle-2">Minerals</span>
             <NutrientsTable 
                 :nutrients="minerals" 
@@ -160,7 +160,7 @@
                 :faoNutrientContentClaims="fao_nutrient_claims"  />
         </div>
 
-        <div class="mt-3" v-if="others.length">
+        <div class="mt-3" v-if="others && others.length">
             <span class="text-subtitle-2">Others</span>
             <NutrientsTable 
                 :nutrients="others" 
@@ -557,7 +557,7 @@ export default {
 
     const fao_nutrient_claims = ref(null);
 
-    const hasMacros = ref(true);
+    const hasMacros = ref(false);
     const chartData = ref(null);
 
     const calorie_req_in_kcal = ref(2000);
@@ -913,8 +913,8 @@ export default {
             macros_percentages[key] = percent.toFixed(2);
         }
 
-        if (Object.values(macros_data).filter(itm => itm).length === 0) {
-            hasMacros.value = false;
+        if (Object.values(macros_data).filter(itm => itm).length > 0) {
+            hasMacros.value = true;
         }
 
         chartData.value = {
