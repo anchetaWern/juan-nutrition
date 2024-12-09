@@ -1,3 +1,5 @@
+import { calculatePercentage } from '@/helpers/Numbers';
+
 const common_nutrient_units = {
     "dietary fiber": "g",
     "protein": "g",
@@ -643,6 +645,19 @@ export function extractFAOClaimReferenceValue(fao_nutrient_content_claims, compo
     };
 }
 
+export function extractFAOClaim(fao_nutrient_content_claims, component, claim)
+{
+    if (fao_nutrient_content_claims) {
+        const match = fao_nutrient_content_claims.find(itm => itm.component === component && itm.claim === claim);
+        if (match) {
+            return match;
+        }
+    }
+
+    return null;
+}
+
+
 // originalNutrientAmount = original nutrient value as per nutrition label
 // component = energy, fat, saturated fat, cholesterol, sugars, sodium, protein, vitamins and minerals, dietary fiber
 // foodState = Solids, Liquids, Powdered, Semi-solid, Frozen (the last 3 are considered Solids so effectively there are only two states)
@@ -710,14 +725,22 @@ export function FAONutrientContentClaim(component, originalNutrientAmount, nutri
         console.log('vitamins & minerals high: ', high_in_vitamins_and_minerals_condition);
 
         // todo: calculate nutrientPercentage
+        const fao_claim = extractFAOClaim(fao_nutrient_content_claims, 'vitamins and minerals', 'source'); // note: doesn't matter what the claim is bec the ref value doesn't change
+        const nutrient_reference_value = fao_claim.reference_values.find(itm => itm.nutrient === component);
+        console.log('nutrient_reference_value: ', nutrient_reference_value); // nutrient_reference_value.daily_value
 
-        if (nutrientPercentage > high_in_vitamins_and_minerals_condition.value) {
-            return 'high';
-        }
-        
-        // if nutrientPercentage is used, how to ensure that the percentage is expressed in 100g serving
-        if (nutrientPercentage > source_of_vitamins_and_minerals_condition.value) {
-            return 'source';
+        // normalized_nutrient_amount
+        if (nutrient_reference_value) {
+            const percentage_per_100g = calculatePercentage(normalized_nutrient_amount, nutrient_reference_value.daily_value); 
+            console.log(component + ' percent per 100g: ' + percentage_per_100g + ' cond: ' + high_in_vitamins_and_minerals_condition);
+            if (percentage_per_100g > high_in_vitamins_and_minerals_condition) {
+                return 'high';
+            }
+            
+            // if nutrientPercentage is used, how to ensure that the percentage is expressed in 100g serving
+            if (percentage_per_100g > source_of_vitamins_and_minerals_condition) {
+                return 'source';
+            }
         }
 
     } else if (component === 'dietary fiber') {
