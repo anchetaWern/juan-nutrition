@@ -116,7 +116,7 @@ export default {
 
     faoNutrientContentClaims: {
       type: Array,
-      required: true,
+      required: false,
     }
 
   },
@@ -180,14 +180,19 @@ export default {
             const saturated_fat = props.nutrients.find(itm => itm.name === 'saturated fat');
             saturated_fat_value = saturated_fat ? saturated_fat.amount : null;
           }
+          
+          let fao_claim = null;
+          let fao_claim_color = null;
 
-          const fao_claim = FAONutrientContentClaim(
-            nutrient.name, total_amount, percentage_per_100g, 
-            props.originalServingSize, props.foodState, 
-            props.faoNutrientContentClaims,
-            props.foodCalories, saturated_fat_value
-          );
-          const fao_claim_color = getFAOColor(fao_claim);
+          if (props.faoNutrientContentClaims) {
+            fao_claim = FAONutrientContentClaim(
+              nutrient.name, total_amount, percentage_per_100g, 
+              props.originalServingSize, props.foodState, 
+              props.faoNutrientContentClaims,
+              props.foodCalories, saturated_fat_value
+            );
+            fao_claim_color = getFAOColor(fao_claim);
+          }
 
           return {
             ...nutrient,
