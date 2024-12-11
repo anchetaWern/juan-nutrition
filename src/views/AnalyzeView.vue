@@ -246,7 +246,7 @@ export default {
       });
     
 
-      const loadData = () => {
+      const loadCustomServingsData = () => {
         // load custom servings data
         console.log('now loading data');
         const stored_cs = sessionStorage.getItem('custom_servings');
@@ -256,7 +256,7 @@ export default {
         }
       }
 
-      onMounted(loadData);
+      onMounted(loadCustomServingsData);
 
 
       const fetchDailyValues = async () => {
