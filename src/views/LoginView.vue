@@ -13,7 +13,6 @@
             :type="showPassword ? 'text' : 'password'"
             label="Password"
             name="password"
-            counter
             @click:append="showPassword = !showPassword"
         ></v-text-field>
 
