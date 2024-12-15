@@ -3,7 +3,9 @@
     <default-bar 
       :updateItems="updateItems" 
       :ingredientCount="ingredientCount"
-      :analyzeCount="analyzeCount" />
+      :analyzeCount="analyzeCount"
+      :loggedInUser="loggedInUser"
+    />
 
     <default-view 
       :items="items" 
@@ -17,6 +19,8 @@
 <script setup>
 import { computed, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router'
+import { auth } from '@/firebase.js';
+import { onAuthStateChanged } from "firebase/auth";
 
 import DefaultBar from './AppBar.vue'
 import DefaultView from './View.vue'
@@ -25,6 +29,18 @@ const router = useRouter();
 
 const ingredientCount = ref(0);
 const analyzeCount = ref(0);
+
+const loggedInUser = ref(null);
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    console.log("User is logged in:", user);
+    loggedInUser.value = user;
+  } else {
+    console.log("No user is logged in.");
+    loggedInUser.value = null;
+  }
+});
 
 onMounted(() => {
   const recipe_data = JSON.parse(sessionStorage.getItem('recipe'));

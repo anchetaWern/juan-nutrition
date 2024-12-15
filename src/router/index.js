@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import SearchView from '../views/SearchView.vue'
 import CategoriesView from '../views/CategoriesView.vue';
+import LoginView from '../views/LoginView.vue';
+import RegisterView from '../views/RegisterView.vue';
 import { useLoadingStore } from '../stores/loading';
 
 const router = createRouter({
@@ -21,6 +23,18 @@ const router = createRouter({
           // this generates a separate chunk (Home-[hash].js) for this route
           // which is lazy-loaded when the route is visited.
           component: CategoriesView,
+        },
+
+        {
+          path: '/login',
+          name: 'Login',
+          component: LoginView,
+        },
+
+        {
+          path: '/register',
+          name: 'Register',
+          component: RegisterView,
         },
 
         {

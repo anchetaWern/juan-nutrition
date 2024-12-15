@@ -2,11 +2,14 @@
   <v-app-bar flat>
     <v-app-bar-title>
       <a href="/" style="color: #333;">
-        <img :src="logo" alt="juan nutrisyon logo" style="width:200px;" />
+        <img :src="logo" alt="juan nutrisyon logo" style="width:150px;" />
       </a>
     </v-app-bar-title>
 
     <template v-slot:append>  
+      <v-btn size="x-small" icon="mdi-login" @click="goToLogin" v-if="!loggedInUser"></v-btn>
+
+      <v-btn size="x-small" icon="mdi-logout" @click="logoutUser" v-if="loggedInUser"></v-btn>
 
       <v-badge
         v-if="ingredientCount > 0"
@@ -102,6 +105,10 @@
 <script>
 import logo from '@/assets/images/juan-nutrisyon.png'
 import { ref } from 'vue';
+import { auth } from '@/firebase.js';
+import { signOut } from "firebase/auth";
+import { createToast } from 'mosha-vue-toastify'
+import 'mosha-vue-toastify/dist/style.css'
 
 export default {
 
@@ -116,6 +123,10 @@ export default {
       type: Number,
       default: 1
     },
+
+    loggedInUser: {
+      type: Object,
+    }
   },
 
   data: () => ({
@@ -133,12 +144,34 @@ export default {
       this.query = '';
     },
 
+    goToLogin() {
+      this.$router.push('/login');
+    },
+
     goToRecipe() {
       this.$router.push('/recipe');
     },
 
     goToAnalysis() {
       this.$router.push('/analyze');
+    },
+
+    async logoutUser() {
+      console.log('logout user');
+
+      try {
+        await signOut(auth);
+        console.log("User logged out");
+        createToast(
+          {
+            title: 'Logout successful',
+          }, 
+          { type: 'success', position: 'bottom-right' }
+        );
+
+      } catch (error) {
+        console.error("Error logging out:", error.message);
+      }
     }
   }
 }
