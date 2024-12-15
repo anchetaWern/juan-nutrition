@@ -17,11 +17,10 @@
             :type="showPassword ? 'text' : 'password'"
             label="Password"
             name="password"
-            counter
             @click:append="showPassword = !showPassword"
         ></v-text-field>
 
-        <v-btn color="primary" block @click="register" rounded="0">Create Account</v-btn>
+        <v-btn color="primary" block @click="register" rounded="0" :disabled="createUserNotOk">Create Account</v-btn>
 
         <div class="mt-2 text-center">
             <a href="/login">Login</a>
@@ -37,13 +36,21 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { createToast } from 'mosha-vue-toastify'
 import 'mosha-vue-toastify/dist/style.css'
 
+import { validateEmail } from "@/helpers/Validate";
+
 export default {
     
     data: () => ({
         email: '',
         username: '',
-        password: ''
+        password: '',
     }),
+
+    computed: {
+        createUserNotOk() {
+            return !(this.email && this.username && this.password && validateEmail(this.email));
+        },
+    },
 
     methods: {
         async register() {
