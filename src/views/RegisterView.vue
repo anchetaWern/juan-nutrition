@@ -7,6 +7,11 @@
         ></v-text-field>
 
         <v-text-field
+            label="Username"
+            v-model="username"
+        ></v-text-field>
+
+        <v-text-field
             v-model="password"
             :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
             :type="showPassword ? 'text' : 'password'"
@@ -28,7 +33,7 @@
 
 <script>
 import { auth } from '@/firebase.js';
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { createToast } from 'mosha-vue-toastify'
 import 'mosha-vue-toastify/dist/style.css'
 
@@ -36,6 +41,7 @@ export default {
     
     data: () => ({
         email: '',
+        username: '',
         password: ''
     }),
 
@@ -48,6 +54,9 @@ export default {
                     this.email,
                     this.password
                 );
+                const user = userCredential.user;
+
+                await updateProfile(user, { displayName: this.username });
                
                 createToast(
                     {
