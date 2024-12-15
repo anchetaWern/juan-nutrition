@@ -68,8 +68,8 @@ export default {
               
                 createToast(
                     {
-                        title: 'Created user',
-                        description: "You'll now be redirected to the homepage"
+                        title: 'Error logging in.',
+                        description: "Please check your credentials."
                     }, 
                     { type: 'danger', position: 'bottom-right' }
                 );
