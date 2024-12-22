@@ -35,8 +35,11 @@ import { auth } from '@/firebase.js';
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { createToast } from 'mosha-vue-toastify'
 import 'mosha-vue-toastify/dist/style.css'
+import axios from 'axios'
 
 import { validateEmail } from "@/helpers/Validate";
+
+const API_BASE_URI = import.meta.env.VITE_API_URI;
 
 export default {
     
@@ -63,7 +66,11 @@ export default {
                 );
                 const user = userCredential.user;
 
+                const token = await user.getIdToken();
+
                 await updateProfile(user, { displayName: this.username });
+
+                const user_res = await axios.post(`${API_BASE_URI}/firebase-auth/sync`, { token });
                
                 createToast(
                     {
