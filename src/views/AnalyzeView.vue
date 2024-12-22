@@ -249,7 +249,7 @@ export default {
       const loadCustomServingsData = () => {
         // load custom servings data
         console.log('now loading data');
-        const stored_cs = sessionStorage.getItem('custom_servings');
+        const stored_cs = sessionStorage.getItem('analyze_custom_servings');
         if (stored_cs) {
           console.log('stored cs: ', stored_cs);
           custom_servings_ref.value = JSON.parse(stored_cs); 
@@ -372,7 +372,7 @@ export default {
 
         // todo: store: custom serving, qty to session storage
         let stored_custom_servings = {};
-        const stored_cs = sessionStorage.getItem('custom_servings');
+        const stored_cs = sessionStorage.getItem('analyze_custom_servings');
         if (stored_cs) {
           stored_custom_servings = JSON.parse(stored_cs);
         }
@@ -385,7 +385,7 @@ export default {
 
         custom_servings_ref.value = stored_custom_servings;
 
-        sessionStorage.setItem('custom_servings', JSON.stringify(stored_custom_servings));
+        sessionStorage.setItem('analyze_custom_servings', JSON.stringify(stored_custom_servings));
       }
 
 
@@ -402,7 +402,7 @@ export default {
         emit('update-analyze-count-child');
 
         // TODO: delete corresponding custom_servings
-        const stored_cs = sessionStorage.getItem('custom_servings');
+        const stored_cs = sessionStorage.getItem('analyze_custom_servings');
         if (stored_cs) {
           const stored_custom_servings = JSON.parse(stored_cs);
           delete stored_custom_servings[slug];
@@ -411,10 +411,10 @@ export default {
 
           if (Object.keys(stored_custom_servings).length > 0) {
             console.log('has something: ', stored_custom_servings);
-            sessionStorage.setItem('custom_servings', JSON.stringify(stored_custom_servings));
+            sessionStorage.setItem('analyze_custom_servings', JSON.stringify(stored_custom_servings));
           } else {
             console.log('no more');
-            sessionStorage.removeItem('custom_servings');
+            sessionStorage.removeItem('analyze_custom_servings');
           }
       
         }

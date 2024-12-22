@@ -202,11 +202,14 @@ export default {
       const hasValuesPerContainerToggle = ref(false);
 
       let isProgrammaticUpdate = false;
+      console.log('ENZYME: ', recipe_data);
 
       recipe.value = recipe_data;
-
-      if (recipe_data && Object.keys(servingSizes).length === 0) {
+      console.log('SS: ', servingSizes.value);
+  
+      if (recipe_data && Object.keys(servingSizes.value).length === 0) {
         recipe_data.forEach(food => {
+          console.log('hato: ', food.serving_size);
           servingSizes.value[food.description_slug] = food.serving_size;
         });
       }
@@ -263,7 +266,7 @@ export default {
       const loadCustomServingsData = () => {
         // load custom servings data
         console.log('now loading data');
-        const stored_cs = sessionStorage.getItem('custom_servings');
+        const stored_cs = sessionStorage.getItem('recipe_custom_servings');
         if (stored_cs) {
           console.log('stored cs: ', stored_cs);
           custom_servings_ref.value = JSON.parse(stored_cs); 
@@ -381,7 +384,7 @@ export default {
       }
 
       refreshNutrients();
-
+  
       const modifyServingSize = () => {
         console.log('modify serving size: ', current_food_serving_size.value);
       
@@ -397,7 +400,7 @@ export default {
 
         // todo: store: custom serving, qty to session storage
         let stored_custom_servings = {};
-        const stored_cs = sessionStorage.getItem('custom_servings');
+        const stored_cs = sessionStorage.getItem('recipe_custom_servings');
         if (stored_cs) {
           stored_custom_servings = JSON.parse(stored_cs);
         }
@@ -410,7 +413,7 @@ export default {
 
         custom_servings_ref.value = stored_custom_servings;
 
-        sessionStorage.setItem('custom_servings', JSON.stringify(stored_custom_servings));
+        sessionStorage.setItem('recipe_custom_servings', JSON.stringify(stored_custom_servings));
       }
 
 
@@ -426,7 +429,7 @@ export default {
 
         delete servingSizes.value[slug];             
 
-        sessionStorage.setItem('recipe_serving_sizes', JSON.stringify(servingSizes.value));
+        sessionStorage.setItem('recipe_custom_servings', JSON.stringify(servingSizes.value));
 
         emit('update-ingredient-count-child');
 
@@ -444,6 +447,7 @@ export default {
       }
 
       const onUpdateServingCount = () => {
+        console.log('serving countzz: ', servingCount.value);
         emit('update-ingredient-serving-count-child', servingCount.value); 
 
         refreshNutrients();
