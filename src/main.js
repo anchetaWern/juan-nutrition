@@ -18,8 +18,6 @@ import { createHead } from '@vueuse/head'
 
 const API_BASE_URI = import.meta.env.VITE_API_URI
 
-localStorage.clear();
-
 const vuetify = createVuetify({
   components,
   directives,
