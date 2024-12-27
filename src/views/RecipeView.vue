@@ -2,7 +2,7 @@
  
     <v-container class="mt-5" id="recipe-container">
     
-      <div class="text-h6 mb-2">Estimate recipe nutrients</div>
+      <div class="text-h6 mb-2">Create Recipe</div>
 
       <v-alert 
         v-if="!recipe || recipe.length === 0"
@@ -14,12 +14,7 @@
       </v-alert>
 
       <div v-if="recipe && recipe.length > 0">
-        <v-text-field
-          v-model="servingCount"
-          @input="onUpdateServingCount"
-          label="Number of servings"
-        ></v-text-field>
-
+        
         <div v-for="food in recipe" :key="food.description_slug" class="mb-3">
           <FoodCard 
             :food="food" 
@@ -29,8 +24,34 @@
             :openModifyServingSizeModal="openModifyServingSizeModal"
             :key="food_card_key" />
         </div>
-      </div>
 
+        <v-text-field
+          v-model="servingCount"
+          @input="onUpdateServingCount"
+          label="Number of servings"
+        ></v-text-field>
+
+        <div v-if="loggedInUser">
+
+          <v-text-field
+            v-model="recipeName"
+            label="Recipe name"
+          ></v-text-field>
+
+          <v-file-input 
+            clearable 
+            @click:clear="clearImage"
+            label="Recipe image" 
+            @change="previewImage('captured_title_image_data', 'title_image_file_input', $event)" 
+            ref="title_image_file_input">
+          </v-file-input>
+
+          <img :src="captured_title_image_data" class="img" />
+
+          <v-btn color="primary" block @click="saveRecipe" rounded="0">Save Recipe</v-btn>
+        </div>
+
+      </div>
 
       <v-dialog
           v-model="modifyServingSizeDialog"
@@ -74,7 +95,7 @@
                       v-model="current_food_serving_size"
                   ></v-text-field>
 
-                  <v-btn color="primary" block @click="modifyServingSize" rounded="0">Modify serving size</v-btn>
+                  <v-btn color="primary" block @click="changeServingSize" rounded="0">Modify serving size</v-btn>
               </div>
           </v-card>
 
@@ -84,6 +105,46 @@
     </v-container>
 
     <div v-if="recipe && recipe.length > 0">
+
+      <v-table>
+          <tbody>
+              <tr>
+                  <td class="text-grey-darken-3">
+                      Serving Size: {{ serving_size }}g
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-grey-darken-3">
+                      Total Servings: {{ servingCount }}
+                  </td>
+              </tr>
+
+              <tr>
+                  <td class="text-grey-darken-3">
+                      Calories per serving: {{ wholeNumber(recipe_calories_per_serving) }}kcal / 2000kcal ({{ formatNumber(calculatePercentage(amountPerContainer(recipe_calories_per_serving, servingCount, displayValuesPerContainer, serving_size, serving_size, servingCount), 2000)) }}%)
+                      <v-progress-linear 
+                        class="mt-1"
+                        :model-value="calculatePercentage(amountPerContainer(recipe_calories_per_serving, servingCount, true, serving_size, serving_size, servingCount), 2000)" 
+                        bg-color="grey-darken-3" 
+                        color="deep-purple-lighten-2">
+                      </v-progress-linear>
+                  </td>
+              </tr>
+
+              <tr>
+                  <td class="text-grey-darken-3">
+                      Total Calories: {{ wholeNumber(recipe_total_calories) }}kcal
+                  </td>
+              </tr>
+
+              <tr>
+                  <td class="text-grey-darken-3">
+                      Ingredient count: {{ ingredients_count }}
+                  </td>
+              </tr>
+
+          </tbody>
+      </v-table>
 
       <div class="text-subtitle-1 mb-2">Estimated nutrients per serving</div>
 
@@ -143,12 +204,23 @@
 </template>
 
 
+<style>
+.img {
+  max-width: 100%;
+}
+</style>
 
 <script>
 import { VNumberInput } from 'vuetify/labs/VNumberInput'
 import FoodCard from '@/components/FoodCard.vue';
 import NutrientsTable from '@/components/NutrientsTable.vue'
 import { ref, watch, onMounted, nextTick } from 'vue';
+import axios from 'axios';
+
+import Compressor from 'compressorjs'
+
+import { createToast } from 'mosha-vue-toastify'
+import 'mosha-vue-toastify/dist/style.css'
 
 import { 
     aggregateNutrients,
@@ -156,31 +228,155 @@ import {
     getVitamins,
     getMinerals,
     getOthers,
+    modifyServingSize,
+    amountPerContainer,
 } from '@/helpers/Nutrients';
 
-import { calculatePercentage } from '@/helpers/Numbers';
+import { calculatePercentage, wholeNumber, formatNumber } from '@/helpers/Numbers';
+
+
+import { auth } from '@/firebase.js';
+import { onAuthStateChanged } from "firebase/auth";
 
 const recipe = ref(null);
 
 const servingCount = ref(1);
+const recipeName = ref('');
 
 const macros = ref([]);
 const vitamins = ref(null);
 const minerals = ref(null);
 const others = ref(null);
 
+const recipe_nutrients = ref(null);
+
 const newServingSize = ref(null);
 const newServingCount = ref(1);
 
+const loggedInUser = ref(null);
+
+const serving_size = ref(null);
+
+const recipe_calories_per_serving = ref(null);
+const recipe_total_calories = ref(null);
+const recipe_food_state = ref(null);
+const ingredients_count = ref(null);
+const ingredients = ref(null);
+
+const API_BASE_URI = import.meta.env.VITE_API_URI;
+
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    console.log("User is logged isn:", user);
+    loggedInUser.value = user;
+  } else {
+    console.log("No user is logged isn.");
+    loggedInUser.value = null;
+  }
+});
+
 export default {
+   
     components: {
       FoodCard,  
       NutrientsTable,
       VNumberInput,
     },
 
+    methods: {
+
+      clearImage() {
+        this.captured_title_image_data = null;
+        this.$refs.title_image_file_input.reset();
+      },
+
+      async previewImage(name, file_input_name, event) {
+        console.log('PREVIEW: ', name);
+        const file = event.target.files[0];
+        const d = await this.optimizeImage(file);
+        
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            console.log('reader result: ', e.target.result);
+            this[name] = e.target.result;
+          };
+          
+          reader.readAsDataURL(file);
+
+        
+        } else {
+          this[name] = null;
+          this.$refs[file_input_name].reset();
+        }
+      },
+
+
+      async optimizeImage(blob) {
+        return new Promise((resolve, reject) => {
+          new Compressor(blob, {
+            quality: 0.8,
+            width: 1000,
+
+            success(blob_obj) {
+              const reader = new FileReader();
+              reader.readAsDataURL(blob_obj);
+
+              reader.onload = (event) => {
+                const dataURL = event.target.result;
+                resolve(dataURL);
+              };
+
+              reader.onerror = (error) => {
+                reject(error);
+              };
+            },
+
+            error(error) {
+              reject(error);
+            }
+          });
+        });
+      },
+
+
+      async saveRecipe() {
+    
+        const api_key = localStorage.getItem('api_key');
+   
+        const recipe_res = await axios.post(`${API_BASE_URI}/recipe`, { 
+          'name': recipeName.value,
+          'image': this.captured_title_image_data, 
+          'serving_count': servingCount.value,
+          'serving_size': serving_size.value,
+          'calories': recipe_calories_per_serving.value,
+          'ingredients': ingredients.value,
+          'nutrients': recipe_nutrients.value,
+          'food_state': recipe_food_state.value,
+        },
+        {
+          timeout: 30000,
+          headers: {
+            'x-api-key': api_key,
+          }
+        });
+
+        createToast(
+            {
+                title: 'Recipe Created!',
+                description: 'Other users can now search your recipe.'
+            }, 
+            { type: 'success', position: 'bottom-right' }
+        );
+
+      }
+
+
+    },
 
     setup(props, { emit }) {
+     
       const recipe_data = JSON.parse(sessionStorage.getItem('recipe'));
 
       const recipe_serving_sizes_data = JSON.parse(sessionStorage.getItem('recipe_serving_sizes'));
@@ -200,6 +396,7 @@ export default {
 
       const current_food_serving_size = ref(null); // the serving size set for the food being currently updated
       const hasValuesPerContainerToggle = ref(false);
+
 
       let isProgrammaticUpdate = false;
       console.log('ENZYME: ', recipe_data);
@@ -374,18 +571,73 @@ export default {
 
         if (recipe_data) {
           const aggregated_nutrients = aggregateNutrients(recipe_data, recipe_serving_sizes_data, servingCount.value);
+          recipe_nutrients.value = aggregated_nutrients;
 
           macros.value = getMacros(aggregated_nutrients);
           vitamins.value = getVitamins(aggregated_nutrients);
           minerals.value = getMinerals(aggregated_nutrients);
           others.value = getOthers(aggregated_nutrients);
         }
+
+        const recipe_ingredients = recipe_data.map((itm) => {
+          const original_serving_size = itm.serving_size;
+          const serving_size = parseInt(recipe_serving_sizes_data[itm.description_slug]);
+          const serving_size_unit = itm.serving_size_unit;
+          const food_state = itm.food_state;
+          const food_substate = itm.food_substate;
+          const original_calories = itm.calories;
+          const new_calories = modifyServingSize(original_serving_size, serving_size, itm.calories);
         
+          return {
+            slug: itm.description_slug,
+            original_serving_size,
+            serving_size,
+            serving_size_unit,
+            food_state,
+            food_substate,
+            original_calories,
+            new_calories,
+          }
+        });
+
+        ingredients.value = recipe_ingredients;
+
+        const total_calories = recipe_ingredients.reduce(
+          (accumulator, itm) => accumulator + itm.new_calories,
+          0,
+        );
+        
+        recipe_total_calories.value = total_calories;
+
+        const calories_per_serving = total_calories / servingCount.value;       
+        recipe_calories_per_serving.value = calories_per_serving;
+
+        const total_ingredients = recipe_ingredients.length;
+        ingredients_count.value = total_ingredients;
+
+        const food_states = {};
+        recipe_ingredients.forEach((itm) => {
+          food_states[itm.food_state] = food_states.hasOwnProperty(itm.food_state) ? food_states[itm.food_state] + 1 : 1; 
+        });
+
+        const sorted_by_food_state = Object.keys(food_states).sort(function(a, b){
+          return food_states[b] - food_states[a];
+        }); // first item is the food state
+
+        recipe_food_state.value = sorted_by_food_state[0];
+
+        const total_weight = recipe_ingredients.reduce(
+          (accumulator, itm) => accumulator + itm.serving_size,
+          0,
+        );
+
+        const weight_per_serving = total_weight / servingCount.value;
+        serving_size.value = weight_per_serving;        
       }
 
       refreshNutrients();
   
-      const modifyServingSize = () => {
+      const changeServingSize = () => {
         console.log('modify serving size: ', current_food_serving_size.value);
       
         modifyServingSizeDialog.value = false;
@@ -393,12 +645,9 @@ export default {
         updateServingSize(current_food_slug.value, current_food_serving_size.value);
 
       
-        food_card_key.value += 1; // works!
+        food_card_key.value += 1; 
 
-        // issue: the custom serving size for each food is not being stored anywhere else.
-        // user must be able to see what they previously selected. with all the details pre-filled
-
-        // todo: store: custom serving, qty to session storage
+      
         let stored_custom_servings = {};
         const stored_cs = sessionStorage.getItem('recipe_custom_servings');
         if (stored_cs) {
@@ -409,8 +658,7 @@ export default {
           'weight': selected_custom_serving.value,
           'qty': selected_serving_qty.value, 
         }
-        console.log('stored custom servings: ', stored_custom_servings);
-
+       
         custom_servings_ref.value = stored_custom_servings;
 
         sessionStorage.setItem('recipe_custom_servings', JSON.stringify(stored_custom_servings));
@@ -464,7 +712,7 @@ export default {
 
         current_food_slug,
         current_food,
-        modifyServingSize,
+        changeServingSize,
         modifyServingSizeDialog,
         custom_serving_sizes,
         selected_custom_serving,
@@ -474,6 +722,7 @@ export default {
         current_food_serving_size,
         hasValuesPerContainerToggle,
 
+       
         openModifyServingSizeModal,
         food_card_key,
       }
@@ -482,14 +731,32 @@ export default {
     data: () => ({
       recipe,
       servingCount,
+      recipeName,
 
       macros,
       vitamins,
       minerals,
       others,
+      recipe_nutrients,
+
+      serving_size,
+      recipe_calories_per_serving,
+      recipe_total_calories,
+      recipe_food_state,
+      ingredients_count,
 
       newServingSize,
       newServingCount,
+      loggedInUser,
+
+      captured_title_image_data: null,
+
+      wholeNumber,
+      formatNumber,
+      amountPerContainer,
+      calculatePercentage,
+
+      ingredients
 
     }),
 

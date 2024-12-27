@@ -157,7 +157,7 @@ export function amountPerContainer(amount, servingsPerContainer, displayValuesPe
     return originalNutrientAmount;
 }
 
-function modifyServingSize(originalServingSize, newServingSize, originalNutrientAmount) {
+export function modifyServingSize(originalServingSize, newServingSize, originalNutrientAmount) {
     return (newServingSize / originalServingSize) * originalNutrientAmount;
 }
 
