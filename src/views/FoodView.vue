@@ -741,7 +741,7 @@ export default {
             createToast(
                 {
                     title: 'Added!',
-                    description: 'Ingredient was added to recipe'
+                    description: food.value.recipe_ingredients.length ? 'Recipe ingredients was added' : 'Ingredient was added to recipe'
                 }, 
                 { type: 'success', position: 'bottom-right' }
             );
