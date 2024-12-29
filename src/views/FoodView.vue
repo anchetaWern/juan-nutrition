@@ -16,7 +16,7 @@
                 <span v-if="food.alternate_names != 'N/A'" class="text-medium-emphasis text-subtitle-2">{{ food.alternate_names }}</span>
             </div>
             <div class="w-33">
-                <v-btn size="x-small" color="success" variant="outlined" @click="addToRecipe">Add to recipe</v-btn>
+                <v-btn size="x-small" color="success" variant="outlined" @click="addToRecipe">{{ food.recipe_ingredients.length ? "Modify Recipe" : "Add to Recipe" }}</v-btn>
                 <v-btn size="x-small" color="primary" variant="outlined" @click="addForAnalysis">Analyze</v-btn>
             </div>
         </div>
@@ -663,9 +663,7 @@ export default {
     };
 
 
-    
-    const addToRecipe = () => {
-       
+    const addIngredientToRecipe = (ingredient, ingredient_serving_size) => {
         const recipe = sessionStorage.getItem('recipe');
         let recipe_data = [];
         if (recipe) {
@@ -673,8 +671,9 @@ export default {
         }
 
         const index = recipe_data.findIndex(itm => itm.description_slug === food.value.description_slug);
+
         if (index === -1) {
-            recipe_data.push(food.value);
+            recipe_data.push(ingredient);
             sessionStorage.setItem('recipe', JSON.stringify(recipe_data));
 
             let serving_size_data = {};
@@ -683,7 +682,7 @@ export default {
                 serving_size_data = JSON.parse(serving_size);
             }
 
-            serving_size_data[food.value.description_slug] = food.value.serving_size;
+            serving_size_data[ingredient.description_slug] = ingredient_serving_size;
             sessionStorage.setItem('recipe_serving_sizes', JSON.stringify(serving_size_data));
 
             //
@@ -694,15 +693,45 @@ export default {
                 stored_custom_servings = JSON.parse(stored_cs);
             }
 
-            stored_custom_servings[food.value.description_slug] = {
+            stored_custom_servings[ingredient.description_slug] = {
                 // todo: this needs to be the individual weight of the custom serving.
                 // its currently the weight * qty
-                'weight': selected_custom_serving.value ? selected_custom_serving.value : food.value.serving_size, 
+                'weight': selected_custom_serving.value ? selected_custom_serving.value : ingredient_serving_size, 
                 'qty': selected_serving_qty.value ? selected_serving_qty.value : 1, 
             }
 
             sessionStorage.setItem('recipe_custom_servings', JSON.stringify(stored_custom_servings));
-            //
+
+            return true;
+        }
+        //
+        return false;
+    }
+
+    
+    const addToRecipe = () => {
+       
+        let added = false;
+
+        if (food.value.recipe_ingredients.length) {
+            console.log('ingredients: ', food.value.recipe_ingredients);
+
+            // todo: loop through the ingredients then add serving_size
+
+            const added_results = [];
+
+            food.value.recipe_ingredients.forEach((itm) => {
+                added_results.push(addIngredientToRecipe(itm.ingredient, itm.serving_size));
+            });
+
+            console.log('added results: ', added_results);
+
+        } else {
+            added = addIngredientToRecipe(food.value, food.value.serving_size);
+        }
+        
+
+        if (added) {
 
             createToast(
                 {
@@ -713,7 +742,7 @@ export default {
             );
 
             emit('update-ingredient-count-child');
-        } 
+        }
     
     }
 
