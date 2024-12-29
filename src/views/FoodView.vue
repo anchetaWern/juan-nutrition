@@ -725,6 +725,11 @@ export default {
             });
 
             console.log('added results: ', added_results);
+            if (added_results.length && added_results[0]) {
+                added = true;
+                sessionStorage.setItem('serving_count', food.value.servings_per_container);
+            }
+            
 
         } else {
             added = addIngredientToRecipe(food.value, food.value.serving_size);
