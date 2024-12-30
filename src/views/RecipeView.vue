@@ -377,6 +377,9 @@ export default {
 
     setup(props, { emit }) {
      
+      const recipe_name = sessionStorage.getItem('recipe_name');
+      recipeName.value = recipe_name;
+
       const recipe_data = JSON.parse(sessionStorage.getItem('recipe'));
 
       const recipe_serving_sizes_data = JSON.parse(sessionStorage.getItem('recipe_serving_sizes'));

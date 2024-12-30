@@ -714,20 +714,17 @@ export default {
         let added = false;
 
         if (food.value.recipe_ingredients.length) {
-            console.log('ingredients: ', food.value.recipe_ingredients);
-
-            // todo: loop through the ingredients then add serving_size
-
+           
             const added_results = [];
 
             food.value.recipe_ingredients.forEach((itm) => {
                 added_results.push(addIngredientToRecipe(itm.ingredient, itm.serving_size));
             });
 
-            console.log('added results: ', added_results);
             if (added_results.length && added_results[0]) {
                 added = true;
                 sessionStorage.setItem('serving_count', food.value.servings_per_container);
+                sessionStorage.setItem('recipe_name', food.value.description);
             }
             
 
