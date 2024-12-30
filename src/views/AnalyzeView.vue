@@ -398,10 +398,10 @@ export default {
         sessionStorage.setItem('analyze', JSON.stringify(updated_analyze));
 
         analyze.value = updated_analyze;   
+        delete servingSizes.value[slug];  
 
         emit('update-analyze-count-child');
 
-        // TODO: delete corresponding custom_servings
         const stored_cs = sessionStorage.getItem('analyze_custom_servings');
         if (stored_cs) {
           const stored_custom_servings = JSON.parse(stored_cs);
@@ -412,9 +412,16 @@ export default {
           if (Object.keys(stored_custom_servings).length > 0) {
             console.log('has something: ', stored_custom_servings);
             sessionStorage.setItem('analyze_custom_servings', JSON.stringify(stored_custom_servings));
+
+            const updated_analyze_serving_sizes = Object.fromEntries(
+              Object.entries(servingSizes.value).map(([key, value]) => [key, value])
+            );
+
+            sessionStorage.setItem('analyze_serving_sizes', JSON.stringify(updated_analyze_serving_sizes));
           } else {
             console.log('no more');
             sessionStorage.removeItem('analyze_custom_servings');
+            sessionStorage.removeItem('analyze_serving_sizes');
           }
       
         }
