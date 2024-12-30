@@ -679,6 +679,12 @@ export default {
 
         sessionStorage.setItem('recipe_custom_servings', JSON.stringify(servingSizes.value));
 
+        const updated_recipe_serving_sizes = Object.fromEntries(
+          Object.entries(servingSizes.value).map(([key, value]) => [key, value])
+        );
+
+        sessionStorage.setItem('recipe_serving_sizes', JSON.stringify(updated_recipe_serving_sizes));
+
         emit('update-ingredient-count-child');
 
         refreshNutrients();
