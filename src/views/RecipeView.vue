@@ -351,40 +351,64 @@ export default {
 
 
       async saveRecipe() {
-    
+
         const api_key = localStorage.getItem('api_key');
         console.log('CAPTURED IMAGE DATA: ', this.captured_title_image_data);
 
+        saveRecipeDisabled.value = true;
+      
         if (recipeName.value && servingCount.value && this.captured_title_image_data) {
-   
-          const recipe_res = await axios.post(`${API_BASE_URI}/recipe`, { 
-            'name': recipeName.value,
-            'image': this.captured_title_image_data, 
-            'serving_count': servingCount.value,
-            'serving_size': serving_size.value,
-            'calories': recipe_calories_per_serving.value,
-            'ingredients': ingredients.value,
-            'nutrients': recipe_nutrients.value,
-            'food_state': recipe_food_state.value,
-          },
-          {
-            timeout: 30000,
-            headers: {
-              'x-api-key': api_key,
-            }
-          });
+          
+          try {
 
-          createToast(
-              {
-                  title: 'Recipe Created!',
-                  description: 'Other users can now search your recipe.'
-              }, 
-              { type: 'success', position: 'bottom-right' }
-          );
-        
+            const recipe_res = await axios.post(`${API_BASE_URI}/recipe`, { 
+              'name': recipeName.value,
+              'image': this.captured_title_image_data, 
+              'serving_count': servingCount.value,
+              'serving_size': serving_size.value,
+              'calories': recipe_calories_per_serving.value,
+              'ingredients': ingredients.value,
+              'nutrients': recipe_nutrients.value,
+              'food_state': recipe_food_state.value,
+            },
+            {
+              timeout: 30000,
+              headers: {
+                'x-api-key': api_key,
+              }
+            });
+
+            createToast(
+                {
+                    title: 'Recipe Created!',
+                    description: 'Other users can now search your recipe.'
+                }, 
+                { type: 'success', position: 'bottom-right' }
+            );
+
+            // reset form
+            saveRecipeDisabled.value = true;
+            recipeName.value = null;
+            servingCount.value = null;
+            this.captured_title_image_data = null;
+            this.title_image_file_input = null;
+
+            sessionStorage.removeItem('recipe');
+            sessionStorage.removeItem('recipe_custom_servings');
+            sessionStorage.removeItem('recipe_name');
+            sessionStorage.removeItem('recipe_serving_sizes');
+            sessionStorage.removeItem('serving_count');
+
+            this.$router.push(`/`);
+
+          } catch (err) {
+            saveRecipeDisabled.value = false;
+          }
+
         } else {
           console.log('INCOMPLETE DATA');
         }
+        
 
       }
 
