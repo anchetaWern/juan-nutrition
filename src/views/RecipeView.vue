@@ -48,7 +48,7 @@
 
           <img :src="captured_title_image_data" class="img" />
 
-          <v-btn color="primary" block @click="saveRecipe" rounded="0">Save Recipe</v-btn>
+          <v-btn color="primary" block @click="saveRecipe" rounded="0" :disabled="saveRecipeDisabled">Save Recipe</v-btn>
         </div>
 
       </div>
@@ -265,6 +265,8 @@ const ingredients = ref(null);
 
 const API_BASE_URI = import.meta.env.VITE_API_URI;
 
+const saveRecipeDisabled = ref(true);
+
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
@@ -285,12 +287,14 @@ export default {
     },
 
     methods: {
-
+      /*
       clearImage() {
-        this.captured_title_image_data = null;
+        this.captured_title_image_data.value = null;
         this.$refs.title_image_file_input.reset();
       },
+      */
 
+      /*
       async previewImage(name, file_input_name, event) {
         console.log('PREVIEW: ', name);
         const file = event.target.files[0];
@@ -298,21 +302,25 @@ export default {
         
         if (file) {
           const reader = new FileReader();
-          reader.onload = (e) => {
+          reader.onload = function(e) {
             console.log('reader result: ', e.target.result);
-            this[name] = e.target.result;
+          
+            this.captured_title_image_data.value = e.target.result; // todo: error here
           };
           
           reader.readAsDataURL(file);
-
         
         } else {
-          this[name] = null;
-          this.$refs[file_input_name].reset();
+          this.title_image_file_input.reset();
+          this.captured_title_image_data.value = null;
         }
+
+        this.refreshRecipe();
       },
+      */
 
 
+      /*
       async optimizeImage(blob) {
         return new Promise((resolve, reject) => {
           new Compressor(blob, {
@@ -339,36 +347,44 @@ export default {
           });
         });
       },
+      */
 
 
       async saveRecipe() {
     
         const api_key = localStorage.getItem('api_key');
-   
-        const recipe_res = await axios.post(`${API_BASE_URI}/recipe`, { 
-          'name': recipeName.value,
-          'image': this.captured_title_image_data, 
-          'serving_count': servingCount.value,
-          'serving_size': serving_size.value,
-          'calories': recipe_calories_per_serving.value,
-          'ingredients': ingredients.value,
-          'nutrients': recipe_nutrients.value,
-          'food_state': recipe_food_state.value,
-        },
-        {
-          timeout: 30000,
-          headers: {
-            'x-api-key': api_key,
-          }
-        });
+        console.log('CAPTURED IMAGE DATA: ', this.captured_title_image_data);
 
-        createToast(
-            {
-                title: 'Recipe Created!',
-                description: 'Other users can now search your recipe.'
-            }, 
-            { type: 'success', position: 'bottom-right' }
-        );
+        if (recipeName.value && servingCount.value && this.captured_title_image_data) {
+   
+          const recipe_res = await axios.post(`${API_BASE_URI}/recipe`, { 
+            'name': recipeName.value,
+            'image': this.captured_title_image_data, 
+            'serving_count': servingCount.value,
+            'serving_size': serving_size.value,
+            'calories': recipe_calories_per_serving.value,
+            'ingredients': ingredients.value,
+            'nutrients': recipe_nutrients.value,
+            'food_state': recipe_food_state.value,
+          },
+          {
+            timeout: 30000,
+            headers: {
+              'x-api-key': api_key,
+            }
+          });
+
+          createToast(
+              {
+                  title: 'Recipe Created!',
+                  description: 'Other users can now search your recipe.'
+              }, 
+              { type: 'success', position: 'bottom-right' }
+          );
+        
+        } else {
+          console.log('INCOMPLETE DATA');
+        }
 
       }
 
@@ -392,6 +408,8 @@ export default {
       const custom_serving_sizes = ref(null);
       const selected_custom_serving = ref(null);
       const selected_serving_qty = ref(1);
+      const captured_title_image_data = ref(null); // replacement
+      const title_image_file_input = ref(null); // replacement
 
       const custom_servings_ref = ref(null);
 
@@ -437,8 +455,110 @@ export default {
         }
       });
 
+      watch(servingCount, () => {
+        refreshRecipe();
+      });
+
+      watch(recipeName, () => {
+        refreshRecipe();
+      });
+
+
 
       const recommended_daily_values = ref(null);
+
+      /*
+      async previewImage(name, file_input_name, event) {
+        console.log('PREVIEW: ', name);
+        const file = event.target.files[0];
+        const d = await this.optimizeImage(file);
+        
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            console.log('reader result: ', e.target.result);
+          
+            this.captured_title_image_data.value = e.target.result; // todo: error here
+          };
+          
+          reader.readAsDataURL(file);
+        
+        } else {
+          this.title_image_file_input.reset();
+          this.captured_title_image_data.value = null;
+        }
+
+        this.refreshRecipe();
+      },
+      */
+
+      /*
+      clearImage() {
+        this.captured_title_image_data.value = null;
+        this.$refs.title_image_file_input.reset();
+      },
+      */
+
+      function clearImage() {
+        captured_title_image_data.value = null;
+        title_image_file_input.value = null;
+
+        refreshRecipe();
+      }
+
+      const previewImage = async (name, fileInputName, event) => {
+        console.log("PREVIEW: ", name);
+        const file = event.target.files[0];
+        const optimizedFile = await optimizeImage(file);
+
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            console.log("reader result: ", e.target.result);
+            captured_title_image_data.value = e.target.result;
+
+            refreshRecipe();
+          };
+
+          reader.readAsDataURL(file);
+        } else {
+          title_image_file_input.value = null;
+          captured_title_image_data.value = null;
+
+          refreshRecipe();
+        }
+
+        
+      };
+
+
+      async function optimizeImage(blob) {
+        return new Promise((resolve, reject) => {
+          new Compressor(blob, {
+            quality: 0.8,
+            width: 1000,
+
+            success(blob_obj) {
+              const reader = new FileReader();
+              reader.readAsDataURL(blob_obj);
+
+              reader.onload = (event) => {
+                const dataURL = event.target.result;
+                resolve(dataURL);
+              };
+
+              reader.onerror = (error) => {
+                reject(error);
+              };
+            },
+
+            error(error) {
+              reject(error);
+            }
+          });
+        });
+      }
+
 
       const fetchDailyValues = async () => {
         let consolidated_daily_nutrient_dv = null;
@@ -566,6 +686,17 @@ export default {
 
         return 'deep-purple-lighten-4';
       };
+
+      function refreshRecipe() {
+        console.log('nato: ', captured_title_image_data.value);
+        // todo: check if serving count, recipe name and recipe image has value
+        if (recipeName.value && servingCount.value && captured_title_image_data.value) {
+          saveRecipeDisabled.value = false;
+        } else {
+          saveRecipeDisabled.value = true;
+        }
+        
+      }
 
 
       const refreshNutrients = () => {
@@ -708,6 +839,8 @@ export default {
         emit('update-ingredient-serving-count-child', servingCount.value); 
 
         refreshNutrients();
+
+        refreshRecipe();
       }
 
 
@@ -734,6 +867,14 @@ export default {
        
         openModifyServingSizeModal,
         food_card_key,
+
+        refreshRecipe,
+
+        captured_title_image_data,
+        title_image_file_input,
+
+        clearImage,
+        previewImage,
       }
     },
 
@@ -754,11 +895,13 @@ export default {
       recipe_food_state,
       ingredients_count,
 
+      saveRecipeDisabled,
+
       newServingSize,
       newServingCount,
       loggedInUser,
 
-      captured_title_image_data: null,
+      // captured_title_image_data: null, // commenting out in favor of using ref
 
       wholeNumber,
       formatNumber,
