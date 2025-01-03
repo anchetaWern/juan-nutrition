@@ -601,9 +601,16 @@ export default {
       };
 
       function refreshRecipe() {
-       
+        
         if (recipeName.value && servingCount.value && captured_title_image_data.value) {
-          saveRecipeDisabled.value = false;
+          const recipe_data = JSON.parse(sessionStorage.getItem('recipe'));
+          if (recipe_data && recipe_data.length > 1) {
+           
+            saveRecipeDisabled.value = false;
+          } else {
+            saveRecipeDisabled.value = true;
+          }
+          
         } else {
           saveRecipeDisabled.value = true;
         }
@@ -735,6 +742,7 @@ export default {
         emit('update-ingredient-count-child');
 
         refreshNutrients();
+        refreshRecipe();
       }
 
       const updateServingSize = (slug, newServingSize) => {
