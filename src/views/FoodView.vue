@@ -384,7 +384,7 @@
                         The daily recommended nutrient intake is adapted from multiple sources. It's primarily based from PDRI's (Philippine Dietary Reference Intakes) Estimated Average Requirements (EAR).
                         </p>
                         <p class="mt-2">
-                        Nutrients that aren't covered by the EAR is adapted from the Recommended Nutrient Intakes for macronutrients, vitamins and minerals. It's based on a 2,530kcal per day requirement for 19 to 29 year old males.
+                        Nutrients that aren't covered by the EAR are adapted from the Recommended Nutrient Intakes for macronutrients, vitamins and minerals. It's based on a 2,530kcal per day requirement for 19 to 29 year old males.
                         </p>
                         
                         <p class="mt-2">
@@ -394,17 +394,17 @@
                         <p class="mt-2">
                         Anything else that hasn't been covered by PDRI's recommendations are adapted from the <a href="https://www.fda.gov/food/nutrition-facts-label/daily-value-nutrition-and-supplement-facts-labels" target="_blank">United States' Food and Drug Administration Daily Values</a>. 
                         </p>
-
-                        <p class="mt-2">
-                        The nutritional values are color-coded to easily determine whether a food is high, moderate, or low on a specific nutrient: <span class="text-deep-purple-lighten-4">light purple</span> for low, <span class="text-deep-purple-lighten-2">mid purple</span> for moderate, <span class="text-deep-purple-darken-4">deep purple</span> for high.
-                        </p>
-                        <p>
-                        For nutrients that are generally good for everyone: protein, dietary fiber, vitamins and minerals. You want to aim for foods that has the deepest shade of purple. 
-                        </p>
                        
                         <p class="mt-2">
                         Do note that these values are only meant to serve as a general guideline for the nutritional needs of the average person. 
                         Individual needs may vary depending on various factors such as age, gender, activity level, health status, body size and composition, metabolic rate, genetic factors, lifestyle and dietary habits, and environmental factors.
+                        </p>
+
+                        <p class="mt-2">
+                        As a general guideline, you want to avoid eating foods that are high in sugars, saturated fat, and cholesterol. 
+                        On the other hand, you want to be eating foods that are high in protein, fiber, vitamins and minerals (except sodium). 
+                        To help with this, we've adapted the <a href="https://www.fao.org/ag/humannutrition/32444-09f5545b8abe9a0c3baf01a4502ac36e4.pdf" target="_blank">FAO guidelines for nutrition and health claims</a>.
+                        You'll see a label of high, low, very low, and free beside the daily value for specific nutrients if they meet FAO's criteria.
                         </p>
 
                         <p class="mt-2">These are the reference values for each nutrient:</p>
