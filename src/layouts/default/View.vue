@@ -16,6 +16,7 @@ const emit = defineEmits(['update-ingredient-count']);
 
 // updates the ingredient count in the app bar
 const updateIngredientCountChild = () => {
+  console.log('HAZAM');
   emit('update-ingredient-count');
 }
 

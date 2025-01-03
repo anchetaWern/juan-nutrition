@@ -399,9 +399,12 @@ export default {
             sessionStorage.removeItem('recipe_serving_sizes');
             sessionStorage.removeItem('serving_count');
 
+            this.$emit('update-ingredient-count-child');
+
             this.$router.push(`/`);
 
           } catch (err) {
+            console.log('err: ', err);
             saveRecipeDisabled.value = false;
           }
 
