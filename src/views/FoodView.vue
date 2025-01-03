@@ -586,14 +586,14 @@ export default {
     const pageDescription = 'View more info at app.juanutrisyon.info';
 
     watch(selected_custom_serving, (new_custom_serving, old_custom_serving) => {
-        console.log('selected_custom_serving changed from', old_custom_serving, 'to', new_custom_serving);
+       
         selected_serving_qty.value = 1;
         newServingSize.value = parseFloat(new_custom_serving);
         
     });
     
     watch(selected_serving_qty, (new_serving_qty, old_serving_qty) => {
-        console.log('serving qty changed: ', new_serving_qty);
+        
         if (selected_custom_serving.value) {
             newServingSize.value = parseFloat(selected_custom_serving.value) * parseInt(new_serving_qty);
         }
@@ -685,8 +685,6 @@ export default {
             serving_size_data[ingredient.description_slug] = ingredient_serving_size;
             sessionStorage.setItem('recipe_serving_sizes', JSON.stringify(serving_size_data));
 
-            //
-            console.log('HAS CUSTOM SERVING SIZE!');
             let stored_custom_servings = {};
             const stored_cs = sessionStorage.getItem('recipe_custom_servings');
             if (stored_cs) {
@@ -694,8 +692,6 @@ export default {
             }
 
             stored_custom_servings[ingredient.description_slug] = {
-                // todo: this needs to be the individual weight of the custom serving.
-                // its currently the weight * qty
                 'weight': selected_custom_serving.value ? selected_custom_serving.value : ingredient_serving_size, 
                 'qty': selected_serving_qty.value ? selected_serving_qty.value : 1, 
             }
@@ -770,10 +766,7 @@ export default {
             serving_size_data[food.value.description_slug] = newServingSize.value ? newServingSize.value : food.value.serving_size; 
             sessionStorage.setItem('analyze_serving_sizes', JSON.stringify(serving_size_data));
 
-            // TODO: store custom servings data in session storage
-            //
-          
-            console.log('HAS CUSTOM SERVING SIZE!');
+           
             let stored_custom_servings = {};
             const stored_cs = sessionStorage.getItem('analyze_custom_servings');
             if (stored_cs) {
@@ -781,15 +774,12 @@ export default {
             }
 
             stored_custom_servings[food.value.description_slug] = {
-                // todo: this needs to be the individual weight of the custom serving.
-                // its currently the weight * qty
                 'weight': selected_custom_serving.value ? selected_custom_serving.value : food.value.serving_size, 
                 'qty': selected_serving_qty.value ? selected_serving_qty.value : 1, 
             }
 
             sessionStorage.setItem('analyze_custom_servings', JSON.stringify(stored_custom_servings));
             
-            //
 
             createToast(
                 {
@@ -825,7 +815,6 @@ export default {
         const current_food = res.data;
         food.value = current_food;
         newServingSize.value = res.data.serving_size;
-        console.log('FOOD: ', res.data);
 
         if (food.value.custom_servings) {
             const serving_units = food.value.custom_servings.serving_units.map(itm => {
@@ -840,34 +829,12 @@ export default {
                 return itm.volume_in_ml && current_food.density || itm.weight;
             });
 
-            console.log("SERVING UNITS: ", serving_units);
-
             if (serving_units && serving_units.length > 0) {
                 custom_serving_sizes.value = serving_units;
             }
         }
 
-        // todo: fill out the custom servings value to be outputted for modal
-        /*
-         "custom_servings": {
-        "id": 15,
-        "name": "Eggs",
-        "slug": "eggs",
-        "serving_units": [
-            {
-                "id": 26,
-                "name": "pewee egg",
-                "long_name": null,
-                "weight": 41,
-                "weight_unit": "g",
-                "pivot": {
-                    "custom_servings_category_id": 15,
-                    "serving_unit_id": 26
-                }
-            },
-        */
-
-        // 
+       
         let consolidated_daily_nutrient_dv = null;
         if (sessionStorage.getItem('consolidated_daily_nutrient_dv')) {
             consolidated_daily_nutrient_dv = JSON.parse(sessionStorage.getItem('consolidated_daily_nutrient_dv'));
@@ -876,7 +843,7 @@ export default {
             consolidated_daily_nutrient_dv = fda_daily_nutrient_values_res.data;
             sessionStorage.setItem('consolidated_daily_nutrient_dv', JSON.stringify(consolidated_daily_nutrient_dv));
         }
-        //
+        
 
         const fda_daily_nutrient_values_arr = consolidated_daily_nutrient_dv.map((itm) => {
             return {
@@ -896,11 +863,8 @@ export default {
             }
         });
 
-        console.log('DV table: ', JSON.stringify(dv_table));
-        
         daily_values_table.value = dv_table;
-        //
-        
+       
         
 
         if (res.data.servings_per_container) {
@@ -987,7 +951,6 @@ export default {
         others.value = getOthers(res.data.nutrients);
 
         // get fao claims
-
         let fao_nutrient_content_claims = null;
         if (sessionStorage.getItem('fao_nutrient_content_claims')) {
             fao_nutrient_content_claims = JSON.parse(sessionStorage.getItem('fao_nutrient_content_claims'));
@@ -1002,8 +965,6 @@ export default {
         const filtered_fao_nutrient_content_claims = fao_nutrient_content_claims.filter((itm) => {
             return itm.food_state === normalized_food_state;
         });
-
-        console.log('filtered: ', filtered_fao_nutrient_content_claims);
        
         fao_nutrient_claims.value = filtered_fao_nutrient_content_claims;
 

@@ -327,17 +327,16 @@ export function aggregateNutrients (recipe, serving_sizes, serving_count = 1) {
                     if (!aggregated_nutrients[name].hasOwnProperty('composition')) {
                         aggregated_nutrients[name].composition = composition.map(subNutrient => ({
                             ...subNutrient,
-                            amount: 0 // Start with amount 0 to allow for aggregation
+                            amount: 0 
                         }));
                     }
 
                     composition.forEach((subNutrient, index) => {
-                        // Check if the sub-nutrient already exists in the aggregated composition
+                        
                         const aggregatedSubNutrient = aggregated_nutrients[name].composition.find(
                             sub => sub.name === subNutrient.name
                         );
     
-                        // If the sub-nutrient exists, aggregate the amount; otherwise, add it
                         if (aggregatedSubNutrient) {
                             aggregatedSubNutrient.amount += subNutrient.amount;
                         } else {
@@ -388,51 +387,12 @@ export function filterNutrients(nutrients, filterNames) {
     return sorted_nutrients;
 }
 
-// note: moderated nutrients should only be considered deficient if its less than 50% of the limit
-// exclude: saturated fat, trans fat, sugar
-
-
 const moderatedNutrients = ['cholesterol', 'calcium']; 
-// deficient: Consumption < 60% of DV
-// good coverage: Consumption < 60% of DV
-// over consumed Consumption > DV
 
 const excludedNutrients = ['saturated fat', 'trans fat', 'sugar'];
-// deficient: excluded
-// good coverage: excluded
-// over consumed: if it goes beyond the DV. for trans fat there should be none.
-
-const highPriorityNutrients = [
-    'protein', 'dietary fiber', 'calcium', 'iron', 'magnesium', 
-    'vitamin a', 'vitamin d', 'zinc', 'iodine', 'vitamin b12', 'vitamin b9'
-]; 
-// deficient: Consumption < 90% of DV
-// good coverage: Consumption ≤ 100% to 120% of DV
-// over consumed: Consumption > DV + 50%
-
-const mediumPriorityNutrients = [
-    'total fat', 'total carbohydrates', 'vitamin c', 'vitamin e', 'vitamin k', 'potassium',
-    'vitamin b1', 'vitamin b2', 'vitamin b3', 'vitamin b5', 'vitamin b6', 'phosphorus', 'selenium',
-    'copper', 'manganese', 'chromium', 'molybdenum', 'choline',
-];
-// deficient: Consumption < 80% of DV
-// good coverage: Consumption ≤ 90% to 120% of DV
-// over consumed: Consumption > DV + 50%
-
-const lowPriorityNutrients = ['biotin', 'sodium', 'chloride'];
-// deficient: Consumption < 70% of DV
-// good coverage: Consumption ≤ 80% to 120% of DV
-// over consumed: Consumption > DV + 50%
-
-/* 
-Excessive = > 125% DV (over-consumed)
-Adequate = 75 to 125% DV (good coverage)
-Fair / Inadequate = 50 to 74% DV (deficient)
-Poor / Starvation = < 50% DV (deficient)
-*/
 
 export function filterDeficientNutrients(nutrients, limits) {
-   // console.log('got called');
+  
     const deficient_nutrients = [];
   
     nutrients.forEach(item => {
@@ -442,10 +402,6 @@ export function filterDeficientNutrients(nutrients, limits) {
             const limit = limits[item.name];
             let new_limit = limit * .74;
             
-            if (item.name == 'protein') {
-                console.log('===PROTEIN: ' + item.amount + " -> " + new_limit);
-            }
-
             if (item.amount <= new_limit) {
                 deficient_nutrients.push({
                     name: item.name,
@@ -663,7 +619,6 @@ export function extractFAOClaim(fao_nutrient_content_claims, component, claim)
 // foodState = Solids, Liquids, Powdered, Semi-solid, Frozen (the last 3 are considered Solids so effectively there are only two states)
 export function FAONutrientContentClaim(component, originalNutrientAmount, nutrientPercentage, originalServingSize, foodState, fao_nutrient_content_claims, calories = null, saturated_fat = null)
 {
-    // todo: look for the fao claim reference value
     const normalized_food_state = normalizeFoodState(foodState);
     const newServingSize = 100; // 100g
     const normalized_nutrient_amount = modifyServingSize(originalServingSize, newServingSize, originalNutrientAmount);
@@ -671,49 +626,49 @@ export function FAONutrientContentClaim(component, originalNutrientAmount, nutri
     if (component === 'energy') {
 
         const low_energy_condition = extractFAOClaimReferenceValue(fao_nutrient_content_claims, 'energy', 'low');
-        console.log('energy low: ', low_energy_condition);
+      
         if (normalized_nutrient_amount <= low_energy_condition.value) {
             return 'low';
         }
 
         const free_energy_condition = extractFAOClaimReferenceValue(fao_nutrient_content_claims, 'energy', 'free');
-        console.log('energy free: ', free_energy_condition);
+      
         if (normalized_food_state === 'liquid' && normalized_nutrient_amount <= free_energy_condition.value) {
             return 'free';
         }
     } else if (component === 'total fat') {
         const low_fat_condition = extractFAOClaimReferenceValue(fao_nutrient_content_claims, 'fat', 'low');
-        console.log('fat low: ', low_fat_condition);
+       
         if (normalized_nutrient_amount <= low_fat_condition.value) {
             return 'low';
         }
 
         const free_fat_condition = extractFAOClaimReferenceValue(fao_nutrient_content_claims, 'fat', 'free');
-        console.log('fat free: ', free_fat_condition);
+       
         if (normalized_nutrient_amount <= free_fat_condition.value) {
             return 'free';
         }
     } else if (component === 'sugar') {
         const free_sugar_condition = extractFAOClaimReferenceValue(fao_nutrient_content_claims, 'sugars', 'free');
-        console.log('sugar free: ', free_sugar_condition);
+      
         if (normalized_nutrient_amount <= free_sugar_condition.value) {
             return 'free';
         }
     } else if (component === 'sodium') {
         const low_sodium_condition = extractFAOClaimReferenceValue(fao_nutrient_content_claims, 'sodium', 'low');
-        console.log('sodium low: ', low_sodium_condition);
+        
         if (normalized_nutrient_amount <= low_sodium_condition.value) {
             return 'low';
         }
 
         const very_low_sodium_condition = extractFAOClaimReferenceValue(fao_nutrient_content_claims, 'sodium', 'very low');
-        console.log('sodium very low: ', very_low_sodium_condition);
+       
         if (normalized_nutrient_amount <= very_low_sodium_condition.value) {
             return 'very low';
         }
 
         const free_sodium_condition = extractFAOClaimReferenceValue(fao_nutrient_content_claims, 'sodium', 'free');
-        console.log('sodium free: ', free_sodium_condition);
+       
         if (normalized_nutrient_amount <= free_sodium_condition.value) {
             return 'free';
         } 
@@ -721,18 +676,12 @@ export function FAONutrientContentClaim(component, originalNutrientAmount, nutri
         const source_of_vitamins_and_minerals_condition = extractFAOClaimReferenceValue(fao_nutrient_content_claims, 'vitamins and minerals', 'source');
         const high_in_vitamins_and_minerals_condition = extractFAOClaimReferenceValue(fao_nutrient_content_claims, 'vitamins and minerals', 'high');
 
-        console.log('vitamins & minerals source: ', source_of_vitamins_and_minerals_condition);
-        console.log('vitamins & minerals high: ', high_in_vitamins_and_minerals_condition);
-
-        // todo: calculate nutrientPercentage
         const fao_claim = extractFAOClaim(fao_nutrient_content_claims, 'vitamins and minerals', 'source'); // note: doesn't matter what the claim is bec the ref value doesn't change
         const nutrient_reference_value = fao_claim.reference_values.find(itm => itm.nutrient === component);
-        console.log('nutrient_reference_value: ', nutrient_reference_value); // nutrient_reference_value.daily_value
-
+      
         // normalized_nutrient_amount
         if (nutrient_reference_value) {
             const percentage_per_100g = calculatePercentage(normalized_nutrient_amount, nutrient_reference_value.daily_value); 
-            console.log(component + ' percent per 100g: ' + percentage_per_100g + ' cond: ' + high_in_vitamins_and_minerals_condition);
             if (percentage_per_100g > high_in_vitamins_and_minerals_condition) {
                 return 'high';
             }
@@ -747,9 +696,6 @@ export function FAONutrientContentClaim(component, originalNutrientAmount, nutri
         const source_of_fiber_condition = extractFAOClaimReferenceValue(fao_nutrient_content_claims, 'dietary fiber', 'source');
         const high_in_fiber_condition = extractFAOClaimReferenceValue(fao_nutrient_content_claims, 'dietary fiber', 'high');
 
-        console.log('fiber source: ', source_of_fiber_condition);
-        console.log('fiber high: ', high_in_fiber_condition);
-
         if (normalized_nutrient_amount > high_in_fiber_condition.value) {
             return 'high';
         }
@@ -760,9 +706,6 @@ export function FAONutrientContentClaim(component, originalNutrientAmount, nutri
     } else if (component === 'protein') {
         const source_of_protein_condition = extractFAOClaimReferenceValue(fao_nutrient_content_claims, 'protein', 'source');
         const high_in_protein_condition = extractFAOClaimReferenceValue(fao_nutrient_content_claims, 'protein', 'high');
-
-        console.log('protein source: ', source_of_protein_condition);
-        console.log('protein high: ', high_in_protein_condition);
 
         if (nutrientPercentage > high_in_protein_condition.value) {
             return 'high';
@@ -786,9 +729,6 @@ export function FAONutrientContentClaim(component, originalNutrientAmount, nutri
         const low_saturated_fat_condition = extractFAOClaimReferenceValue(fao_nutrient_content_claims, 'saturated fat', 'low');
         const low_saturated_fat_condition_two = ten_percent_of_total_energy > saturated_fat_energy;
 
-        console.log('cholesterol free: ', free_of_saturated_fat_condition);
-        console.log('saturated fat low: ', low_saturated_fat_condition);
-        
         if (normalized_nutrient_amount <= free_of_saturated_fat_condition.value) {
             return 'free';
         }
@@ -801,9 +741,6 @@ export function FAONutrientContentClaim(component, originalNutrientAmount, nutri
 
         const free_of_cholesterol_condition = extractFAOClaimReferenceValue(fao_nutrient_content_claims, 'cholesterol', 'free');
         const low_saturated_fat_condition = extractFAOClaimReferenceValue(fao_nutrient_content_claims, 'saturated fat', 'low');
-
-        console.log('cholesterol free: ', free_of_cholesterol_condition);
-        console.log('cholesterol low: ', low_saturated_fat_condition);
 
         const normalized_saturated_fat_amount = modifyServingSize(originalServingSize, 100, saturated_fat);
 

@@ -290,11 +290,11 @@ export default defineComponent({
       };
 
       while ((match = regex.exec(str)) !== null) {
-        console.log(match)
+      
         const keyword = match[1];
         const cond = match[2];
         const value = match[3];
-        console.log('val: ', value);
+     
         const unit = match[5];
 
         if (keyword) {
@@ -391,7 +391,7 @@ export default defineComponent({
 
         })
         .catch((err) => {
-          console.log('err: ', err);
+          console.log('search err: ', err);
         });
     }
 

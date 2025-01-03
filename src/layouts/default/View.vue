@@ -16,7 +16,6 @@ const emit = defineEmits(['update-ingredient-count']);
 
 // updates the ingredient count in the app bar
 const updateIngredientCountChild = () => {
-  console.log('HAZAM');
   emit('update-ingredient-count');
 }
 
@@ -27,13 +26,11 @@ const updateAnalyzeCountChild = () => {
 
 // update the serving size for a recipe ingredient
 const updateIngredientServingSizeChild = () => {
-  console.log('update serving size child!');
   emit('update-serving-size');
 }
 
 // update the serving count for a recipe
 const updateIngredientServingCountChild = (servingCount) => {
-  console.log('update serving count child!', servingCount);
   emit('update-serving-count', servingCount);
 }
 

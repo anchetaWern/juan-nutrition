@@ -270,10 +270,8 @@ const saveRecipeDisabled = ref(true);
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    console.log("User is logged isn:", user);
     loggedInUser.value = user;
   } else {
-    console.log("No user is logged isn.");
     loggedInUser.value = null;
   }
 });
@@ -287,74 +285,11 @@ export default {
     },
 
     methods: {
-      /*
-      clearImage() {
-        this.captured_title_image_data.value = null;
-        this.$refs.title_image_file_input.reset();
-      },
-      */
-
-      /*
-      async previewImage(name, file_input_name, event) {
-        console.log('PREVIEW: ', name);
-        const file = event.target.files[0];
-        const d = await this.optimizeImage(file);
-        
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = function(e) {
-            console.log('reader result: ', e.target.result);
-          
-            this.captured_title_image_data.value = e.target.result; // todo: error here
-          };
-          
-          reader.readAsDataURL(file);
-        
-        } else {
-          this.title_image_file_input.reset();
-          this.captured_title_image_data.value = null;
-        }
-
-        this.refreshRecipe();
-      },
-      */
-
-
-      /*
-      async optimizeImage(blob) {
-        return new Promise((resolve, reject) => {
-          new Compressor(blob, {
-            quality: 0.8,
-            width: 1000,
-
-            success(blob_obj) {
-              const reader = new FileReader();
-              reader.readAsDataURL(blob_obj);
-
-              reader.onload = (event) => {
-                const dataURL = event.target.result;
-                resolve(dataURL);
-              };
-
-              reader.onerror = (error) => {
-                reject(error);
-              };
-            },
-
-            error(error) {
-              reject(error);
-            }
-          });
-        });
-      },
-      */
-
-
+     
       async saveRecipe() {
 
         const api_key = localStorage.getItem('api_key');
-        console.log('CAPTURED IMAGE DATA: ', this.captured_title_image_data);
-
+       
         saveRecipeDisabled.value = true;
       
         if (recipeName.value && servingCount.value && this.captured_title_image_data) {
@@ -404,13 +339,11 @@ export default {
             this.$router.push(`/`);
 
           } catch (err) {
-            console.log('err: ', err);
+            console.log('save recipe err: ', err);
             saveRecipeDisabled.value = false;
           }
 
-        } else {
-          console.log('INCOMPLETE DATA');
-        }
+        } 
         
 
       }
@@ -447,14 +380,11 @@ export default {
 
 
       let isProgrammaticUpdate = false;
-      console.log('ENZYME: ', recipe_data);
-
+     
       recipe.value = recipe_data;
-      console.log('SS: ', servingSizes.value);
-  
+    
       if (recipe_data && Object.keys(servingSizes.value).length === 0) {
         recipe_data.forEach(food => {
-          console.log('hato: ', food.serving_size);
           servingSizes.value[food.description_slug] = food.serving_size;
         });
       }
@@ -467,16 +397,14 @@ export default {
 
       watch(selected_custom_serving, (new_custom_serving, old_custom_serving) => {
         if (isProgrammaticUpdate) return;
-        console.log('is programmatic update: ', isProgrammaticUpdate);
-        console.log('===selected_custom_serving changed from', old_custom_serving, 'to', new_custom_serving);
+       
         selected_serving_qty.value = 1;
         current_food_serving_size.value = parseFloat(new_custom_serving);  
       });
 
       watch(selected_serving_qty, (new_serving_qty, old_serving_qty) => {
         if (isProgrammaticUpdate) return;
-        console.log('is programmatic update: ', isProgrammaticUpdate);
-        console.log('====serving qty changed: ', new_serving_qty);
+      
         if (selected_custom_serving.value) {
             current_food_serving_size.value = parseFloat(selected_custom_serving.value) * parseInt(new_serving_qty);
         }
@@ -494,38 +422,7 @@ export default {
 
       const recommended_daily_values = ref(null);
 
-      /*
-      async previewImage(name, file_input_name, event) {
-        console.log('PREVIEW: ', name);
-        const file = event.target.files[0];
-        const d = await this.optimizeImage(file);
-        
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = function(e) {
-            console.log('reader result: ', e.target.result);
-          
-            this.captured_title_image_data.value = e.target.result; // todo: error here
-          };
-          
-          reader.readAsDataURL(file);
-        
-        } else {
-          this.title_image_file_input.reset();
-          this.captured_title_image_data.value = null;
-        }
-
-        this.refreshRecipe();
-      },
-      */
-
-      /*
-      clearImage() {
-        this.captured_title_image_data.value = null;
-        this.$refs.title_image_file_input.reset();
-      },
-      */
-
+      
       function clearImage() {
         captured_title_image_data.value = null;
         title_image_file_input.value = null;
@@ -534,14 +431,14 @@ export default {
       }
 
       const previewImage = async (name, fileInputName, event) => {
-        console.log("PREVIEW: ", name);
+       
         const file = event.target.files[0];
         const optimizedFile = await optimizeImage(file);
 
         if (file) {
           const reader = new FileReader();
           reader.onload = (e) => {
-            console.log("reader result: ", e.target.result);
+            
             captured_title_image_data.value = e.target.result;
 
             refreshRecipe();
@@ -612,10 +509,9 @@ export default {
 
       const loadCustomServingsData = () => {
         // load custom servings data
-        console.log('now loading data');
+      
         const stored_cs = sessionStorage.getItem('recipe_custom_servings');
         if (stored_cs) {
-          console.log('stored cs: ', stored_cs);
           custom_servings_ref.value = JSON.parse(stored_cs); 
         }
       }
@@ -624,16 +520,14 @@ export default {
 
 
       const openModifyServingSizeModal = (food_slug, custom_servings_category) => {
-        console.log('slug: ', food_slug);
-
+        
         current_food_slug.value = food_slug;
         const found_food = recipe.value.find(itm => itm.description_slug === food_slug);
         current_food.value = found_food;
 
         if (custom_servings_category) {
           hasValuesPerContainerToggle.value = false;
-          console.log('custom servings: ',  custom_servings_category);
-
+          
           const serving_units = custom_servings_category.serving_units.map(itm => {
             return {
               'name': itm.name,
@@ -646,8 +540,6 @@ export default {
             return itm.volume_in_ml && found_food.density || itm.weight;
           });
 
-          console.log('custom servings: ', serving_units);
-
           if (serving_units && serving_units.length > 0) {
               custom_serving_sizes.value = serving_units;
           }
@@ -659,10 +551,8 @@ export default {
           if (current_custom_serving) {
             isProgrammaticUpdate = true;
 
-            console.log('current custom serving: ', custom_servings_ref.value[food_slug]);
             const current_serving_size = current_custom_serving.weight * current_custom_serving.qty;
-            console.log('current serving size: ', current_serving_size);
-            
+           
             selected_custom_serving.value = current_custom_serving.weight;
             selected_serving_qty.value = current_custom_serving.qty;
             current_food_serving_size.value = current_serving_size; // custom_servings_ref.value[food_slug].weight;
@@ -674,24 +564,20 @@ export default {
           }
 
         } else {
-          console.log('there are no custom servings');
           const current_food = recipe.value.find(itm => itm.description_slug === food_slug);
 
           if (current_food.servings_per_container > 1) {
-            console.log('has values per container: ');
             hasValuesPerContainerToggle.value = true;
           }
 
           const current_serving_size = parseFloat(servingSizes.value[food_slug]);
 
-          console.log('current food serving size: ', current_serving_size);
           custom_serving_sizes.value = null;
           selected_custom_serving.value = current_serving_size;
           selected_serving_qty.value = 1;
 
           current_food_serving_size.value = current_serving_size;
 
-          console.log('current food: ', current_food);
         }
         
         
@@ -715,8 +601,7 @@ export default {
       };
 
       function refreshRecipe() {
-        console.log('nato: ', captured_title_image_data.value);
-        // todo: check if serving count, recipe name and recipe image has value
+       
         if (recipeName.value && servingCount.value && captured_title_image_data.value) {
           saveRecipeDisabled.value = false;
         } else {
@@ -729,9 +614,7 @@ export default {
       const refreshNutrients = () => {
         const recipe_data = JSON.parse(sessionStorage.getItem('recipe'));
         const recipe_serving_sizes_data = JSON.parse(sessionStorage.getItem('recipe_serving_sizes'));
-        
-        console.log('recipe data: ', recipe_data);
-
+     
         if (recipe_data && recipe_data.length) {
           const aggregated_nutrients = aggregateNutrients(recipe_data, recipe_serving_sizes_data, servingCount.value);
           recipe_nutrients.value = aggregated_nutrients;
@@ -803,8 +686,7 @@ export default {
       refreshNutrients();
   
       const changeServingSize = () => {
-        console.log('modify serving size: ', current_food_serving_size.value);
-      
+       
         modifyServingSizeDialog.value = false;
 
         updateServingSize(current_food_slug.value, current_food_serving_size.value);
@@ -866,7 +748,7 @@ export default {
       }
 
       const onUpdateServingCount = () => {
-        console.log('serving countzz: ', servingCount.value);
+      
         emit('update-ingredient-serving-count-child', servingCount.value); 
 
         refreshNutrients();

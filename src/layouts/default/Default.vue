@@ -34,10 +34,8 @@ const loggedInUser = ref(null);
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    console.log("User is logged in:", user);
     loggedInUser.value = user;
   } else {
-    console.log("No user is logged in.");
     loggedInUser.value = null;
   }
 });
@@ -60,7 +58,6 @@ const updateIngredientCount = () => {
   const recipe_serving_sizes = JSON.parse(sessionStorage.getItem('recipe_serving_sizes'));
 
   if (recipe_data && recipe_serving_sizes) {
-    console.log('has some recipe ingredient');
     ingredientCount.value = recipe_data.length;
   } else {
     ingredientCount.value = 0;

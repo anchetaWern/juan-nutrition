@@ -162,11 +162,10 @@ export default {
     },
 
     async logoutUser() {
-      console.log('logout user');
-
+     
       try {
         await signOut(auth);
-        console.log("User logged out");
+       
         createToast(
           {
             title: 'Logout successful',

@@ -230,16 +230,13 @@ export default {
      
       watch(selected_custom_serving, (new_custom_serving, old_custom_serving) => {
         if (isProgrammaticUpdate) return;
-        console.log('is programmatic update: ', isProgrammaticUpdate);
-        console.log('===selected_custom_serving changed from', old_custom_serving, 'to', new_custom_serving);
         selected_serving_qty.value = 1;
         current_food_serving_size.value = parseFloat(new_custom_serving);  
       });
 
       watch(selected_serving_qty, (new_serving_qty, old_serving_qty) => {
         if (isProgrammaticUpdate) return;
-        console.log('is programmatic update: ', isProgrammaticUpdate);
-        console.log('====serving qty changed: ', new_serving_qty);
+    
         if (selected_custom_serving.value) {
             current_food_serving_size.value = parseFloat(selected_custom_serving.value) * parseInt(new_serving_qty);
         }
@@ -248,10 +245,9 @@ export default {
 
       const loadCustomServingsData = () => {
         // load custom servings data
-        console.log('now loading data');
         const stored_cs = sessionStorage.getItem('analyze_custom_servings');
         if (stored_cs) {
-          console.log('stored cs: ', stored_cs);
+         
           custom_servings_ref.value = JSON.parse(stored_cs); 
         }
       }
@@ -282,16 +278,14 @@ export default {
       fetchDailyValues();
 
       const openModifyServingSizeModal = (food_slug, custom_servings_category) => {
-        console.log('slug: ', food_slug);
-
+       
         current_food_slug.value = food_slug;
         const found_food = analyze.value.find(itm => itm.description_slug === food_slug);
         current_food.value = found_food;
 
         if (custom_servings_category) {
           hasValuesPerContainerToggle.value = false;
-          console.log('custom servings: ',  custom_servings_category);
-
+         
           const serving_units = custom_servings_category.serving_units.map(itm => {
             return {
               'name': itm.name,
@@ -304,8 +298,6 @@ export default {
             return itm.volume_in_ml && found_food.density || itm.weight;
           });
 
-          console.log('custom servings: ', serving_units);
-
           if (serving_units && serving_units.length > 0) {
               custom_serving_sizes.value = serving_units;
           }
@@ -317,10 +309,8 @@ export default {
           if (current_custom_serving) {
             isProgrammaticUpdate = true;
 
-            console.log('current custom serving: ', custom_servings_ref.value[food_slug]);
             const current_serving_size = current_custom_serving.weight * current_custom_serving.qty;
-            console.log('current serving size: ', current_serving_size);
-            
+           
             selected_custom_serving.value = current_custom_serving.weight;
             selected_serving_qty.value = current_custom_serving.qty;
             current_food_serving_size.value = current_serving_size; // custom_servings_ref.value[food_slug].weight;
@@ -332,24 +322,22 @@ export default {
           }
 
         } else {
-          console.log('there are no custom servings');
+         
           const current_food = analyze.value.find(itm => itm.description_slug === food_slug);
 
           if (current_food.servings_per_container > 1) {
-            console.log('has values per container: ');
+            
             hasValuesPerContainerToggle.value = true;
           }
 
           const current_serving_size = parseFloat(servingSizes.value[food_slug]);
 
-          console.log('current food serving size: ', current_serving_size);
           custom_serving_sizes.value = null;
           selected_custom_serving.value = current_serving_size;
           selected_serving_qty.value = 1;
 
           current_food_serving_size.value = current_serving_size;
 
-          console.log('current food: ', current_food);
         }
         
         
@@ -358,19 +346,13 @@ export default {
       }
 
       const modifyServingSize = () => {
-        console.log('modify serving size: ', current_food_serving_size.value);
       
         modifyServingSizeDialog.value = false;
 
         updateServingSize(current_food_slug.value, current_food_serving_size.value);
 
-      
-        food_card_key.value += 1; // works!
+        food_card_key.value += 1; 
 
-        // issue: the custom serving size for each food is not being stored anywhere else.
-        // user must be able to see what they previously selected. with all the details pre-filled
-
-        // todo: store: custom serving, qty to session storage
         let stored_custom_servings = {};
         const stored_cs = sessionStorage.getItem('analyze_custom_servings');
         if (stored_cs) {
@@ -381,8 +363,7 @@ export default {
           'weight': selected_custom_serving.value,
           'qty': selected_serving_qty.value, 
         }
-        console.log('stored custom servings: ', stored_custom_servings);
-
+      
         custom_servings_ref.value = stored_custom_servings;
 
         sessionStorage.setItem('analyze_custom_servings', JSON.stringify(stored_custom_servings));
@@ -407,10 +388,8 @@ export default {
           const stored_custom_servings = JSON.parse(stored_cs);
           delete stored_custom_servings[slug];
 
-          console.log('--UPDATED: ', stored_custom_servings);
-
           if (Object.keys(stored_custom_servings).length > 0) {
-            console.log('has something: ', stored_custom_servings);
+           
             sessionStorage.setItem('analyze_custom_servings', JSON.stringify(stored_custom_servings));
 
             const updated_analyze_serving_sizes = Object.fromEntries(
@@ -419,7 +398,6 @@ export default {
 
             sessionStorage.setItem('analyze_serving_sizes', JSON.stringify(updated_analyze_serving_sizes));
           } else {
-            console.log('no more');
             sessionStorage.removeItem('analyze_custom_servings');
             sessionStorage.removeItem('analyze_serving_sizes');
           }
@@ -431,7 +409,7 @@ export default {
 
 
       const updateServingSize = (slug, newServingSize) => {
-        console.log('new serbing siyzu: ', newServingSize); 
+     
         servingSizes.value[slug] = newServingSize;
         sessionStorage.setItem('analyze_serving_sizes', JSON.stringify(servingSizes.value));
 
