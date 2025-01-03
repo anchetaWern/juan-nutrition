@@ -88,7 +88,7 @@
 
           <br>
           <br>Most of the foods here are from PhilFCT <a href="https://i.fnri.dost.gov.ph/fct/library/starting_pg" target="_blank">(Philippine Food Composition Tables Online Database)</a>
-          <br>Some are gathered from the author taking pictures of food labels. If you want to contribute, <a href="/register">create an account</a> then visit <a href="https://contribute.juanutrisyon.info" target="_blank">contribute.juanutrisyon.info</a>.
+          <br>Some are gathered from the author taking pictures of food labels. If you want to contribute, <a href="/register">create an account</a> then visit<a href="https://contribute.juanutrisyon.info" target="_blank">contribute.juanutrisyon.info</a>.
 
         </template>
 
