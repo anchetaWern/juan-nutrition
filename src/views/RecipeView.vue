@@ -726,8 +726,10 @@ export default {
       const refreshNutrients = () => {
         const recipe_data = JSON.parse(sessionStorage.getItem('recipe'));
         const recipe_serving_sizes_data = JSON.parse(sessionStorage.getItem('recipe_serving_sizes'));
+        
+        console.log('recipe data: ', recipe_data);
 
-        if (recipe_data) {
+        if (recipe_data && recipe_data.length) {
           const aggregated_nutrients = aggregateNutrients(recipe_data, recipe_serving_sizes_data, servingCount.value);
           recipe_nutrients.value = aggregated_nutrients;
 
@@ -735,62 +737,64 @@ export default {
           vitamins.value = getVitamins(aggregated_nutrients);
           minerals.value = getMinerals(aggregated_nutrients);
           others.value = getOthers(aggregated_nutrients);
+       
+          const recipe_ingredients = recipe_data.map((itm) => {
+            const original_serving_size = itm.serving_size;
+            const serving_size = parseInt(recipe_serving_sizes_data[itm.description_slug]);
+            const serving_size_unit = itm.serving_size_unit;
+            const food_state = itm.food_state;
+            const food_substate = itm.food_substate;
+            const original_calories = itm.calories;
+            const new_calories = modifyServingSize(original_serving_size, serving_size, itm.calories);
+          
+            return {
+              slug: itm.description_slug,
+              original_serving_size,
+              serving_size,
+              serving_size_unit,
+              food_state,
+              food_substate,
+              original_calories,
+              new_calories,
+            }
+          });
+
+          ingredients.value = recipe_ingredients;
+
+          const total_calories = recipe_ingredients.reduce(
+            (accumulator, itm) => accumulator + itm.new_calories,
+            0,
+          );
+          
+          recipe_total_calories.value = total_calories;
+
+          const calories_per_serving = total_calories / servingCount.value;       
+          recipe_calories_per_serving.value = calories_per_serving;
+
+          const total_ingredients = recipe_ingredients.length;
+          ingredients_count.value = total_ingredients;
+
+          const food_states = {};
+          recipe_ingredients.forEach((itm) => {
+            food_states[itm.food_state] = food_states.hasOwnProperty(itm.food_state) ? food_states[itm.food_state] + 1 : 1; 
+          });
+
+          const sorted_by_food_state = Object.keys(food_states).sort(function(a, b){
+            return food_states[b] - food_states[a];
+          }); // first item is the food state
+
+          recipe_food_state.value = sorted_by_food_state[0];
+
+          const total_weight = recipe_ingredients.reduce(
+            (accumulator, itm) => accumulator + itm.serving_size,
+            0,
+          );
+
+          const weight_per_serving = total_weight / servingCount.value;
+          serving_size.value = weight_per_serving; 
+
         }
-
-        const recipe_ingredients = recipe_data.map((itm) => {
-          const original_serving_size = itm.serving_size;
-          const serving_size = parseInt(recipe_serving_sizes_data[itm.description_slug]);
-          const serving_size_unit = itm.serving_size_unit;
-          const food_state = itm.food_state;
-          const food_substate = itm.food_substate;
-          const original_calories = itm.calories;
-          const new_calories = modifyServingSize(original_serving_size, serving_size, itm.calories);
-        
-          return {
-            slug: itm.description_slug,
-            original_serving_size,
-            serving_size,
-            serving_size_unit,
-            food_state,
-            food_substate,
-            original_calories,
-            new_calories,
-          }
-        });
-
-        ingredients.value = recipe_ingredients;
-
-        const total_calories = recipe_ingredients.reduce(
-          (accumulator, itm) => accumulator + itm.new_calories,
-          0,
-        );
-        
-        recipe_total_calories.value = total_calories;
-
-        const calories_per_serving = total_calories / servingCount.value;       
-        recipe_calories_per_serving.value = calories_per_serving;
-
-        const total_ingredients = recipe_ingredients.length;
-        ingredients_count.value = total_ingredients;
-
-        const food_states = {};
-        recipe_ingredients.forEach((itm) => {
-          food_states[itm.food_state] = food_states.hasOwnProperty(itm.food_state) ? food_states[itm.food_state] + 1 : 1; 
-        });
-
-        const sorted_by_food_state = Object.keys(food_states).sort(function(a, b){
-          return food_states[b] - food_states[a];
-        }); // first item is the food state
-
-        recipe_food_state.value = sorted_by_food_state[0];
-
-        const total_weight = recipe_ingredients.reduce(
-          (accumulator, itm) => accumulator + itm.serving_size,
-          0,
-        );
-
-        const weight_per_serving = total_weight / servingCount.value;
-        serving_size.value = weight_per_serving;        
+               
       }
 
       refreshNutrients();
