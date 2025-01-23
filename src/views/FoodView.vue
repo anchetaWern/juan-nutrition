@@ -361,10 +361,36 @@
             </v-card>
         </v-dialog>
 
+
+        <v-dialog
+            v-model="reportIssueModalVisible"
+            width="300"
+            max-width="400"
+        >
+            <v-card title="Report Issue">
+                <template v-slot:text>
+                    
+                    <v-textarea
+                        label="Describe your issue"
+                        v-model="issueDescription"
+                        rows="2"
+                    ></v-textarea>
+
+                    <v-btn color="primary" block @click="submitIssue" rounded="0">Submit</v-btn>
+                </template>
+            </v-card>
+        </v-dialog>
+
     </div>
 
     <div class="mt-5" v-if="food.origin_country && food.origin_country !== 'PH'">
         <div class="text-body2 mb-1">Origin Country: {{ food.origin_country }}</div>
+    </div>
+
+    <div class="mt-5 text-center">
+        <v-btn variant="text" @click="openReportIssueModal">
+        Report Issue
+        </v-btn>
     </div>
 
   </div>
@@ -518,6 +544,7 @@ const chartOptions = {
 ChartJS.register(ArcElement, Tooltip, Legend)
 
 const imageModalVisible = ref(false);
+const reportIssueModalVisible = ref(false);
 
 const currentImage = ref(null);
 
@@ -541,6 +568,7 @@ export default {
   data: () => ({
     chartOptions,
     imageModalVisible,
+    reportIssueModalVisible,
     dvHelp: false,
     displayValuesPerContainer: false,
   }),
@@ -580,6 +608,8 @@ export default {
     const newServingCount = ref(null);
 
     const food_ingredients = ref(null);
+
+    const issueDescription = ref('');
 
     //
     const pageTitle = 'Juan Nutrisyon';
@@ -807,6 +837,34 @@ export default {
     }
 
 
+    const submitIssue = async () => {
+        if (issueDescription.value.trim()) {
+
+            try {
+                await axios.post(`${API_BASE_URI}/report-issue`, 
+                    { 
+                        'page': `/food/${route.params.food}`,
+                        'description': issueDescription.value
+                    }, 
+                );
+
+                createToast(
+                    {
+                        title: 'Submitted!',
+                        description: "Your issue was submitted. Thank you for your contribution. We really appreciate it!"
+                    }, 
+                    { type: 'success', position: 'bottom-right' }
+                );
+
+                issueDescription.value = '';
+                
+            } catch (err) {
+                console.log('submit issue error: ', err);
+            }
+        }
+    }
+
+
     const fetchData = async () => {
       
         const food_slug = route.params.food;
@@ -1024,7 +1082,7 @@ export default {
         modifyServingCount,
         
         servingSize,
-
+        
         openIngredientsInfoModal,
         ingredientsInfoDialog,
         food_ingredients,
@@ -1034,7 +1092,8 @@ export default {
 
         getValueColor,
 
-
+        issueDescription,
+        submitIssue,
     }
 
   },
@@ -1053,6 +1112,14 @@ export default {
       openImageModal(img) {
           this.imageModalVisible = true;
           currentImage.value = img;
+      },
+
+      closeReportIssueModal() {
+          this.reportIssueModalVisible = false;
+      },
+
+      openReportIssueModal() {
+          this.reportIssueModalVisible = true;
       }
   }
 }
