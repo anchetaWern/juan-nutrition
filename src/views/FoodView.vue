@@ -838,6 +838,7 @@ export default {
 
 
     const submitIssue = async () => {
+        
         if (issueDescription.value.trim()) {
 
             try {
@@ -857,11 +858,13 @@ export default {
                 );
 
                 issueDescription.value = '';
+                reportIssueModalVisible.value = false;
                 
             } catch (err) {
                 console.log('submit issue error: ', err);
             }
         }
+        
     }
 
 
