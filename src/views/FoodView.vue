@@ -388,7 +388,7 @@
     </div>
 
     <div class="mt-5 text-center">
-        <v-btn variant="text" @click="openReportIssueModal">
+        <v-btn size="x-small" variant="text" @click="openReportIssueModal">
         Report Issue
         </v-btn>
     </div>
@@ -1115,10 +1115,6 @@ export default {
       openImageModal(img) {
           this.imageModalVisible = true;
           currentImage.value = img;
-      },
-
-      closeReportIssueModal() {
-          this.reportIssueModalVisible = false;
       },
 
       openReportIssueModal() {
