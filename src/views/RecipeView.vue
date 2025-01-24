@@ -803,13 +803,15 @@ export default {
 
       const submitIssue = async () => {
         
+        const food_urls = recipe.value.map(itm => itm.description_slug);
+
         if (issueDescription.value.trim()) {
 
             try {
                 await axios.post(`${API_BASE_URI}/report-issue`, 
                     { 
-                        'page': `analyze`,
-                        // todo: add params (foods added, form inputs)
+                        'page': `recipe`,
+                        'params': JSON.stringify(food_urls),
                         'description': issueDescription.value
                     }, 
                 );
