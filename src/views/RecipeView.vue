@@ -102,6 +102,26 @@
       </v-dialog>
 
 
+      <v-dialog
+          v-model="reportIssueModalVisible"
+          width="300"
+          max-width="400"
+      >
+          <v-card title="Report Issue">
+              <template v-slot:text>
+                  
+                  <v-textarea
+                      label="Describe your issue"
+                      v-model="issueDescription"
+                      rows="2"
+                  ></v-textarea>
+
+                  <v-btn color="primary" block @click="submitIssue" rounded="0">Submit</v-btn>
+              </template>
+          </v-card>
+      </v-dialog>
+
+
     </v-container>
 
     <div v-if="recipe && recipe.length > 0">
@@ -198,6 +218,13 @@
           :getValueColor="getValueColor" />
       </div>
 
+
+      <div class="mt-5 text-center">
+        <v-btn size="x-small" variant="text" @click="openReportIssueModal">
+        Report Issue
+        </v-btn>
+      </div>
+
     </div>
     
 
@@ -266,6 +293,9 @@ const ingredients = ref(null);
 const API_BASE_URI = import.meta.env.VITE_API_URI;
 
 const saveRecipeDisabled = ref(true);
+
+const reportIssueModalVisible = ref(false);
+const issueDescription = ref('');
 
 
 onAuthStateChanged(auth, (user) => {
@@ -765,6 +795,44 @@ export default {
       }
 
 
+
+      const openReportIssueModal = () => {
+          reportIssueModalVisible.value = true;
+      }
+
+
+      const submitIssue = async () => {
+        
+        if (issueDescription.value.trim()) {
+
+            try {
+                await axios.post(`${API_BASE_URI}/report-issue`, 
+                    { 
+                        'page': `analyze`,
+                        // todo: add params (foods added, form inputs)
+                        'description': issueDescription.value
+                    }, 
+                );
+
+                createToast(
+                    {
+                        title: 'Submitted!',
+                        description: "Your issue was submitted. Thank you for your contribution. We really appreciate it!"
+                    }, 
+                    { type: 'success', position: 'bottom-right' }
+                );
+
+                issueDescription.value = '';
+                reportIssueModalVisible.value = false;
+                
+            } catch (err) {
+                console.log('submit issue error: ', err);
+            }
+        }
+        
+      }
+
+
       return {
         removeFood,
         recommended_daily_values,
@@ -796,6 +864,11 @@ export default {
 
         clearImage,
         previewImage,
+
+        openReportIssueModal,
+        reportIssueModalVisible,
+        issueDescription,
+        submitIssue,
       }
     },
 
