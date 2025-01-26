@@ -30,7 +30,7 @@
       >
         <div class="d-flex justify-sm-start">
           <span class="capitalize">{{ item.name }}&nbsp;</span>
-          <span>{{ item.amount }}{{ item.unit }}</span>
+          <span>{{ formatNumber(item.amount) }}{{ item.unit }}</span>
         </div>
 
         <Line />
@@ -43,7 +43,7 @@
           >
             <div class="d-flex justify-sm-start">
               <span class="capitalize">{{ subItem.name }}&nbsp;</span>
-              <span>{{ subItem.amount }}{{ subItem.unit }}</span>
+              <span>{{ formatNumber(subItem.amount) }}{{ subItem.unit }}</span>
             </div>
 
             <Line inner />
@@ -59,6 +59,7 @@
 <script>
 import Line from '@/components/Line.vue'
 import Bar from '@/components/Bar.vue'
+import { formatNumber } from '@/helpers/Numbers';
 
 export default {
   name: "NutritionLabel",
@@ -84,6 +85,12 @@ export default {
       required: true,
     },
   },
+
+  setup(props) {
+      return {
+          formatNumber
+      }
+  }
 };
 </script>
 
