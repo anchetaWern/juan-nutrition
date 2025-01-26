@@ -11,8 +11,8 @@
 
     <div class="amount-per-serving bold">Amount Per Serving</div>
     <div class="calories-value d-flex justify-space-between">
-        <div>Calories</div>
-        <div>{{ calories }}kcal</div>
+        <div class="bold">Calories</div>
+        <div class="bold">{{ calories }}kcal</div>
     </div>
       
 
@@ -105,9 +105,9 @@ export default {
   max-width: 400px;
   background: #fff;
 }
+
 .calories-value {
   font-size: 1.5rem;
-  font-weight: 1000 !important;
   line-height: 1.5rem;
 }
 
