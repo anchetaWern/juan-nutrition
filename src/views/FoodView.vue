@@ -95,133 +95,96 @@
         
         <v-divider></v-divider>
 
-        <div ref="exportable" class="capture-area">
+        <div ref="exportable" class="capture-area hidden">
 
-            <div class="hidden" id="top-info">
-                <img :src="logo" alt="juan nutrisyon logo" style="width:150px;" />
-
-                <v-table>
-                    <tbody>
-                        <tr v-if="food.servings_per_container">
-                            <td class="text-grey-darken-3">
-                                {{ newServingCount ? newServingCount : food.servings_per_container }} Servings Per Container
-                            </td>
-                        </tr>
-                        <tr v-if="food.serving_size">
-                            <td class="text-grey-darken-3">
-                                Serving Size: {{ servingSize(food.serving_size, newServingSize) }}{{ food.serving_size_unit }} <span v-if="food.custom_serving_size">/ {{ food.custom_serving_size }}</span>
-                                
-                            </td>
-                        </tr>
-                        <tr v-if="food.edible_portion && food.edible_portion < 100">
-                            <td class="text-grey-darken-3">
-                            Edible Portion: {{ food.edible_portion }}%
-                            </td>
-                        </tr>
-                        <tr v-if="food.calories">
-                            <td class="text-grey-darken-3">
-                                Calories: 
-                                {{ formatNumber(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount)) }}{{ food.calories_unit }} / {{ calorie_req_in_kcal }}{{ food.calories_unit }} ({{ formatNumber(calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount), calorie_req_in_kcal)) }}%) 
-                                <v-chip 
-                                    size="small" 
-                                    density="compact" 
-                                    :color="getFAOColor(FAONutrientContentClaim('energy', food.calories, calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, 100, newServingCount), calorie_req_in_kcal), food.serving_size, food.state.name, fao_nutrient_claims))"
-                                    v-if="FAONutrientContentClaim('energy', food.calories, calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, 100, newServingCount), calorie_req_in_kcal), food.serving_size, food.state.name, fao_nutrient_claims)">{{ FAONutrientContentClaim('energy', food.calories, calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount), calorie_req_in_kcal), food.serving_size, food.state.name, fao_nutrient_claims) }}</v-chip>
-                                <v-progress-linear 
-                                    class="mt-1"
-                                    :model-value="calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount), calorie_req_in_kcal)" 
-                                    :bg-color="getCalorieBgColor(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount))" 
-                                    :color="getCalorieColor(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount))">
-                                </v-progress-linear>
-                            </td>
-                        </tr>
-                    </tbody>
-                </v-table>
-
-            </div>
-
-            <div class="mt-3" v-if="elements && elements.length">
-                <span class="text-subtitle-2">Elements</span>
-                <NutrientsTable 
-                    :nutrients="elements" 
-                    :servingsPerContainer="servingsPerContainer" 
-                    :displayValuesPerContainer="displayValuesPerContainer"
-                    :recommended_daily_values="recommended_daily_values"
-                    :originalServingSize="food.serving_size"
-                    :newServingSize="newServingSize"
-                    :newServingCount="newServingCount"
-                    :getValueColor="getValueColor"
-                    :foodState="food.state.name"
-                    :foodCalories="food.calories"
-                    :faoNutrientContentClaims="fao_nutrient_claims"  />
-            </div>
-
-            <div class="mt-3" v-if="macros && macros.length">
-                <span class="text-subtitle-2">Macros</span>
-                <NutrientsTable 
-                    :nutrients="macros" 
-                    :servingsPerContainer="servingsPerContainer" 
-                    :displayValuesPerContainer="displayValuesPerContainer"
-                    :recommended_daily_values="recommended_daily_values"
-                    :originalServingSize="food.serving_size"
-                    :newServingSize="newServingSize"
-                    :newServingCount="newServingCount"
-                    :getValueColor="getValueColor"
-                    :foodState="food.state.name" 
-                    :foodCalories="food.calories"
-                    :faoNutrientContentClaims="fao_nutrient_claims"
-                />
-            </div>
-
-            <div class="mt-3" v-if="vitamins && vitamins.length">
-                <span class="text-subtitle-2">Vitamins</span>
-                <NutrientsTable 
-                    :nutrients="vitamins" 
-                    :servingsPerContainer="servingsPerContainer" 
-                    :displayValuesPerContainer="displayValuesPerContainer"
-                    :recommended_daily_values="recommended_daily_values"
-                    :originalServingSize="food.serving_size"
-                    :newServingSize="newServingSize"
-                    :newServingCount="newServingCount"
-                    :getValueColor="getValueColor"
-                    :foodState="food.state.name"
-                    :foodCalories="food.calories"
-                    :faoNutrientContentClaims="fao_nutrient_claims"  />
-            </div>
-
-            <div class="mt-3" v-if="minerals && minerals.length">
-                <span class="text-subtitle-2">Minerals</span>
-                <NutrientsTable 
-                    :nutrients="minerals" 
-                    :servingsPerContainer="servingsPerContainer" 
-                    :displayValuesPerContainer="displayValuesPerContainer"
-                    :recommended_daily_values="recommended_daily_values"
-                    :originalServingSize="food.serving_size"
-                    :newServingSize="newServingSize"
-                    :newServingCount="newServingCount"
-                    :getValueColor="getValueColor"
-                    :foodState="food.state.name"
-                    :foodCalories="food.calories"
-                    :faoNutrientContentClaims="fao_nutrient_claims"  />
-            </div>
-
-            <div class="mt-3" v-if="others && others.length">
-                <span class="text-subtitle-2">Others</span>
-                <NutrientsTable 
-                    :nutrients="others" 
-                    :servingsPerContainer="servingsPerContainer" 
-                    :displayValuesPerContainer="displayValuesPerContainer"
-                    :recommended_daily_values="recommended_daily_values"
-                    :originalServingSize="food.serving_size"
-                    :newServingSize="newServingSize"
-                    :newServingCount="newServingCount"
-                    :getValueColor="getValueColor"
-                    :foodState="food.state.name"
-                    :foodCalories="food.calories"
-                    :faoNutrientContentClaims="fao_nutrient_claims"  />
-            </div>
-
+            <NutritionLabel 
+                :servingsPerContainer="food.servings_per_container"
+                :servingSize="food.serving_size"
+                :calories="food.calories"
+                :nutritionData="food.nutrients"
+            />
         </div>
+
+        <div class="mt-3" v-if="elements && elements.length">
+            <span class="text-subtitle-2">Elements</span>
+            <NutrientsTable 
+                :nutrients="elements" 
+                :servingsPerContainer="servingsPerContainer" 
+                :displayValuesPerContainer="displayValuesPerContainer"
+                :recommended_daily_values="recommended_daily_values"
+                :originalServingSize="food.serving_size"
+                :newServingSize="newServingSize"
+                :newServingCount="newServingCount"
+                :getValueColor="getValueColor"
+                :foodState="food.state.name"
+                :foodCalories="food.calories"
+                :faoNutrientContentClaims="fao_nutrient_claims"  />
+        </div>
+
+        <div class="mt-3" v-if="macros && macros.length">
+            <span class="text-subtitle-2">Macros</span>
+            <NutrientsTable 
+                :nutrients="macros" 
+                :servingsPerContainer="servingsPerContainer" 
+                :displayValuesPerContainer="displayValuesPerContainer"
+                :recommended_daily_values="recommended_daily_values"
+                :originalServingSize="food.serving_size"
+                :newServingSize="newServingSize"
+                :newServingCount="newServingCount"
+                :getValueColor="getValueColor"
+                :foodState="food.state.name" 
+                :foodCalories="food.calories"
+                :faoNutrientContentClaims="fao_nutrient_claims"
+            />
+        </div>
+
+        <div class="mt-3" v-if="vitamins && vitamins.length">
+            <span class="text-subtitle-2">Vitamins</span>
+            <NutrientsTable 
+                :nutrients="vitamins" 
+                :servingsPerContainer="servingsPerContainer" 
+                :displayValuesPerContainer="displayValuesPerContainer"
+                :recommended_daily_values="recommended_daily_values"
+                :originalServingSize="food.serving_size"
+                :newServingSize="newServingSize"
+                :newServingCount="newServingCount"
+                :getValueColor="getValueColor"
+                :foodState="food.state.name"
+                :foodCalories="food.calories"
+                :faoNutrientContentClaims="fao_nutrient_claims"  />
+        </div>
+
+        <div class="mt-3" v-if="minerals && minerals.length">
+            <span class="text-subtitle-2">Minerals</span>
+            <NutrientsTable 
+                :nutrients="minerals" 
+                :servingsPerContainer="servingsPerContainer" 
+                :displayValuesPerContainer="displayValuesPerContainer"
+                :recommended_daily_values="recommended_daily_values"
+                :originalServingSize="food.serving_size"
+                :newServingSize="newServingSize"
+                :newServingCount="newServingCount"
+                :getValueColor="getValueColor"
+                :foodState="food.state.name"
+                :foodCalories="food.calories"
+                :faoNutrientContentClaims="fao_nutrient_claims"  />
+        </div>
+
+        <div class="mt-3" v-if="others && others.length">
+            <span class="text-subtitle-2">Others</span>
+            <NutrientsTable 
+                :nutrients="others" 
+                :servingsPerContainer="servingsPerContainer" 
+                :displayValuesPerContainer="displayValuesPerContainer"
+                :recommended_daily_values="recommended_daily_values"
+                :originalServingSize="food.serving_size"
+                :newServingSize="newServingSize"
+                :newServingCount="newServingCount"
+                :getValueColor="getValueColor"
+                :foodState="food.state.name"
+                :foodCalories="food.calories"
+                :faoNutrientContentClaims="fao_nutrient_claims"  />
+        </div>   
         
         <div class="text-center mt-2">
             <v-btn variant="plain" size="x-small" @click="exportAsImage">
@@ -539,10 +502,10 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Pie } from 'vue-chartjs'
 import axios from 'axios'
 import NutrientsTable from '@/components/NutrientsTable.vue'
+import NutritionLabel from '@/components/NutritionLabel.vue'
 import { calculatePercentage, formatNumber } from '@/helpers/Numbers';
 import { convertWeight, FAONutrientContentClaim, normalizeFoodState } from '@/helpers/Nutrients';
 
-import logo from '@/assets/images/juan-nutrisyon.png'
 
 import { toPng } from 'html-to-image';
 
@@ -622,10 +585,11 @@ export default {
     Pie,
     NutrientsTable,
     VNumberInput,
+    NutritionLabel,
   },
     
   data: () => ({
-    logo,
+
     chartOptions,
     imageModalVisible,
     reportIssueModalVisible,
@@ -740,26 +704,22 @@ export default {
        
         const node = exportable.value;
 
-        node.classList.add('add-padding');
-
-        const topInfoNode = document.getElementById('top-info');
-
-        topInfoNode.classList.remove('hidden');
+       
+        node.classList.remove('hidden');
 
         toPng(node)
             .then((dataUrl) => {
-                // Create a download link
+               
                 const link = document.createElement('a');
                 link.download = `${food.value.description_slug}-nutrient-info.png`;
                 link.href = dataUrl;
                 link.click();
 
-                topInfoNode.classList.add('hidden');
-                node.classList.remove('add-padding');
+                node.classList.add('hidden');
+               
             })
             .catch((error) => {
-                topInfoNode.classList.add('hidden');
-                node.classList.remove('add-padding');
+                node.classList.add('hidden');
                 console.error('Error exporting image:', error);
             });
     }
