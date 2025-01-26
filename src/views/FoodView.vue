@@ -102,6 +102,7 @@
                 :servingSize="food.serving_size"
                 :calories="food.calories"
                 :nutritionData="food.nutrients"
+                :ingredients="food.ingredients"
             />
         </div>
 

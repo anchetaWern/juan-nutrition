@@ -52,6 +52,13 @@
         </div>
       </div>
     </div>
+
+    <div v-if="ingredients">
+        <div class="bold small-text">Ingredients:</div> 
+        <div class="tiny-text">
+        {{ ingredients }}
+        </div>
+    </div>
    
   </v-card>
 </template>
@@ -84,6 +91,10 @@ export default {
       type: Array,
       required: true,
     },
+    ingredients: {
+        type: String,
+        required: false,
+    }
   },
 
   setup(props) {
