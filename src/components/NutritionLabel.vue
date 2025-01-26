@@ -6,7 +6,7 @@
     <Line />
     
     <div>{{ servingsPerContainer }} Servings Per Container</div>
-    <div class="bold">Serving Size: {{ servingSize }}</div>
+    <div class="bold">Serving Size: {{ servingSize }}g</div>
     <Bar />
 
     <div class="amount-per-serving bold">Amount Per Serving</div>
