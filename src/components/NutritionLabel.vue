@@ -22,15 +22,18 @@
 
     <Line />
     
-    <div>
+    <div v-if="nutrientsWithPercentage">
       <div
-        v-for="(item, index) in nutritionData"
+        v-for="(item, index) in nutrientsWithPercentage"
         :key="index"
         class="p-0"
       >
-        <div class="d-flex justify-sm-start" v-if="showNutrient(item.name)">
-          <span :class="['capitalize', highlightNutrient(item.name, 'bold')]">{{ item.name }}&nbsp;</span>
-          <span>{{ formatNumber(item.amount) }}{{ item.unit }}</span>
+        <div class="d-flex justify-space-between">
+          <div class="d-flex justify-sm-start" v-if="showNutrient(item.name)">
+            <span :class="['capitalize', highlightNutrient(item.name, 'bold')]">{{ item.name }}&nbsp;</span>
+            <span>{{ formatNumber(item.amount) }}{{ item.unit }}</span>
+          </div>
+          <div v-if="showNutrient(item.name) && item.hasRecommendedDailyValues">{{ formatNumber(item.percentage) }}%</div>
         </div>
 
         <Line v-if="showNutrient(item.name)" />
@@ -41,9 +44,13 @@
             :key="subIndex"
             class="p-0"
           >
-            <div class="d-flex justify-sm-start" v-if="showNutrient(subItem.name)">
-              <span :class="['capitalize', highlightNutrient(subItem.name, 'semi-bold')]">{{ subItem.name }}&nbsp;</span>
-              <span>{{ formatNumber(subItem.amount) }}{{ subItem.unit }}</span>
+            <div class="d-flex justify-space-between">
+              <div class="d-flex justify-sm-start" v-if="showNutrient(subItem.name)">
+                <span :class="['capitalize', highlightNutrient(subItem.name, 'semi-bold')]">{{ subItem.name }}&nbsp;</span>
+                <span>{{ formatNumber(subItem.amount) }}{{ subItem.unit }}</span>
+              </div>
+              
+              <div v-if="showNutrient(subItem.name) && subItem.hasRecommendedDailyValues">{{ formatNumber(subItem.percentage) }}%</div>
             </div>
 
             <Line v-if="showNutrient(subItem.name)" inner />
@@ -64,9 +71,11 @@
 </template>
 
 <script>
+import { computed } from 'vue';
 import Line from '@/components/Line.vue'
 import Bar from '@/components/Bar.vue'
-import { formatNumber } from '@/helpers/Numbers';
+import { calculatePercentage, formatNumber } from '@/helpers/Numbers';
+import { amountPerContainer } from '@/helpers/Nutrients';
 
 const showNutrients = [
     'total fat', 'saturated fat', 'cholesterol', 'unsaturated fat',
@@ -113,12 +122,57 @@ export default {
     ingredients: {
         type: String,
         required: false,
+    },
+    recommended_daily_values: {
+        type: Object,
+        required: true,
     }
   },
 
   setup(props) {
+
+      const nutrients_with_recommended_daily_values = [
+        'dietary fiber', 'protein', 'total fat', 'saturated fat', 'cholesterol', 'total carbohydrates', 'sugar', 
+        'sodium', 'potassium', 'calcium', 'fluoride', 'iron', 'magnesium', 'zinc', 'selenium', 'phosphorus', 'chloride', 'choline', 'chromium', 'copper',
+        'iodine', 'manganese', 'molybdenum',
+        'vitamin a', 'vitamin c', 'vitamin d', 'vitamin e', 'vitamin k', 
+        'vitamin b1', 'vitamin b2', 'vitamin b3', 'vitamin b5', 'vitamin b6', 'vitamin b9', 'vitamin b12',
+      ];
+
+      const calculateNutrientPercentage = (nutrient_name, nutrient_value) => {
+        if (props.recommended_daily_values.hasOwnProperty(nutrient_name)) {
+          const reni_limit = props.recommended_daily_values[nutrient_name];
+          const percentage = calculatePercentage(nutrient_value, reni_limit);
+          
+          return percentage;
+        }
+        return 0; 
+      }
+
+
+      const nutrientsWithPercentage = computed(() => {
+       
+        return props.nutritionData.map(nutrient => {
+          
+          const total_amount = amountPerContainer(nutrient.amount, props.servingsPerContainer, false, props.servingSize, props.servingSize, 1); // nutrient.amount * multiplier;
+          const percentage = calculateNutrientPercentage(nutrient.name, total_amount);
+
+          const hasRecommendedDailyValues = nutrients_with_recommended_daily_values.indexOf(nutrient.name) !== -1;
+
+          return {
+            ...nutrient,
+            percentage,
+            hasRecommendedDailyValues: hasRecommendedDailyValues,
+            dailyLimit: hasRecommendedDailyValues && props.recommended_daily_values[nutrient.name] ? props.recommended_daily_values[nutrient.name].toFixed(0) : null,
+            
+          };
+        });
+      });
+
+
       return {
-          formatNumber
+          formatNumber,
+          nutrientsWithPercentage
       }
   },
 
