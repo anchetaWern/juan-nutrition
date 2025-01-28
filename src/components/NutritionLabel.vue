@@ -12,7 +12,7 @@
     <div class="amount-per-serving bold">Amount Per Serving</div>
     <div class="calories-value d-flex justify-space-between">
         <div class="bold">Calories</div>
-        <div class="bold">{{ calories }}kcal</div>
+        <div class="bold">{{ calories }}</div>
     </div>
       
 
@@ -28,25 +28,25 @@
         :key="index"
         class="p-0"
       >
-        <div class="d-flex justify-sm-start">
-          <span class="capitalize">{{ item.name }}&nbsp;</span>
+        <div class="d-flex justify-sm-start" v-if="showNutrient(item.name)">
+          <span :class="['capitalize', highlightNutrient(item.name, 'bold')]">{{ item.name }}&nbsp;</span>
           <span>{{ formatNumber(item.amount) }}{{ item.unit }}</span>
         </div>
 
-        <Line />
+        <Line v-if="showNutrient(item.name)" />
 
-        <div v-if="item.composition" class="pl-4">
+        <div v-if="item.composition && showNutrient(item.name)" class="pl-4">
           <div
             v-for="(subItem, subIndex) in item.composition"
             :key="subIndex"
             class="p-0"
           >
-            <div class="d-flex justify-sm-start">
-              <span class="capitalize">{{ subItem.name }}&nbsp;</span>
+            <div class="d-flex justify-sm-start" v-if="showNutrient(subItem.name)">
+              <span :class="['capitalize', highlightNutrient(subItem.name, 'semi-bold')]">{{ subItem.name }}&nbsp;</span>
               <span>{{ formatNumber(subItem.amount) }}{{ subItem.unit }}</span>
             </div>
 
-            <Line inner />
+            <Line v-if="showNutrient(subItem.name)" inner />
 
           </div>
         </div>
@@ -67,6 +67,25 @@
 import Line from '@/components/Line.vue'
 import Bar from '@/components/Bar.vue'
 import { formatNumber } from '@/helpers/Numbers';
+
+const showNutrients = [
+    'total fat', 'saturated fat', 'cholesterol', 'unsaturated fat',
+    'protein', 
+    'total carbohydrates', 'dietary fiber', 'sugar',
+    'vitamin a', 'vitamin c', 
+    'vitamin b1', 'vitamin b2', 'vitamin b3', 'vitamin b6', 'vitamin b12',
+    'calcium', 'iron',
+    'vitamin d', 'vitamin e',
+    'potassium', 'magnesium', 'zinc', 
+];
+
+const highlightedNutrients = [
+  'total fat', 'saturated fat', 'cholesterol', 'sodium', 
+  'total carbohydrates', 'dietary fiber', 'sugar',
+  'protein', 
+  'vitamin a', 'vitamin c', 
+  'calcium', 'iron'
+];
 
 export default {
   name: "NutritionLabel",
@@ -101,6 +120,19 @@ export default {
       return {
           formatNumber
       }
+  },
+
+  methods: {
+      showNutrient(nutrient) {
+        return showNutrients.indexOf(nutrient) !== -1;
+      },
+
+      highlightNutrient(nutrient, classname) {
+        if (highlightedNutrients.indexOf(nutrient) !== -1) {
+          return classname;
+        }
+        return '';
+      }
   }
 };
 </script>
@@ -124,6 +156,10 @@ export default {
 
 .bold {
     font-weight: 1000;
+}
+
+.semi-bold {
+    font-weight: 800;
 }
 
 .amount-per-serving {
