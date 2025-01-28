@@ -103,6 +103,7 @@
                 :calories="food.calories"
                 :nutritionData="food.nutrients"
                 :ingredients="food.ingredients"
+                :recommended_daily_values="recommended_daily_values"
             />
         </div>
 
