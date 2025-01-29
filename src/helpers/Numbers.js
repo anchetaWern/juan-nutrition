@@ -1,5 +1,9 @@
 export function calculatePercentage(number, total) {
-    return (number / total) * 100;
+    let percent = (number / total) * 100;
+    if (percent < 1) {
+        return percent;
+    }
+    return Math.floor(percent);
 }
 
 export function formatNumber(number) {
