@@ -159,13 +159,40 @@ export default {
 
           const hasRecommendedDailyValues = nutrients_with_recommended_daily_values.indexOf(nutrient.name) !== -1;
 
-          return {
+          let processedNutrient = {
             ...nutrient,
             percentage,
-            hasRecommendedDailyValues: hasRecommendedDailyValues,
-            dailyLimit: hasRecommendedDailyValues && props.recommended_daily_values[nutrient.name] ? props.recommended_daily_values[nutrient.name].toFixed(0) : null,
-            
+            hasRecommendedDailyValues,
+            dailyLimit: hasRecommendedDailyValues && props.recommended_daily_values[nutrient.name] 
+              ? props.recommended_daily_values[nutrient.name].toFixed(0) 
+              : null
           };
+
+       
+          if (nutrient.composition && Array.isArray(nutrient.composition)) {
+            processedNutrient.composition = nutrient.composition.map(sub_item => {
+              const sub_total_amount = amountPerContainer(
+                sub_item.amount, 
+                props.servingsPerContainer, 
+                false, 
+                props.servingSize, 
+                props.servingSize, 
+                1
+              );
+
+              return {
+                ...sub_item,
+                percentage: calculateNutrientPercentage(sub_item.name, sub_total_amount),
+                hasRecommendedDailyValues: nutrients_with_recommended_daily_values.includes(sub_item.name),
+                dailyLimit: nutrients_with_recommended_daily_values.includes(sub_item.name) && props.recommended_daily_values[sub_item.name]
+                  ? props.recommended_daily_values[sub_item.name].toFixed(0)
+                  : null
+              };
+            });
+          }
+
+          return processedNutrient;
+
         });
       });
 
