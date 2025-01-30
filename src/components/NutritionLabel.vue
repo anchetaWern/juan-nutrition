@@ -5,7 +5,7 @@
 
     <Line />
     
-    <div>{{ servingsPerContainer }} Servings Per Container</div>
+    <div v-if="servingsPerContainer">{{ servingsPerContainer }} Servings Per Container</div>
     <div class="bold">Serving Size: {{ servingSize }}g</div>
     <Bar />
 
