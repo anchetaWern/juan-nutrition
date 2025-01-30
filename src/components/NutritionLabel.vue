@@ -63,12 +63,16 @@
       </div>
     </div>
 
-    <div v-if="ingredients">
+    <div v-if="ingredients" class="mb-1">
         <div class="bold small-text">Ingredients:</div> 
         <div class="tiny-text">
         {{ ingredients }}
         </div>
     </div>
+
+    <Line v-if="ingredients" />
+
+    <div class="tiny-text mt-1">*Daily Value are based on a 2,530 calorie diet for 19-29 y/o Male (Based on PDRI 2018). Daily values for added sugar, cholesterol, saturated fat, and other nutrients not specified in PDRI 2018 are adopted from the US FDA daily values.</div>
    
   </v-card>
 </template>
