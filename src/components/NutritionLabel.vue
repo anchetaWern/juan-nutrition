@@ -36,7 +36,7 @@
           <div v-if="showNutrient(item.name) && item.hasRecommendedDailyValues && showDailyValue(item.name)">{{ formatNumber(item.percentage) }}%</div>
         </div>
 
-        <Line v-if="showNutrient(item.name)" />
+        <Line v-if="showNutrient(item.name) && item.name !== 'protein'" />
 
         <div v-if="item.composition && showNutrient(item.name)" class="pl-4">
           <div
@@ -57,6 +57,9 @@
 
           </div>
         </div>
+
+        <Bar v-if="item.name === 'protein'" />
+
       </div>
     </div>
 
