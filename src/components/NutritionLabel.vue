@@ -75,7 +75,7 @@ import { computed } from 'vue';
 import Line from '@/components/Line.vue'
 import Bar from '@/components/Bar.vue'
 import { calculatePercentage, formatNumber } from '@/helpers/Numbers';
-import { amountPerContainer } from '@/helpers/Nutrients';
+import { amountPerContainer, sortNutrients } from '@/helpers/Nutrients';
 
 const showNutrients = [
     'total fat', 'saturated fat', 'cholesterol', 'unsaturated fat',
@@ -152,7 +152,7 @@ export default {
 
       const nutrientsWithPercentage = computed(() => {
        
-        return props.nutritionData.map(nutrient => {
+        return sortNutrients(props.nutritionData).map(nutrient => {
           
           const total_amount = amountPerContainer(nutrient.amount, props.servingsPerContainer, false, props.servingSize, props.servingSize, 1); // nutrient.amount * multiplier;
           const percentage = calculateNutrientPercentage(nutrient.name, total_amount);

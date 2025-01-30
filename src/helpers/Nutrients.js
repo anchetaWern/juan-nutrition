@@ -779,3 +779,62 @@ function getValueAndUnit(text) {
         unit: 'g'
     };
 }
+
+
+const sortOrder = [
+    "total fat", "cholesterol", "sodium", 
+    "total carbohydrates", "protein",
+];
+
+function isVitamin(name) {
+    return name.startsWith("vitamin ");
+} 
+
+function isMineral(name) {
+    return [
+        "calcium",
+        "iron",
+        "potassium",
+        "magnesium",
+        "zinc",
+        "selenium",
+        "fluoride",
+        "chloride",
+        "chromium",
+        "copper",
+        "iodine",
+        "manganese",
+        "molybdenum",
+        "phosphorus",
+    ].includes(name);
+}
+  
+export function sortNutrients(nutrients) {
+    return nutrients.sort((a, b) => {
+      const indexA = sortOrder.indexOf(a.name);
+      const indexB = sortOrder.indexOf(b.name);
+  
+      const aIsVitamin = isVitamin(a.name);
+      const bIsVitamin = isVitamin(b.name);
+  
+      const aIsMineral = isMineral(a.name);
+      const bIsMineral = isMineral(b.name);
+  
+      // Sort based on explicit sortOrder
+      if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+      if (indexA !== -1) return -1; // a is in sortOrder, so it comes first
+      if (indexB !== -1) return 1;  // b is in sortOrder, so it comes first
+  
+      // Vitamins should always come before minerals
+      if (aIsVitamin && bIsVitamin) return a.name.localeCompare(b.name); // Sort vitamins alphabetically
+      if (aIsVitamin) return -1; // a is a vitamin, it comes first
+      if (bIsVitamin) return 1;  // b is a vitamin, it comes first
+  
+      // Minerals should always come after vitamins, sorted alphabetically
+      if (aIsMineral && bIsMineral) return a.name.localeCompare(b.name);
+      if (aIsMineral) return -1; // a is a mineral, it comes before unlisted nutrients
+      if (bIsMineral) return 1;  // b is a mineral, it comes before unlisted nutrients
+  
+      return 0; // Maintain order for unlisted nutrients
+    });
+  }
