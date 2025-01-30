@@ -33,7 +33,7 @@
             <span :class="['capitalize', highlightNutrient(item.name, 'bold')]">{{ item.name }}&nbsp;</span>
             <span>{{ formatNumber(item.amount) }}{{ item.unit }}</span>
           </div>
-          <div v-if="showNutrient(item.name) && item.hasRecommendedDailyValues">{{ formatNumber(item.percentage) }}%</div>
+          <div v-if="showNutrient(item.name) && item.hasRecommendedDailyValues && showDailyValue(item.name)">{{ formatNumber(item.percentage) }}%</div>
         </div>
 
         <Line v-if="showNutrient(item.name)" />
@@ -50,7 +50,7 @@
                 <span>{{ formatNumber(subItem.amount) }}{{ subItem.unit }}</span>
               </div>
               
-              <div v-if="showNutrient(subItem.name) && subItem.hasRecommendedDailyValues">{{ formatNumber(subItem.percentage) }}%</div>
+              <div v-if="showNutrient(subItem.name) && subItem.hasRecommendedDailyValues && showDailyValue(subItem.name)">{{ formatNumber(subItem.percentage) }}%</div>
             </div>
 
             <Line v-if="showNutrient(subItem.name)" inner />
@@ -213,6 +213,13 @@ export default {
           return classname;
         }
         return '';
+      },
+
+      showDailyValue(nutrient) {
+        if (highlightedNutrients.indexOf(nutrient) !== -1) {
+          return true;
+        }
+        return false;
       }
   }
 };
