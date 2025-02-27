@@ -217,38 +217,42 @@
 
 
     <div class="mt-5 pt-5 text-center">
-        <div class="text-body2 mb-1 font-weight-medium">Images</div>
 
-        <v-row>
-            <v-col
-                v-for="img in images"
-                :key="img"
-                class="d-flex child-flex"
-                cols="6"
-            >
-                <v-img
-                    :lazy-src="img"
-                    :src="img.src"
-                    aspect-ratio="1"
-                    class="bg-grey-lighten-2"
-                    cover
-                    @click="openImageModal(img)"
+        <template v-if="images.length > 0">
+            <div class="text-body2 mb-1 font-weight-medium">Images</div>
+
+            <v-row>
+                <v-col
+                    v-for="img in images"
+                    :key="img"
+                    class="d-flex child-flex"
+                    cols="6"
                 >
-                    <template v-slot:placeholder>
-                        <v-row
-                            align="center"
-                            class="fill-height ma-0"
-                            justify="center"
-                        >
-                            <v-progress-circular
-                                color="grey-lighten-5"
-                                indeterminate
-                            ></v-progress-circular>
-                        </v-row>
-                    </template>
-                </v-img>
-            </v-col>
-        </v-row>
+                    <v-img
+                        :lazy-src="img"
+                        :src="img.src"
+                        aspect-ratio="1"
+                        class="bg-grey-lighten-2"
+                        cover
+                        @click="openImageModal(img)"
+                    >
+                        <template v-slot:placeholder>
+                            <v-row
+                                align="center"
+                                class="fill-height ma-0"
+                                justify="center"
+                            >
+                                <v-progress-circular
+                                    color="grey-lighten-5"
+                                    indeterminate
+                                ></v-progress-circular>
+                            </v-row>
+                        </template>
+                    </v-img>
+                </v-col>
+            </v-row>
+
+        </template>
 
 
         <v-dialog
@@ -987,12 +991,14 @@ export default {
         }
         
     
-        const images_arr = [
-            {
+        const images_arr = [];
+
+        if (res.data.title_image) {
+            images_arr.push({
                 title: 'Food',
                 src: res.data.title_image,
-            },
-        ];
+            });
+        }
 
         if (res.data.nutrition_label_image) {
             images_arr.push({
