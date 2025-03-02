@@ -12,7 +12,7 @@
     <div class="amount-per-serving bold">Amount Per Serving</div>
     <div class="calories-value d-flex justify-space-between">
         <div class="bold">Calories</div>
-        <div class="bold">{{ calories }}</div>
+        <div class="bold">{{ convertKjToKcal(calories, caloriesUnit) }}</div>
     </div>
       
 
@@ -82,7 +82,7 @@ import { computed } from 'vue';
 import Line from '@/components/Line.vue'
 import Bar from '@/components/Bar.vue'
 import { calculatePercentage, formatNumber } from '@/helpers/Numbers';
-import { amountPerContainer, sortNutrients } from '@/helpers/Nutrients';
+import { amountPerContainer, sortNutrients, convertKjToKcal } from '@/helpers/Nutrients';
 
 const showNutrients = [
     'total fat', 'saturated fat', 'cholesterol', 'unsaturated fat',
@@ -120,6 +120,10 @@ export default {
     },
     calories: {
       type: Number,
+      required: true,
+    },
+    caloriesUnit: {
+      type: String,
       required: true,
     },
     nutritionData: {
@@ -206,7 +210,8 @@ export default {
 
       return {
           formatNumber,
-          nutrientsWithPercentage
+          nutrientsWithPercentage,
+          convertKjToKcal
       }
   },
 

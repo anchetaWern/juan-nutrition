@@ -76,17 +76,156 @@
                 <tr v-if="food.calories">
                     <td class="text-grey-darken-3">
                         Calories: 
-                        {{ formatNumber(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount)) }}{{ food.calories_unit }} / {{ calorie_req_in_kcal }}{{ food.calories_unit }} ({{ formatNumber(calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount), calorie_req_in_kcal)) }}%) 
+                        {{ 
+                            formatNumber(
+                                convertKjToKcal(
+                                    amountPerContainer(
+                                        food.calories, 
+                                        servingsPerContainer, 
+                                        displayValuesPerContainer, 
+                                        food.serving_size, 
+                                        newServingSize, 
+                                        newServingCount
+                                    ),
+                                    food.calories_unit
+                                )
+                            ) 
+                        }}
+                        kcal / {{ calorie_req_in_kcal }}kcal 
+                        ({{ 
+                            formatNumber(
+                                calculatePercentage(
+                                    convertKjToKcal(
+                                        amountPerContainer(
+                                            food.calories, 
+                                            servingsPerContainer, 
+                                            displayValuesPerContainer, 
+                                            food.serving_size, 
+                                            newServingSize, 
+                                            newServingCount
+                                        ),
+                                        food.calories_unit
+                                    ), 
+                                    calorie_req_in_kcal
+                                )
+                            ) 
+                        }}%) 
                         <v-chip 
                             size="small" 
                             density="compact" 
-                            :color="getFAOColor(FAONutrientContentClaim('energy', food.calories, calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, 100, newServingCount), calorie_req_in_kcal), food.serving_size, food.state.name, fao_nutrient_claims))"
-                            v-if="FAONutrientContentClaim('energy', food.calories, calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, 100, newServingCount), calorie_req_in_kcal), food.serving_size, food.state.name, fao_nutrient_claims)">{{ FAONutrientContentClaim('energy', food.calories, calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount), calorie_req_in_kcal), food.serving_size, food.state.name, fao_nutrient_claims) }}</v-chip>
+                            :color="getFAOColor(
+                                FAONutrientContentClaim(
+                                    'energy', 
+                                    food.calories, 
+                                    calculatePercentage(
+                                        convertKjToKcal(
+                                            amountPerContainer(
+                                                food.calories, 
+                                                servingsPerContainer, 
+                                                displayValuesPerContainer, 
+                                                food.serving_size, 
+                                                100, 
+                                                newServingCount
+                                            ),
+                                            food.calories_unit
+                                        ),
+                                        calorie_req_in_kcal
+                                    ), 
+                                    food.serving_size, 
+                                    food.state.name, 
+                                    fao_nutrient_claims
+                                )
+                            )"
+                            v-if="
+                                FAONutrientContentClaim(
+                                    'energy', 
+                                    food.calories, 
+                                    calculatePercentage(
+                                        convertKjToKcal(
+                                            amountPerContainer(
+                                                food.calories, 
+                                                servingsPerContainer, 
+                                                displayValuesPerContainer, 
+                                                food.serving_size, 
+                                                100, 
+                                                newServingCount
+                                            ), 
+                                            food.calories_unit 
+                                        ),
+                                        calorie_req_in_kcal
+                                    ), 
+                                    food.serving_size, 
+                                    food.state.name, 
+                                    fao_nutrient_claims)">
+                                        {{ 
+                                            FAONutrientContentClaim(
+                                                'energy', 
+                                                food.calories, 
+                                                calculatePercentage(
+                                                    convertKjToKcal(
+                                                        amountPerContainer(
+                                                            food.calories, 
+                                                            servingsPerContainer, 
+                                                            displayValuesPerContainer, 
+                                                            food.serving_size, 
+                                                            newServingSize, 
+                                                            newServingCount
+                                                        ),
+                                                        food.calories_unit
+                                                    ), 
+                                                    calorie_req_in_kcal
+                                                ), 
+                                                food.serving_size, 
+                                                food.state.name, 
+                                                fao_nutrient_claims
+                                            ) 
+                                        }}
+                                    </v-chip>
                         <v-progress-linear 
                             class="mt-1"
-                            :model-value="calculatePercentage(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount), calorie_req_in_kcal)" 
-                            :bg-color="getCalorieBgColor(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount))" 
-                            :color="getCalorieColor(amountPerContainer(food.calories, servingsPerContainer, displayValuesPerContainer, food.serving_size, newServingSize, newServingCount))">
+                            :model-value="
+                                calculatePercentage(
+                                    convertKjToKcal(
+                                        amountPerContainer(
+                                            food.calories, 
+                                            servingsPerContainer, 
+                                            displayValuesPerContainer, 
+                                            food.serving_size, 
+                                            newServingSize, 
+                                            newServingCount
+                                        ), 
+                                        food.calories_unit
+                                    ),
+                                    calorie_req_in_kcal
+                                )" 
+                            :bg-color="
+                                getCalorieBgColor(
+                                    convertKjToKcal(
+                                        amountPerContainer(
+                                            food.calories, 
+                                            servingsPerContainer, 
+                                            displayValuesPerContainer, 
+                                            food.serving_size, 
+                                            newServingSize, 
+                                            newServingCount
+                                        ),
+                                        food.calories_unit
+                                    )
+                                )" 
+                            :color="
+                                getCalorieColor(
+                                    convertKjToKcal(
+                                        amountPerContainer(
+                                            food.calories, 
+                                            servingsPerContainer, 
+                                            displayValuesPerContainer, 
+                                            food.serving_size, 
+                                            newServingSize, 
+                                            newServingCount
+                                        ),
+                                        food.calories_unit
+                                    )
+                                )">
                         </v-progress-linear>
                     </td>
                 </tr>
@@ -95,12 +234,13 @@
         
         <v-divider></v-divider>
 
-        <div ref="exportable" class="capture-area hidden">
+        <div ref="exportable" class="capture-area">
 
             <NutritionLabel 
                 :servingsPerContainer="food.servings_per_container"
                 :servingSize="food.serving_size"
                 :calories="food.calories"
+                :caloriesUnit="food.calories_unit"
                 :nutritionData="food.nutrients"
                 :ingredients="food.ingredients"
                 :recommended_daily_values="recommended_daily_values"
@@ -510,7 +650,7 @@ import axios from 'axios'
 import NutrientsTable from '@/components/NutrientsTable.vue'
 import NutritionLabel from '@/components/NutritionLabel.vue'
 import { calculatePercentage, formatNumber } from '@/helpers/Numbers';
-import { convertWeight, FAONutrientContentClaim, normalizeFoodState } from '@/helpers/Nutrients';
+import { convertWeight, FAONutrientContentClaim, normalizeFoodState, convertKjToKcal } from '@/helpers/Nutrients';
 
 
 import { toPng } from 'html-to-image';
@@ -725,6 +865,7 @@ export default {
                
             })
             .catch((error) => {
+                console.log('error: ', error);
                 node.classList.add('hidden');
                 console.error('Error exporting image:', error);
             });
@@ -1118,6 +1259,7 @@ export default {
         calculatePercentage,
         formatNumber,
         convertWeight,
+        convertKjToKcal,
         FAONutrientContentClaim,
         
         getCalorieBgColor,

@@ -838,3 +838,13 @@ export function sortNutrients(nutrients) {
       return 0; // Maintain order for unlisted nutrients
     });
   }
+
+
+export function convertKjToKcal(value, unit)
+{
+    if (unit === 'kj') {
+        return Math.round(value * 0.239);
+    }
+
+    return value;
+}
