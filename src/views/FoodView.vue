@@ -234,7 +234,7 @@
         
         <v-divider></v-divider>
 
-        <div ref="exportable" class="capture-area">
+        <div ref="exportable" class="capture-area" hidden>
 
             <NutritionLabel 
                 :servingsPerContainer="food.servings_per_container"
