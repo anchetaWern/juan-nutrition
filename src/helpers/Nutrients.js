@@ -846,5 +846,5 @@ export function convertKjToKcal(value, unit)
         return Math.round(value * 0.239);
     }
 
-    return value;
+    return Math.round(value);
 }
