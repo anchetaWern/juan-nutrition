@@ -1328,8 +1328,9 @@ export default {
 
 <style>
 .capture-area {
-  position: relative;
-  background-color: #FFFFFF;
+    width: 300px;
+    position: relative;
+    background-color: #FFFFFF;
 }
 
 .hidden {
