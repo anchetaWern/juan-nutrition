@@ -76,6 +76,7 @@ export function standardizeVitaminD(value, unit) {
     const conversion_factors = {
         'IU': 0.025,
         'mg': 1000,
+        'µg': 1
     };
 
     if (unit !== standard_unit) {
@@ -133,6 +134,7 @@ export function standardizeVitaminB9(value, unit) {
     const standard_unit = 'mcg'; // mcg of DFE 
     const conversion_factors = {
         'µgDFE': 1, // used interchangeably
+        'µg': 1,
         'mg': 1000, 
     };
 
