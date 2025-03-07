@@ -39,6 +39,7 @@
     <v-dialog
       max-width="400"
       v-model="welcomeModalVisible"   
+      persistent
     >
         <v-card
           title="Welcome to Juan Nutrisyon!🌱"
