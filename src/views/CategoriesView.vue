@@ -34,6 +34,47 @@
         </v-col>
       </v-row>
     </v-container>
+
+
+    <v-dialog
+      max-width="400"
+      v-model="welcomeModalVisible"   
+    >
+        <v-card
+          title="Welcome to Juan Nutrisyon!🌱"
+        >
+
+            <div class="px-5 text-body-1">
+              <div>
+              Your personal nutrition companion to help you make informed food choices—without guilt or fear.
+              </div>
+
+              <div class="mt-5">
+              ✅ Search for foods and instantly view their nutrient content.
+              </div>
+
+              <div>
+              ✅ Build recipes and get a full breakdown of combined nutrients.
+              </div>
+
+              <div>
+              ✅ Track your daily intake and find out if you're meeting your nutritional goals.
+              </div>
+
+              <div class="mt-4">
+              ✨ Remember: Your body is resilient, and all foods can have a place in a balanced diet. You deserve to eat, and no single food defines your health. Moderation, not restriction, is key. 💛
+              </div>
+            </div>
+
+            <template v-slot:actions>
+                <v-btn
+                    class="ms-auto"
+                    text="Ok"
+                    @click="closeWelcomeModal"
+                ></v-btn>
+            </template>
+        </v-card>
+    </v-dialog>
  
 </template>
 
@@ -62,6 +103,7 @@ import foragedFoodsImage from '@/assets/images/foraged-foods.jpg'
 export default {
     
     data: () => ({
+        welcomeModalVisible: !localStorage.getItem('welcome_done'),
         cards: [
             { id: 2, slug: 'vegetables', title: 'Vegetables', src: vegetablesImage, flex: 12 },
             { id: 4, slug: 'aquatic-foods', title: 'Aquatic Foods', src: aquaticFoodsImage, flex: 6 },
@@ -88,6 +130,12 @@ export default {
         goToCategory(slug) {
          
             this.$router.push(`/search?category=${slug}`);
+        },
+
+        closeWelcomeModal() {
+          
+          this.welcomeModalVisible = false;
+          localStorage.setItem('welcome_done', 'yes');
         }
     }
 }
