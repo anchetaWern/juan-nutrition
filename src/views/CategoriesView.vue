@@ -70,7 +70,7 @@
             <template v-slot:actions>
                 <v-btn
                     class="ms-auto"
-                    text="Ok"
+                    text="Dismiss"
                     @click="closeWelcomeModal"
                 ></v-btn>
             </template>
