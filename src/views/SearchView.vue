@@ -1,20 +1,28 @@
 <template>
     
     <div class="mt-5 pt-5">
-        <v-alert
-            border="top"
-            type="warning"
-            variant="outlined"
-            prominent
-            v-if="items.length === 0"
-          >
-          No matches found for query '{{state.searchSummary}}'. Please try a different query.
-        </v-alert>
+        <div class="text-center">
+          <v-progress-circular indeterminate v-if="isLoading" color="primary"></v-progress-circular>
+        </div>
 
-        <v-alert :text="`Showing results for '${state.searchSummary}'`" class="mb-2" v-if="state.searchSummary && items.length > 0" type="info"></v-alert>
+        <div v-if="!isLoading">
+          <v-alert
+              border="top"
+              type="warning"
+              variant="outlined"
+              prominent
+              v-if="items.length === 0"
+            >
+            No matches found for query '{{state.searchSummary}}'. Please try a different query.
+          </v-alert>
+
+          <v-alert :text="`Showing results for '${state.searchSummary}'`" class="mb-2" v-if="state.searchSummary && items.length > 0" type="info"></v-alert>
+        </div>
     </div>
 
-    <v-card class="mx-auto" max-width="450">
+  
+    <v-card class="mx-auto" max-width="450" v-if="!isLoading">
+
       <v-list
         :items="items"
         lines="three"
@@ -24,7 +32,7 @@
       </v-list>
     </v-card>  
     
-    <div class="text-center">
+    <div class="text-center" v-if="!isLoading">
         <v-container>
           <v-row justify="center">
             <v-col cols="12">
@@ -73,6 +81,8 @@ export default defineComponent({
     const currentPage = ref(parseInt(route.query.page) || 1);
     const totalPages = ref(1);
     const instance = getCurrentInstance();
+
+    const isLoading = ref(true);
 
     function updateSearchSummary(newSummary) {
       state.searchSummary = newSummary;
@@ -133,7 +143,9 @@ export default defineComponent({
       currentCategory,
       totalPages,
       updateSearchSummary,
-      state
+      state,
+
+      isLoading
     };
   },
 
@@ -354,10 +366,14 @@ export default defineComponent({
       
       const url = this.currentCategory ? `${API_BASE_URI}/foods?${query}&category=${this.currentCategory}&page=${this.currentPage}` : `${API_BASE_URI}/foods?${query}&page=${this.currentPage}`;
 
+      this.isLoading = true;
 
       axios.get(url)
         .then((res) => {
           const items_per_page = 10;
+
+          this.isLoading = false;
+
           this.totalPages = Math.round(res.data.total / items_per_page);
 
           this.items = res.data.data.flatMap((itm, index, array) => {
@@ -392,6 +408,7 @@ export default defineComponent({
         })
         .catch((err) => {
           console.log('search err: ', err);
+          this.isLoading = false;
         });
     }
 
