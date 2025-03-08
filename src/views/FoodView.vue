@@ -1,4 +1,9 @@
 <template>
+
+<div class="text-center mt-10" v-if="isLoading">
+    <v-progress-circular indeterminate color="primary"></v-progress-circular>
+</div>
+
   <div class="mt-5" v-if="food">
     
     <div class="pt-3">
@@ -747,6 +752,8 @@ export default {
 
     const route = useRoute();
 
+    const isLoading = ref(true);
+
     const food = ref(null);
     const images = ref([]);
     const custom_serving_sizes = ref(null);
@@ -1064,10 +1071,15 @@ export default {
 
 
     const fetchData = async () => {
-      
+        
+        isLoading.value = true;
+
         const food_slug = route.params.food;
 
         const res = await axios.get(`${API_BASE_URI}/foods/${food_slug}`);
+
+        isLoading.value = false;
+
         const current_food = res.data;
         food.value = current_food;
         newServingSize.value = res.data.serving_size;
@@ -1231,6 +1243,8 @@ export default {
     onMounted(fetchData);
 
     return {
+        isLoading,
+
         food,
         custom_serving_sizes,
         selected_custom_serving,
