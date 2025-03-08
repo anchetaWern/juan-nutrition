@@ -63,7 +63,7 @@
               </div>
 
               <div class="mt-4">
-              ✨ Remember: Your body is resilient, and all foods can have a place in a balanced diet. You deserve to eat, and no single food defines your health. Moderation, not restriction, is key. 💛
+              ✨ Remember: Your body is resilient, and all foods can have a place in a balanced diet. Focus on eating more <strong>whole foods</strong>, <strong>fiber</strong>, and <strong>essential nutrients</strong>, but also enjoy treats in moderation. You deserve to eat, and no single food defines your health. Moderation, not restriction, is key. 💛
               </div>
             </div>
 
