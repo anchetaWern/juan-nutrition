@@ -65,6 +65,7 @@
     <template v-slot:default="{ isActive }">
       <v-card title="Help">
         <template v-slot:text>
+          <h3 class="text-subtitle-1 font-weight-bold">How to use</h3>
           This app has two main features: <br>
           <ul class="pt-1 pl-5">
             <li>Searching and viewing nutrient information of foods.</li>
@@ -87,8 +88,18 @@
           You can also save your recipe for other users to view and modify.  
 
           <br>
-          <br>Most of the foods here are from PhilFCT <a href="https://i.fnri.dost.gov.ph/fct/library/starting_pg" target="_blank">(Philippine Food Composition Tables Online Database)</a>
-          <br>Some are gathered from the author taking pictures of food labels. If you want to contribute, <a href="/register">create an account</a> then visit<a href="https://contribute.juanutrisyon.info" target="_blank">contribute.juanutrisyon.info</a>.
+          <br>
+          <h3 class="text-subtitle-1 font-weight-bold">Sources & References</h3>
+          Below are the data sources used for nutrition facts, diet analysis, recipe analysis assessments, and nutrient health claims (high, low, very low, free) in this app:
+          <ul class="ml-3">
+            <li>Department of Science and Technology-Food and Nutrition Research Institute (DOST-FNRI). 2022. Philippine Food Composition Table (PhilFCT) Online Database. iFNRI Website. Retrieved June-08-2024, from <a href="http://i.fnri.dost.gov.ph/fct/library" target="_blank">http://i.fnri.dost.gov.ph/fct/library</a></li>
+            <li>U.S. Department of Agriculture, Agricultural Research Service, Beltsville Human Nutrition Research Center. FoodData Central. [Internet]. [cited February 2025]. Available from <a href="https://fdc.nal.usda.gov/" target="_blank">https://fdc.nal.usda.gov/</a>.</li>
+            <li>Food and Agriculture Organization - <a href="https://www.fao.org/ag/humannutrition/32444-09f5545b8abe9a0c3baf01a4502ac36e4.pdf" target="_blank">Guidelines for use of nutrition and health claims.</a></li>
+          </ul>
+          
+          <br>
+          <h3 class="text-subtitle-1 font-weight-bold">Contributing</h3>
+          If you want to contribute, <a href="/register">create an account</a> then visit<a href="https://contribute.juanutrisyon.info" target="_blank">contribute.juanutrisyon.info</a>.
 
         </template>
 
