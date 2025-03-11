@@ -90,11 +90,27 @@
           <br>
           <br>
           <h3 class="text-subtitle-1 font-weight-bold">Sources & References</h3>
-          Below are the data sources used for nutrition facts, diet analysis, recipe analysis assessments, and nutrient health claims (high, low, very low, free) in this app:
+          Below are the sources used for nutrition facts, diet analysis, recipe analysis assessments, daily values, nutrient claims, food weights, local food names in this app:
           <ul class="ml-3">
             <li>Department of Science and Technology-Food and Nutrition Research Institute (DOST-FNRI). 2022. Philippine Food Composition Table (PhilFCT) Online Database. iFNRI Website. Retrieved June-08-2024, from <a href="http://i.fnri.dost.gov.ph/fct/library" target="_blank">http://i.fnri.dost.gov.ph/fct/library</a></li>
             <li>U.S. Department of Agriculture, Agricultural Research Service, Beltsville Human Nutrition Research Center. FoodData Central. [Internet]. [cited February 2025]. Available from <a href="https://fdc.nal.usda.gov/" target="_blank">https://fdc.nal.usda.gov/</a>.</li>
+            
+            <li>Food and Nutrition Research Institute of the Department of Science and Technology (FNRI-DOST) - <a href="https://www.fnri.dost.gov.ph/images/images/news/PDRI-2018.pdf" target="_blank">Philippine Dietary Reference Intakes 2015</a></li>
+            <li>U.S. Food & Drug Administration - <a href="https://www.fda.gov/food/nutrition-facts-label/daily-value-nutrition-and-supplement-facts-labels" target="_blank">Daily Value on the Nutrition and Supplement Facts Labels</a></li>
+
             <li>Food and Agriculture Organization - <a href="https://www.fao.org/ag/humannutrition/32444-09f5545b8abe9a0c3baf01a4502ac36e4.pdf" target="_blank">Guidelines for use of nutrition and health claims.</a></li>
+
+            <li>Bureau of Fisheries and Aquatic Resources - <a href="https://www.bfar.da.gov.ph/market-development-services/fish-and-fishery-product-price-monitoring-service/" target="_blank">Fish and Fishery Product Price Monitoring Service</a></li>
+          
+            <li>Department of Agriculture - <a href="https://www.da.gov.ph/price-monitoring/" target="_blank">Price monitoring</a></li>
+
+            <li>
+            Local food names sources: <a href="https://www.facebook.com/LocalFoodHeritagePH" target="_blank">Lokalpedia</a>,
+            <a href="https://featrmedia.com/" target="_blank">Featr</a>, 
+            <a href="https://www.gmanetwork.com/gtv/magazine/biyahe_ni_drew/home" target="_blank">Biyahe ni Drew</a>, 
+            <a href="https://www.gmanetwork.com/entertainment/tv/pinas_sarap_full_episodes/home/" target="_blank">Pinas Sarap</a>, 
+            <a href="https://www.facebook.com/kapusomojessicasoho/" target="_blank">Kapuso mo Jessica Soho</a>
+            </li>
           </ul>
           
           <br>
