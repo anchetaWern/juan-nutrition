@@ -682,6 +682,8 @@ import { useHead } from '@vueuse/head'
 
 const API_BASE_URI = import.meta.env.VITE_API_URI;
 
+import { retryAxios } from '@/api/retryAxios';
+
 
 const chartOptions = {
   responsive: true,
@@ -881,7 +883,7 @@ export default {
     const openIngredientsInfoModal = () => {
         // todo:
         const food_slug = route.params.food;
-        axios.get(`${API_BASE_URI}/food-ingredients/${food_slug}`)
+        retryAxios(`${API_BASE_URI}/food-ingredients/${food_slug}`)
             .then(async (res) => {
                 food_ingredients.value = res.data;
             });
@@ -1078,8 +1080,8 @@ export default {
 
             const food_slug = route.params.food;
 
-            const res = await axios.get(`${API_BASE_URI}/foods/${food_slug}`);
-
+            const res = await retryAxios(`${API_BASE_URI}/foods/${food_slug}`);
+           
             isLoading.value = false;
 
             const current_food = res.data;
@@ -1109,7 +1111,7 @@ export default {
             if (sessionStorage.getItem('consolidated_daily_nutrient_dv')) {
                 consolidated_daily_nutrient_dv = JSON.parse(sessionStorage.getItem('consolidated_daily_nutrient_dv'));
             } else {
-                const fda_daily_nutrient_values_res = await axios.get(`${API_BASE_URI}/consolidated-recommended-daily-nutrient-intake?gender=male&age=19`);
+                const fda_daily_nutrient_values_res = await retryAxios(`${API_BASE_URI}/consolidated-recommended-daily-nutrient-intake?gender=male&age=19`);
                 consolidated_daily_nutrient_dv = fda_daily_nutrient_values_res.data;
                 sessionStorage.setItem('consolidated_daily_nutrient_dv', JSON.stringify(consolidated_daily_nutrient_dv));
             }
@@ -1227,7 +1229,7 @@ export default {
             if (sessionStorage.getItem('fao_nutrient_content_claims')) {
                 fao_nutrient_content_claims = JSON.parse(sessionStorage.getItem('fao_nutrient_content_claims'));
             } else {
-                const fda_daily_nutrient_values_res = await axios.get(`${API_BASE_URI}/fao-nutrient-content-claims`);
+                const fda_daily_nutrient_values_res = await retryAxios(`${API_BASE_URI}/fao-nutrient-content-claims`);
                 fao_nutrient_content_claims = fda_daily_nutrient_values_res.data;
                 sessionStorage.setItem('fao_nutrient_content_claims', JSON.stringify(fao_nutrient_content_claims));
             }

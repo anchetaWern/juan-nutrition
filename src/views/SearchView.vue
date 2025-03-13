@@ -57,6 +57,8 @@ import axios from 'axios';
 import { useRouter, useRoute } from 'vue-router';
 import { unslugify } from '@/helpers/Str';
 
+import { retryAxios } from '@/api/retryAxios';
+
 const API_BASE_URI = import.meta.env.VITE_API_URI;
 
 export default defineComponent({
@@ -368,13 +370,14 @@ export default defineComponent({
 
       this.isLoading = true;
 
-      axios.get(url)
+      retryAxios(url)
         .then((res) => {
+         
           const items_per_page = 10;
 
           this.isLoading = false;
 
-          this.totalPages = Math.round(res.data.total / items_per_page);
+          this.totalPages = Math.round(res.data.data.total / items_per_page);
 
           this.items = res.data.data.flatMap((itm, index, array) => {
             
