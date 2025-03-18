@@ -7,12 +7,17 @@
       :loggedInUser="loggedInUser"
     />
 
+    
+
     <default-view 
       :items="items" 
       @update-ingredient-count="updateIngredientCount" 
       @update-serving-size="updateServingSize"
       @update-serving-count="updateServingCount"
       @update-analyze-count="updateAnalyzeCount" />
+
+      <FloatingActionButton />
+      
   </v-app>
 </template>
 
@@ -24,6 +29,8 @@ import { onAuthStateChanged } from "firebase/auth";
 
 import DefaultBar from './AppBar.vue'
 import DefaultView from './View.vue'
+
+import FloatingActionButton from '@/components/FloatingActionButton.vue';
 
 const router = useRouter();
 

@@ -7,9 +7,9 @@
     </v-app-bar-title>
 
     <template v-slot:append>  
-      <v-btn size="x-small" icon="mdi-login" @click="goToLogin" v-if="!loggedInUser"></v-btn>
+      <v-btn size="x-small" icon="mdi-login" @click="goToLogin" v-if="!loggedInUser" id="loginButton"></v-btn>
 
-      <v-btn size="x-small" icon="mdi-logout" @click="logoutUser" v-if="loggedInUser"></v-btn>
+      <v-btn size="x-small" icon="mdi-logout" @click="logoutUser" v-if="loggedInUser" id="logoutButton"></v-btn>
 
       <v-badge
         v-if="ingredientCount > 0"
@@ -17,7 +17,7 @@
         overlap
         color="success"
       >
-        <v-btn size="x-small" icon="mdi-chef-hat" @click="goToRecipe"></v-btn>
+        <v-btn size="x-small" icon="mdi-chef-hat" @click="goToRecipe" id="recipeAnalysisButton"></v-btn>
       </v-badge>
 
       <v-badge
@@ -26,21 +26,21 @@
         overlap
         color="success"
       >
-        <v-btn size="x-small" icon="mdi-chart-box" @click="goToAnalysis"></v-btn>
+        <v-btn size="x-small" icon="mdi-chart-box" @click="goToAnalysis" id="dietAnalysisButton"></v-btn>
       </v-badge>
 
-      <v-btn v-if="ingredientCount == 0" size="x-small" icon="mdi-chef-hat" @click="goToRecipe"></v-btn>
-      <v-btn v-if="analyzeCount == 0" size="x-small" icon="mdi-chart-box" @click="goToAnalysis"></v-btn>
+      <v-btn v-if="ingredientCount == 0" size="x-small" icon="mdi-chef-hat" @click="goToRecipe" id="recipeAnalysisButton"></v-btn>
+      <v-btn v-if="analyzeCount == 0" size="x-small" icon="mdi-chart-box" @click="goToAnalysis" id="dietAnalysisButton"></v-btn>
       
 
-      <v-btn size="x-small" icon="mdi-help" @click="helpDialog = true"></v-btn>
-      <v-btn size="x-small" icon="mdi-magnify" @click="dialog = true"></v-btn>
+      <v-btn size="x-small" icon="mdi-help" @click="helpDialog = true" id="helpButton"></v-btn>
+      <v-btn size="x-small" icon="mdi-magnify" @click="searchDialog = true" id="searchButton"></v-btn>
     </template>    
 
   </v-app-bar>
 
   <v-dialog
-    v-model="dialog"
+    v-model="searchDialog"
     width="300"
   >
     <v-card>
@@ -50,9 +50,23 @@
         placeholder="Type the name of food"
         v-model="query"
         autofocus
-      ></v-text-field>
+      >
+       
+      </v-text-field>
+
      
-      <v-btn color="primary" block @click="search" rounded="0">Search</v-btn>
+      <v-tooltip location="bottom" :model-value="true" class="custom-tooltip">
+        <template v-slot:activator="{ props }">
+          <v-btn v-bind="props" color="primary" block @click="search" rounded="0">
+            Search
+          </v-btn>
+        </template>
+
+        <div v-if="tourModeEnabled">
+        Type in the name of the food you’re looking for, or the vitamins and minerals you want (eg. high in vitamin c, high protein, low carbohydrates) then click on the ‘search’ button.
+        </div>
+      </v-tooltip>
+    
     </v-card>
 
   </v-dialog>
@@ -66,11 +80,20 @@
       <v-card title="Help">
         <template v-slot:text>
           <h3 class="text-subtitle-1 font-weight-bold">How to use</h3>
-          This app has two main features: <br>
+          This app has three main features: <br>
           <ul class="pt-1 pl-5">
-            <li>Searching and viewing nutrient information of foods.</li>
-            <li>Diet analysis.</li>
-            <li>Recipe analysis.</li>
+            <li>
+              Searching and viewing nutrient information of foods. 
+              <v-btn size="x-small" color="primary" @click="enableTourMode">Tour me</v-btn>
+            </li>
+            <li>
+              Diet analysis.
+              <v-btn size="x-small" color="primary" @click="enableTourMode">Tour me</v-btn>
+            </li>
+            <li>
+              Recipe analysis.
+              <v-btn size="x-small" color="primary" @click="enableTourMode">Tour me</v-btn>
+            </li>
           </ul>
           <br>
           To view food data, you can click on the magnifying glass icon to begin searching. Just type in what you're looking for (eg. <code>Rambutan</code>, <code>high protein</code>, <code>carbohydrates<=2g</code>, <code>high iron</code>, <code>high vitamin c</code>). 
@@ -133,77 +156,65 @@
   </v-dialog>
 
 </template>
-
-<script>
-import logo from '@/assets/images/juan-nutrisyon.png'
-import { ref } from 'vue';
+<script setup>
+import logo from '@/assets/images/juan-nutrisyon.png';
+import { ref, inject } from 'vue';
 import { auth } from '@/firebase.js';
 import { signOut } from "firebase/auth";
-import { createToast } from 'mosha-vue-toastify'
-import 'mosha-vue-toastify/dist/style.css'
+import { createToast } from 'mosha-vue-toastify';
+import 'mosha-vue-toastify/dist/style.css';
+import { useRouter } from 'vue-router';
 
-export default {
+// Props
+const props = defineProps({
+  updateItems: Function,
+  ingredientCount: { type: Number, default: 0 },
+  analyzeCount: { type: Number, default: 1 },
+  loggedInUser: Object
+});
 
-  props: {
-    updateItems: Function,
-    ingredientCount: {
-      type: Number,
-      default: 0
-    },
+const tourModeEnabled = inject("tourModeEnabled");
 
-    analyzeCount: {
-      type: Number,
-      default: 1
-    },
+// State variables
+const query = ref('');
+const searchDialog = ref(false);
+const helpDialog = ref(false);
 
-    loggedInUser: {
-      type: Object,
-    }
-  },
+const router = useRouter();
 
-  data: () => ({
-    logo,
-    query: '',
-    dialog: false,
-    helpDialog: false,
-  }),
+// Functions
+const search = () => {
+  searchDialog.value = false;
+  props.updateItems(query.value);
+  query.value = '';
+};
 
-  methods: {
-    search() {
-      this.dialog = false;
-     
-      this.updateItems(this.query);
-      this.query = '';
-    },
-
-    goToLogin() {
-      this.$router.push('/login');
-    },
-
-    goToRecipe() {
-      this.$router.push('/recipe');
-    },
-
-    goToAnalysis() {
-      this.$router.push('/analyze');
-    },
-
-    async logoutUser() {
-     
-      try {
-        await signOut(auth);
-       
-        createToast(
-          {
-            title: 'Logout successful',
-          }, 
-          { type: 'success', position: 'bottom-right' }
-        );
-
-      } catch (error) {
-        console.error("Error logging out:", error.message);
-      }
-    }
-  }
+const enableTourMode = () => {
+  tourModeEnabled.value = 'yes';
+  helpDialog.value = false;
 }
+
+const goToLogin = () => router.push('/login');
+const goToRecipe = () => router.push('/recipe');
+const goToAnalysis = () => router.push('/analyze');
+
+const logoutUser = async () => {
+  try {
+    await signOut(auth);
+    createToast({ title: 'Logout successful' }, { type: 'success', position: 'bottom-right' });
+  } catch (error) {
+    console.error("Error logging out:", error.message);
+  }
+};
 </script>
+
+
+<style>
+.custom-tooltip .v-overlay__content {
+  background-color: #fff !important; /* Custom background */
+  color: #000 !important; /* Custom text color */
+  font-weight: bold;
+  border-radius: 8px;
+  padding: 8px;
+}
+</style>

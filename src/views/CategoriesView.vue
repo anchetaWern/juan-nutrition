@@ -6,13 +6,17 @@
     align-items: center;
   }
 }
+
+#category-container {
+  max-width: 450px;
+}
 </style>
 
 
 <template>
  
+    <v-container class="mt-5 overflow-y-auto" id="category-container" max-height="400px">
 
-    <v-container class="mt-5" id="category-container">
       <v-row dense justify="center">
         <v-col
           v-for="card in cards"
@@ -33,6 +37,7 @@
           </v-card>
         </v-col>
       </v-row>
+
     </v-container>
 
 
@@ -76,16 +81,20 @@
             </template>
         </v-card>
     </v-dialog>
- 
+  
+    <Tour 
+      target="#searchButton" 
+      title="Step 1" 
+      description="Click on the search icon to start searching for a food." 
+      v-if="tourModeEnabled" 
+      :isLoading="isLoading" />
 </template>
 
-<style scoped>
-#category-container {
-  max-width: 450px;
-}
-</style>
 
-<script>
+<script setup>
+import { ref, computed, inject } from 'vue';
+import { useRouter } from 'vue-router';
+import Tour from '@/components/Tour.vue';
 
 import vegetablesImage from '@/assets/images/vegetables.jpg';
 import aquaticFoodsImage from '@/assets/images/aquatic-foods.jpg';
@@ -98,46 +107,77 @@ import meatAndPoultryImage from '@/assets/images/meat-and-poultry.jpg';
 import fatsAndOilsImage from '@/assets/images/fats-and-oils.jpg';
 import beveragesImage from '@/assets/images/beverages.jpg';
 import sugarsAndSweetsImage from '@/assets/images/sugars-and-sweets.jpg';
-import preparedAndProcessedImage from '@/assets/images/prepared-and-processed.jpg'
-import foragedFoodsImage from '@/assets/images/foraged-foods.jpg'
+import preparedAndProcessedImage from '@/assets/images/prepared-and-processed.jpg';
+import foragedFoodsImage from '@/assets/images/foraged-foods.jpg';
 
-export default {
-    
-    data: () => ({
-        welcomeModalVisible: !localStorage.getItem('welcome_done'),
-        cards: [
-            { id: 2, slug: 'vegetables', title: 'Vegetables', src: vegetablesImage, flex: 12 },
-            { id: 4, slug: 'aquatic-foods', title: 'Aquatic Foods', src: aquaticFoodsImage, flex: 6 },
-            { id: 4, slug: 'meat-and-poultry', title: 'Meat and Poultry', src: meatAndPoultryImage, flex: 6 },
-            { id: 7, slug: 'legumes-nuts-and-seeds', title: 'Legumes, nuts, and seeds', src: legumesNutsSeedsImage, flex: 6 },
-            { id: 8, slug: 'fats-and-oils', title: 'Fats and Oils', src: fatsAndOilsImage, flex: 6 },
+const router = useRouter();
+const welcomeModalVisible = ref(!localStorage.getItem('welcome_done'));
+const tourModalVisible = ref(true);
 
-            { id: 3, slug: 'fruits', title: 'Fruits', src: fruitsImage, flex: 6 },
-            { id: 1, slug: 'cereals-and-grains', title: 'Cereals and Grains', src: cerealsAndGrainsImage, flex: 6 },
+const tourModeEnabled = inject("tourModeEnabled");
 
-            { id: 6, slug: 'dairy-products', title: 'Dairy Products', src: dairyProductsImage, flex: 6 },
-            
-            { id: 11, slug: 'herbs-and-spices', title: 'Herbs and Spices', src: herbsAndSpicesImage, flex: 6 },
-            
-            { id: 10, slug: 'beverages', title: 'Beverages', src: beveragesImage, flex: 6 },
-            
-            { id: 12, slug: 'prepared-and-processed', title: 'Prepared and Processed', src: preparedAndProcessedImage, flex: 6 },
-            { id: 9, slug: 'sugars-and-sweets', title: 'Sugars and Sweets', src: sugarsAndSweetsImage, flex: 6 },
-            { id: 9, slug: 'foraged-foods', title: 'Foraged Foods', src: foragedFoodsImage, flex: 6 },
-        ],
-    }),
+const isLoading = ref(false);
 
-    methods: {
-        goToCategory(slug) {
-         
-            this.$router.push(`/search?category=${slug}`);
-        },
+const cards = ref([
+  { id: 2, slug: 'vegetables', title: 'Vegetables', src: vegetablesImage, flex: 12 },
+  { id: 4, slug: 'aquatic-foods', title: 'Aquatic Foods', src: aquaticFoodsImage, flex: 6 },
+  { id: 4, slug: 'meat-and-poultry', title: 'Meat and Poultry', src: meatAndPoultryImage, flex: 6 },
+  { id: 7, slug: 'legumes-nuts-and-seeds', title: 'Legumes, nuts, and seeds', src: legumesNutsSeedsImage, flex: 6 },
+  { id: 8, slug: 'fats-and-oils', title: 'Fats and Oils', src: fatsAndOilsImage, flex: 6 },
+  { id: 3, slug: 'fruits', title: 'Fruits', src: fruitsImage, flex: 6 },
+  { id: 1, slug: 'cereals-and-grains', title: 'Cereals and Grains', src: cerealsAndGrainsImage, flex: 6 },
+  { id: 6, slug: 'dairy-products', title: 'Dairy Products', src: dairyProductsImage, flex: 6 },
+  { id: 11, slug: 'herbs-and-spices', title: 'Herbs and Spices', src: herbsAndSpicesImage, flex: 6 },
+  { id: 10, slug: 'beverages', title: 'Beverages', src: beveragesImage, flex: 6 },
+  { id: 12, slug: 'prepared-and-processed', title: 'Prepared and Processed', src: preparedAndProcessedImage, flex: 6 },
+  { id: 9, slug: 'sugars-and-sweets', title: 'Sugars and Sweets', src: sugarsAndSweetsImage, flex: 6 },
+  { id: 9, slug: 'foraged-foods', title: 'Foraged Foods', src: foragedFoodsImage, flex: 6 },
+]);
 
-        closeWelcomeModal() {
-          
-          this.welcomeModalVisible = false;
-          localStorage.setItem('welcome_done', 'yes');
-        }
-    }
-}
+
+
+
+
+
+const goToCategory = (slug) => {
+  router.push(`/search?category=${slug}`);
+};
+
+const closeWelcomeModal = () => {
+  welcomeModalVisible.value = false;
+  localStorage.setItem('welcome_done', 'yes');
+};
+
+//
+const steps = ref([
+  { id: 1, target: "#btn-1", tooltipText: "Click this button to start" },
+  { id: 2, target: "#btn-2", tooltipText: "This button does something important" },
+  { id: 3, target: "#input-1", tooltipText: "Enter your details here" },
+]);
+
+const stepIndex = ref(0);
+const isOnboarding = ref(true);
+
+// Computed Property for Current Step
+const currentStep = computed(() => steps.value[stepIndex.value]);
+
+// Get Activator for Tooltip (Ensures it attaches to the correct element)
+const getActivator = computed(() => {
+  return document.querySelector(currentStep.value.target);
+});
+
+// Step Navigation
+const nextStep = () => {
+  if (stepIndex.value < steps.value.length - 1) {
+    stepIndex.value++;
+  } else {
+    isOnboarding.value = false;
+  }
+};
+
+const prevStep = () => {
+  if (stepIndex.value > 0) {
+    stepIndex.value--;
+  }
+};
 </script>
