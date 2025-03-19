@@ -54,15 +54,18 @@
        
       </v-text-field>
 
+      <v-btn color="primary" block @click="search" rounded="0" v-if="!tourModeEnabled">
+        Search
+      </v-btn>
      
-      <v-tooltip location="bottom" :model-value="true" class="custom-tooltip">
+      <v-tooltip location="bottom" :model-value="true" class="custom-tooltip" v-if="tourModeEnabled">
         <template v-slot:activator="{ props }">
           <v-btn v-bind="props" color="primary" block @click="search" rounded="0">
             Search
           </v-btn>
         </template>
 
-        <div v-if="tourModeEnabled">
+        <div>
         Type in the name of the food you’re looking for, or the vitamins and minerals you want (eg. high in vitamin c, high protein, low carbohydrates) then click on the ‘search’ button.
         </div>
       </v-tooltip>
