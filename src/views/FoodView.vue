@@ -646,9 +646,9 @@
 
 </template>
 
-<script>
+<script setup>
 import { VNumberInput } from 'vuetify/labs/VNumberInput'
-import { ref, onMounted, watchEffect, watch } from 'vue';
+import { ref, onMounted, watchEffect, watch, defineEmits } from 'vue';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Pie } from 'vue-chartjs'
 import axios from 'axios'
@@ -683,6 +683,8 @@ import { useHead } from '@vueuse/head'
 const API_BASE_URI = import.meta.env.VITE_API_URI;
 
 import { retryAxios } from '@/api/retryAxios';
+
+const emit = defineEmits(['update-ingredient-count-child', 'update-analyze-count-child']);
 
 
 const chartOptions = {
@@ -731,621 +733,529 @@ const others = ref(null);
 
 const exportable = ref(null);
 
+const dvHelp = ref(false);
 
-export default {
-  name: 'FoodView',
-  components: {
-    Pie,
-    NutrientsTable,
-    VNumberInput,
-    NutritionLabel,
-  },
+const displayValuesPerContainer = ref(false);
+
+// ==
+
+const route = useRoute();
+
+const isLoading = ref(true);
+
+const food = ref(null);
+const images = ref([]);
+const custom_serving_sizes = ref(null);
+const selected_custom_serving = ref(null);
+const selected_serving_qty = ref(1);
+
+const fao_nutrient_claims = ref(null);
+
+const hasMacros = ref(false);
+const chartData = ref(null);
+
+const calorie_req_in_kcal = ref(2000);
+
+const recommended_daily_values = ref(null);
+
+const daily_values_table = ref(null);
+
+const servingsPerContainer = ref(1);
+const hasValuesPerContainerToggle = ref(false);
+
+const modifyServingSizeDialog = ref(false);
+
+const modifyServingCountDialog = ref(false);
+
+const ingredientsInfoDialog = ref(false);
+
+const newServingSize = ref(null);
+
+const newServingCount = ref(null);
+
+const food_ingredients = ref(null);
+
+const issueDescription = ref('');
+
+//
+const pageTitle = 'Juan Nutrisyon';
+const pageDescription = 'View more info at app.juanutrisyon.info';
+
+watch(selected_custom_serving, (new_custom_serving, old_custom_serving) => {
     
-  data: () => ({
-
-    chartOptions,
-    imageModalVisible,
-    reportIssueModalVisible,
-    dvHelp: false,
-    displayValuesPerContainer: false,
-  }),
-
-  setup(props, { emit }) {
-
-    const route = useRoute();
-
-    const isLoading = ref(true);
-
-    const food = ref(null);
-    const images = ref([]);
-    const custom_serving_sizes = ref(null);
-    const selected_custom_serving = ref(null);
-    const selected_serving_qty = ref(1);
-
-    const fao_nutrient_claims = ref(null);
-
-    const hasMacros = ref(false);
-    const chartData = ref(null);
-
-    const calorie_req_in_kcal = ref(2000);
-
-    const recommended_daily_values = ref(null);
-
-    const daily_values_table = ref(null);
-
-    const servingsPerContainer = ref(1);
-    const hasValuesPerContainerToggle = ref(false);
-
-    const modifyServingSizeDialog = ref(false);
-
-    const modifyServingCountDialog = ref(false);
-
-    const ingredientsInfoDialog = ref(false);
-
-    const newServingSize = ref(null);
-
-    const newServingCount = ref(null);
-
-    const food_ingredients = ref(null);
-
-    const issueDescription = ref('');
-
-    //
-    const pageTitle = 'Juan Nutrisyon';
-    const pageDescription = 'View more info at app.juanutrisyon.info';
-
-    watch(selected_custom_serving, (new_custom_serving, old_custom_serving) => {
-       
-        selected_serving_qty.value = 1;
-        newServingSize.value = parseFloat(new_custom_serving);
-        
-    });
+    selected_serving_qty.value = 1;
+    newServingSize.value = parseFloat(new_custom_serving);
     
-    watch(selected_serving_qty, (new_serving_qty, old_serving_qty) => {
-        
-        if (selected_custom_serving.value) {
-            newServingSize.value = parseFloat(selected_custom_serving.value) * parseInt(new_serving_qty);
-        }
-    });
+});
 
-    watchEffect(() => {
-      if (food.value) {
-        const pageTitle = food.value.description;
-        const pageDescription = `${food.value.calories}${food.value.calories_unit}. View more info at app.juanutrisyon.info`;
-
-        useHead({
-          title: pageTitle,
-          meta: [
-            { name: 'description', content: pageDescription },
-            { property: 'og:title', content: `Juan Nutrisyon - ${pageTitle}` },
-            { property: 'og:description', content: pageDescription },
-            { property: 'og:image', content: food.value.title_image },
-          ],
-        });
-      }
-    });
-    //
-
-    const getFAOColor = (value) => {
-        const fao_colors = {
-            'free': 'blue-grey-lighten-1',
-            'very low': 'blue-grey-darken-1',
-            'low': 'blue',
-            'source': 'yellow',
-            'high': 'red'
-        };
-        return fao_colors[value];
-    }
-
-    const getCalorieBgColor = (calories) => {
-        return 'grey-darken-3';
-    }
-   
-    const getCalorieColor = (calories) => {
-        return 'deep-purple-lighten-2';
-    }
-
-    const openModifyServingCountModal = () => {
-        
-        modifyServingCountDialog.value = true;
-    }
-
-    const openModifyServingSizeModal = async () => {
+watch(selected_serving_qty, (new_serving_qty, old_serving_qty) => {
     
-        modifyServingSizeDialog.value = true;
+    if (selected_custom_serving.value) {
+        newServingSize.value = parseFloat(selected_custom_serving.value) * parseInt(new_serving_qty);
     }
+});
 
-    const exportAsImage = () => {
-       
-        const node = exportable.value;
+watchEffect(() => {
+    if (food.value) {
+    const pageTitle = food.value.description;
+    const pageDescription = `${food.value.calories}${food.value.calories_unit}. View more info at app.juanutrisyon.info`;
 
-       
-        node.classList.remove('hidden');
-
-        toPng(node)
-            .then((dataUrl) => {
-               
-                const link = document.createElement('a');
-                link.download = `${food.value.description_slug}-nutrient-info.png`;
-                link.href = dataUrl;
-                link.click();
-
-                node.classList.add('hidden');
-               
-            })
-            .catch((error) => {
-                console.log('error: ', error);
-                node.classList.add('hidden');
-                console.error('Error exporting image:', error);
-            });
+    useHead({
+        title: pageTitle,
+        meta: [
+        { name: 'description', content: pageDescription },
+        { property: 'og:title', content: `Juan Nutrisyon - ${pageTitle}` },
+        { property: 'og:description', content: pageDescription },
+        { property: 'og:image', content: food.value.title_image },
+        ],
+    });
     }
+});
 
-    const openIngredientsInfoModal = () => {
-        // todo:
-        const food_slug = route.params.food;
-        retryAxios(`${API_BASE_URI}/food-ingredients/${food_slug}`)
-            .then(async (res) => {
-                food_ingredients.value = res.data;
-            });
 
-        ingredientsInfoDialog.value = true;
-    }
+// ===
 
-    const getValueColor = (value, daily_limit) => {
-
-        return 'deep-purple-lighten-2';
+const getFAOColor = (value) => {
+    const fao_colors = {
+        'free': 'blue-grey-lighten-1',
+        'very low': 'blue-grey-darken-1',
+        'low': 'blue',
+        'source': 'yellow',
+        'high': 'red'
     };
+    return fao_colors[value];
+}
 
+const getCalorieBgColor = (calories) => {
+    return 'grey-darken-3';
+}
 
-    const addIngredientToRecipe = (ingredient, ingredient_serving_size) => {
-        const recipe = sessionStorage.getItem('recipe');
-        let recipe_data = [];
-        if (recipe) {
-            recipe_data = JSON.parse(recipe);
-        }
+const getCalorieColor = (calories) => {
+    return 'deep-purple-lighten-2';
+}
 
-        const index = recipe_data.findIndex(itm => itm.description_slug === food.value.description_slug);
+const openModifyServingCountModal = () => {
+    
+    modifyServingCountDialog.value = true;
+}
 
-        if (index === -1) {
-            recipe_data.push(ingredient);
-            sessionStorage.setItem('recipe', JSON.stringify(recipe_data));
+const openModifyServingSizeModal = async () => {
 
-            let serving_size_data = {};
-            const serving_size = sessionStorage.getItem('recipe_serving_sizes');
-            if (serving_size) {
-                serving_size_data = JSON.parse(serving_size);
-            }
+    modifyServingSizeDialog.value = true;
+}
 
-            serving_size_data[ingredient.description_slug] = ingredient_serving_size;
-            sessionStorage.setItem('recipe_serving_sizes', JSON.stringify(serving_size_data));
-
-            let stored_custom_servings = {};
-            const stored_cs = sessionStorage.getItem('recipe_custom_servings');
-            if (stored_cs) {
-                stored_custom_servings = JSON.parse(stored_cs);
-            }
-
-            stored_custom_servings[ingredient.description_slug] = {
-                'weight': selected_custom_serving.value ? selected_custom_serving.value : ingredient_serving_size, 
-                'qty': selected_serving_qty.value ? selected_serving_qty.value : 1, 
-            }
-
-            sessionStorage.setItem('recipe_custom_servings', JSON.stringify(stored_custom_servings));
-
-            return true;
-        }
-        //
-        return false;
-    }
+const exportAsImage = () => {
+    
+    const node = exportable.value;
 
     
-    const addToRecipe = () => {
-       
-        let added = false;
+    node.classList.remove('hidden');
 
-        if (food.value.recipe_ingredients.length) {
-           
-            const added_results = [];
-
-            food.value.recipe_ingredients.forEach((itm) => {
-                added_results.push(addIngredientToRecipe(itm.ingredient, itm.serving_size));
-            });
-
-            if (added_results.length && added_results[0]) {
-                added = true;
-                sessionStorage.setItem('serving_count', food.value.servings_per_container);
-                sessionStorage.setItem('recipe_name', food.value.description);
-            }
+    toPng(node)
+        .then((dataUrl) => {
             
+            const link = document.createElement('a');
+            link.download = `${food.value.description_slug}-nutrient-info.png`;
+            link.href = dataUrl;
+            link.click();
 
-        } else {
-            added = addIngredientToRecipe(food.value, food.value.serving_size);
+            node.classList.add('hidden');
+            
+        })
+        .catch((error) => {
+            console.log('error: ', error);
+            node.classList.add('hidden');
+            console.error('Error exporting image:', error);
+        });
+}
+
+const openIngredientsInfoModal = () => {
+    // todo:
+    const food_slug = route.params.food;
+    retryAxios(`${API_BASE_URI}/food-ingredients/${food_slug}`)
+        .then(async (res) => {
+            food_ingredients.value = res.data;
+        });
+
+    ingredientsInfoDialog.value = true;
+}
+
+const getValueColor = (value, daily_limit) => {
+
+    return 'deep-purple-lighten-2';
+};
+
+
+const addIngredientToRecipe = (ingredient, ingredient_serving_size) => {
+    const recipe = sessionStorage.getItem('recipe');
+    let recipe_data = [];
+    if (recipe) {
+        recipe_data = JSON.parse(recipe);
+    }
+
+    const index = recipe_data.findIndex(itm => itm.description_slug === food.value.description_slug);
+
+    if (index === -1) {
+        recipe_data.push(ingredient);
+        sessionStorage.setItem('recipe', JSON.stringify(recipe_data));
+
+        let serving_size_data = {};
+        const serving_size = sessionStorage.getItem('recipe_serving_sizes');
+        if (serving_size) {
+            serving_size_data = JSON.parse(serving_size);
         }
-        
 
-        if (added) {
+        serving_size_data[ingredient.description_slug] = ingredient_serving_size;
+        sessionStorage.setItem('recipe_serving_sizes', JSON.stringify(serving_size_data));
 
-            createToast(
-                {
-                    title: 'Added!',
-                    description: food.value.recipe_ingredients.length ? 'Recipe ingredients was added' : 'Ingredient was added to recipe'
-                }, 
-                { type: 'success', position: 'bottom-right' }
-            );
-
-            emit('update-ingredient-count-child');
+        let stored_custom_servings = {};
+        const stored_cs = sessionStorage.getItem('recipe_custom_servings');
+        if (stored_cs) {
+            stored_custom_servings = JSON.parse(stored_cs);
         }
+
+        stored_custom_servings[ingredient.description_slug] = {
+            'weight': selected_custom_serving.value ? selected_custom_serving.value : ingredient_serving_size, 
+            'qty': selected_serving_qty.value ? selected_serving_qty.value : 1, 
+        }
+
+        sessionStorage.setItem('recipe_custom_servings', JSON.stringify(stored_custom_servings));
+
+        return true;
+    }
+    //
+    return false;
+}
+
+
+const addToRecipe = () => {
     
-    }
+    let added = false;
 
-
-    const addForAnalysis = () => {
-        const analyze = sessionStorage.getItem('analyze');
-        let analyze_data = [];
-        if (analyze) {
-            analyze_data = JSON.parse(analyze);
-        }
-
-        const index = analyze_data.findIndex(itm => itm.description_slug === food.value.description_slug);
-        if (index === -1) {
-            analyze_data.push(food.value);
-            sessionStorage.setItem('analyze', JSON.stringify(analyze_data));
-
-            let serving_size_data = {};
-            const serving_size = sessionStorage.getItem('analyze_serving_sizes');
-            if (serving_size) {
-                serving_size_data = JSON.parse(serving_size);
-            }
-
-            serving_size_data[food.value.description_slug] = newServingSize.value ? newServingSize.value : food.value.serving_size; 
-            sessionStorage.setItem('analyze_serving_sizes', JSON.stringify(serving_size_data));
-
-           
-            let stored_custom_servings = {};
-            const stored_cs = sessionStorage.getItem('analyze_custom_servings');
-            if (stored_cs) {
-                stored_custom_servings = JSON.parse(stored_cs);
-            }
-
-            stored_custom_servings[food.value.description_slug] = {
-                'weight': selected_custom_serving.value ? selected_custom_serving.value : food.value.serving_size, 
-                'qty': selected_serving_qty.value ? selected_serving_qty.value : 1, 
-            }
-
-            sessionStorage.setItem('analyze_custom_servings', JSON.stringify(stored_custom_servings));
-            
-
-            createToast(
-                {
-                    title: 'Added!',
-                    description: 'Food was added for analysis'
-                }, 
-                { type: 'success', position: 'bottom-right' }
-            );
-
-            emit('update-analyze-count-child');
-        } 
-    }
-
-
-    const modifyServingSize = () => {
+    if (food.value.recipe_ingredients.length) {
         
+        const added_results = [];
 
-        modifyServingSizeDialog.value = false;
-    }
+        food.value.recipe_ingredients.forEach((itm) => {
+            added_results.push(addIngredientToRecipe(itm.ingredient, itm.serving_size));
+        });
 
-
-    const modifyServingCount = () => {
-
-        modifyServingCountDialog.value = false;
-    }
-
-
-    const submitIssue = async () => {
-        
-        if (issueDescription.value.trim()) {
-
-            try {
-                await axios.post(`${API_BASE_URI}/report-issue`, 
-                    { 
-                        'page': `/food/${route.params.food}`,
-                        'description': issueDescription.value
-                    }, 
-                );
-
-                createToast(
-                    {
-                        title: 'Submitted!',
-                        description: "Your issue was submitted. Thank you for your contribution. We really appreciate it!"
-                    }, 
-                    { type: 'success', position: 'bottom-right' }
-                );
-
-                issueDescription.value = '';
-                reportIssueModalVisible.value = false;
-                
-            } catch (err) {
-                console.log('submit issue error: ', err);
-            }
+        if (added_results.length && added_results[0]) {
+            added = true;
+            sessionStorage.setItem('serving_count', food.value.servings_per_container);
+            sessionStorage.setItem('recipe_name', food.value.description);
         }
         
+
+    } else {
+        added = addIngredientToRecipe(food.value, food.value.serving_size);
+    }
+    
+
+    if (added) {
+
+        createToast(
+            {
+                title: 'Added!',
+                description: food.value.recipe_ingredients.length ? 'Recipe ingredients was added' : 'Ingredient was added to recipe'
+            }, 
+            { type: 'success', position: 'bottom-right' }
+        );
+
+        emit('update-ingredient-count-child');
     }
 
+}
 
-    const fetchData = async () => {
+
+const addForAnalysis = () => {
+    const analyze = sessionStorage.getItem('analyze');
+    let analyze_data = [];
+    if (analyze) {
+        analyze_data = JSON.parse(analyze);
+    }
+
+    const index = analyze_data.findIndex(itm => itm.description_slug === food.value.description_slug);
+    if (index === -1) {
+        analyze_data.push(food.value);
+        sessionStorage.setItem('analyze', JSON.stringify(analyze_data));
+
+        let serving_size_data = {};
+        const serving_size = sessionStorage.getItem('analyze_serving_sizes');
+        if (serving_size) {
+            serving_size_data = JSON.parse(serving_size);
+        }
+
+        serving_size_data[food.value.description_slug] = newServingSize.value ? newServingSize.value : food.value.serving_size; 
+        sessionStorage.setItem('analyze_serving_sizes', JSON.stringify(serving_size_data));
+
         
-        isLoading.value = true;
+        let stored_custom_servings = {};
+        const stored_cs = sessionStorage.getItem('analyze_custom_servings');
+        if (stored_cs) {
+            stored_custom_servings = JSON.parse(stored_cs);
+        }
+
+        stored_custom_servings[food.value.description_slug] = {
+            'weight': selected_custom_serving.value ? selected_custom_serving.value : food.value.serving_size, 
+            'qty': selected_serving_qty.value ? selected_serving_qty.value : 1, 
+        }
+
+        sessionStorage.setItem('analyze_custom_servings', JSON.stringify(stored_custom_servings));
+        
+
+        createToast(
+            {
+                title: 'Added!',
+                description: 'Food was added for analysis'
+            }, 
+            { type: 'success', position: 'bottom-right' }
+        );
+
+        emit('update-analyze-count-child');
+    } 
+}
+
+
+const modifyServingSize = () => {
+    modifyServingSizeDialog.value = false;
+}
+
+
+const modifyServingCount = () => {
+
+    modifyServingCountDialog.value = false;
+}
+
+
+const submitIssue = async () => {
+    
+    if (issueDescription.value.trim()) {
 
         try {
+            await axios.post(`${API_BASE_URI}/report-issue`, 
+                { 
+                    'page': `/food/${route.params.food}`,
+                    'description': issueDescription.value
+                }, 
+            );
 
-            const food_slug = route.params.food;
+            createToast(
+                {
+                    title: 'Submitted!',
+                    description: "Your issue was submitted. Thank you for your contribution. We really appreciate it!"
+                }, 
+                { type: 'success', position: 'bottom-right' }
+            );
 
-            const res = await retryAxios(`${API_BASE_URI}/foods/${food_slug}`);
-           
-            isLoading.value = false;
-
-            const current_food = res.data;
-            food.value = current_food;
-            newServingSize.value = res.data.serving_size;
-
-            if (food.value.custom_servings) {
-                const serving_units = food.value.custom_servings.serving_units.map(itm => {
-                    return {
-                        'name': itm.name,
-                        'weight': itm.weight,
-                        'unit': itm.weight_unit,
-                        'volume_in_ml': itm.volume_in_ml,
-                    }
-                })
-                .filter((itm) => {
-                    return itm.volume_in_ml && current_food.density || itm.weight;
-                });
-
-                if (serving_units && serving_units.length > 0) {
-                    custom_serving_sizes.value = serving_units;
-                }
-            }
-
-        
-            let consolidated_daily_nutrient_dv = null;
-            if (sessionStorage.getItem('consolidated_daily_nutrient_dv')) {
-                consolidated_daily_nutrient_dv = JSON.parse(sessionStorage.getItem('consolidated_daily_nutrient_dv'));
-            } else {
-                const fda_daily_nutrient_values_res = await retryAxios(`${API_BASE_URI}/consolidated-recommended-daily-nutrient-intake?gender=male&age=19`);
-                consolidated_daily_nutrient_dv = fda_daily_nutrient_values_res.data;
-                sessionStorage.setItem('consolidated_daily_nutrient_dv', JSON.stringify(consolidated_daily_nutrient_dv));
-            }
+            issueDescription.value = '';
+            reportIssueModalVisible.value = false;
             
-
-            const fda_daily_nutrient_values_arr = consolidated_daily_nutrient_dv.map((itm) => {
-                return {
-                    [itm.nutrient]: itm.daily_value,
-                }
-            });
-            const fda_daily_nutrient_values = Object.assign({}, ...fda_daily_nutrient_values_arr);
-
-            recommended_daily_values.value = fda_daily_nutrient_values;
-            
-            const dv_table = Object.keys(fda_daily_nutrient_values).map((key) => {
-                const val = fda_daily_nutrient_values[key];
-                const unit = nutrientUnit(key);
-                return {
-                    nutrient: key, 
-                    value: `${val}${unit}`
-                }
-            });
-
-            daily_values_table.value = dv_table;
-        
-            
-
-            if (res.data.servings_per_container) {
-                servingsPerContainer.value = res.data.servings_per_container;
-
-                if (res.data.servings_per_container > 1) {
-                    hasValuesPerContainerToggle.value = true;
-                }
-            }
-            
-        
-            const images_arr = [];
-
-            if (res.data.title_image) {
-                images_arr.push({
-                    title: 'Food',
-                    src: res.data.title_image,
-                });
-            }
-
-            if (res.data.nutrition_label_image) {
-                images_arr.push({
-                    title: 'Nutrition label',
-                    src: res.data.nutrition_label_image,
-                })
-            }
-
-            if (res.data.barcode_image) {
-                images_arr.push({
-                    title: 'Barcode',
-                    src: res.data.barcode_image,
-                });
-            }   
-
-            if (res.data.ingredients_image) {
-                images_arr.push({
-                    title: 'Ingredients',
-                    src: res.data.ingredients_image,
-                });
-            }
-
-            images.value = images_arr;
-
-        
-            const macros_keys = ['total carbohydrates', 'protein', 'total fat'];
-            
-            const macros_data = {};
-
-            res.data.nutrients.forEach((itm) => {
-                if (macros_keys.indexOf(itm.name) !== -1) {
-                    macros_data[itm.name] = itm.amount;
-                }
-            });
-
-            const macros_numbers = Object.values(macros_data);
-            const total = macros_numbers.reduce((sum, num) => sum + num, 0);
-
-            const macros_percentages = {};
-            for (const [key, value] of Object.entries(macros_data)) {
-                const percent = calculatePercentage(value, total);
-                macros_percentages[key] = percent.toFixed(2);
-            }
-
-            if (Object.values(macros_data).filter(itm => itm).length > 0) {
-                hasMacros.value = true;
-            }
-
-            chartData.value = {
-                labels: [`Protein: ${macros_percentages.protein}%`, `Fat: ${macros_percentages['total fat']}%`, `Carbs: ${macros_percentages['total carbohydrates']}%`],
-                datasets: [
-                    {
-                        backgroundColor: ['#2ecc71', '#d35400', '#f39c12'],
-                        data: [
-                            macros_percentages['protein'],
-                            macros_percentages['total fat'],
-                            macros_percentages['total carbohydrates']
-                        ] 
-                    }
-                ],
-            }
-            
-            elements.value = getElements(res.data.nutrients);
-            macros.value = getMacros(res.data.nutrients);
-            vitamins.value = getVitamins(res.data.nutrients); 
-            minerals.value = getMinerals(res.data.nutrients);
-            others.value = getOthers(res.data.nutrients);
-
-            // get fao claims
-            let fao_nutrient_content_claims = null;
-            if (sessionStorage.getItem('fao_nutrient_content_claims')) {
-                fao_nutrient_content_claims = JSON.parse(sessionStorage.getItem('fao_nutrient_content_claims'));
-            } else {
-                const fda_daily_nutrient_values_res = await retryAxios(`${API_BASE_URI}/fao-nutrient-content-claims`);
-                fao_nutrient_content_claims = fda_daily_nutrient_values_res.data;
-                sessionStorage.setItem('fao_nutrient_content_claims', JSON.stringify(fao_nutrient_content_claims));
-            }
-
-            // filter using the current food state
-            const normalized_food_state = normalizeFoodState(food.value.state.name);
-            const filtered_fao_nutrient_content_claims = fao_nutrient_content_claims.filter((itm) => {
-                return itm.food_state === normalized_food_state;
-            });
-        
-            fao_nutrient_claims.value = filtered_fao_nutrient_content_claims;
-
         } catch (err) {
-            console.log('error loading food data: ', err);
-            isLoading.value = false;
+            console.log('submit issue error: ', err);
+        }
+    }
+    
+}
+
+
+const fetchData = async () => {
+    
+    isLoading.value = true;
+
+    try {
+
+        const food_slug = route.params.food;
+
+        const res = await retryAxios(`${API_BASE_URI}/foods/${food_slug}`);
+        
+        isLoading.value = false;
+
+        const current_food = res.data;
+        food.value = current_food;
+        newServingSize.value = res.data.serving_size;
+
+        if (food.value.custom_servings) {
+            const serving_units = food.value.custom_servings.serving_units.map(itm => {
+                return {
+                    'name': itm.name,
+                    'weight': itm.weight,
+                    'unit': itm.weight_unit,
+                    'volume_in_ml': itm.volume_in_ml,
+                }
+            })
+            .filter((itm) => {
+                return itm.volume_in_ml && current_food.density || itm.weight;
+            });
+
+            if (serving_units && serving_units.length > 0) {
+                custom_serving_sizes.value = serving_units;
+            }
         }
 
+    
+        let consolidated_daily_nutrient_dv = null;
+        if (sessionStorage.getItem('consolidated_daily_nutrient_dv')) {
+            consolidated_daily_nutrient_dv = JSON.parse(sessionStorage.getItem('consolidated_daily_nutrient_dv'));
+        } else {
+            const fda_daily_nutrient_values_res = await retryAxios(`${API_BASE_URI}/consolidated-recommended-daily-nutrient-intake?gender=male&age=19`);
+            consolidated_daily_nutrient_dv = fda_daily_nutrient_values_res.data;
+            sessionStorage.setItem('consolidated_daily_nutrient_dv', JSON.stringify(consolidated_daily_nutrient_dv));
+        }
+        
+
+        const fda_daily_nutrient_values_arr = consolidated_daily_nutrient_dv.map((itm) => {
+            return {
+                [itm.nutrient]: itm.daily_value,
+            }
+        });
+        const fda_daily_nutrient_values = Object.assign({}, ...fda_daily_nutrient_values_arr);
+
+        recommended_daily_values.value = fda_daily_nutrient_values;
+        
+        const dv_table = Object.keys(fda_daily_nutrient_values).map((key) => {
+            const val = fda_daily_nutrient_values[key];
+            const unit = nutrientUnit(key);
+            return {
+                nutrient: key, 
+                value: `${val}${unit}`
+            }
+        });
+
+        daily_values_table.value = dv_table;
+    
+        
+
+        if (res.data.servings_per_container) {
+            servingsPerContainer.value = res.data.servings_per_container;
+
+            if (res.data.servings_per_container > 1) {
+                hasValuesPerContainerToggle.value = true;
+            }
+        }
+        
+    
+        const images_arr = [];
+
+        if (res.data.title_image) {
+            images_arr.push({
+                title: 'Food',
+                src: res.data.title_image,
+            });
+        }
+
+        if (res.data.nutrition_label_image) {
+            images_arr.push({
+                title: 'Nutrition label',
+                src: res.data.nutrition_label_image,
+            })
+        }
+
+        if (res.data.barcode_image) {
+            images_arr.push({
+                title: 'Barcode',
+                src: res.data.barcode_image,
+            });
+        }   
+
+        if (res.data.ingredients_image) {
+            images_arr.push({
+                title: 'Ingredients',
+                src: res.data.ingredients_image,
+            });
+        }
+
+        images.value = images_arr;
+
+    
+        const macros_keys = ['total carbohydrates', 'protein', 'total fat'];
+        
+        const macros_data = {};
+
+        res.data.nutrients.forEach((itm) => {
+            if (macros_keys.indexOf(itm.name) !== -1) {
+                macros_data[itm.name] = itm.amount;
+            }
+        });
+
+        const macros_numbers = Object.values(macros_data);
+        const total = macros_numbers.reduce((sum, num) => sum + num, 0);
+
+        const macros_percentages = {};
+        for (const [key, value] of Object.entries(macros_data)) {
+            const percent = calculatePercentage(value, total);
+            macros_percentages[key] = percent.toFixed(2);
+        }
+
+        if (Object.values(macros_data).filter(itm => itm).length > 0) {
+            hasMacros.value = true;
+        }
+
+        chartData.value = {
+            labels: [`Protein: ${macros_percentages.protein}%`, `Fat: ${macros_percentages['total fat']}%`, `Carbs: ${macros_percentages['total carbohydrates']}%`],
+            datasets: [
+                {
+                    backgroundColor: ['#2ecc71', '#d35400', '#f39c12'],
+                    data: [
+                        macros_percentages['protein'],
+                        macros_percentages['total fat'],
+                        macros_percentages['total carbohydrates']
+                    ] 
+                }
+            ],
+        }
+        
+        elements.value = getElements(res.data.nutrients);
+        macros.value = getMacros(res.data.nutrients);
+        vitamins.value = getVitamins(res.data.nutrients); 
+        minerals.value = getMinerals(res.data.nutrients);
+        others.value = getOthers(res.data.nutrients);
+
+        // get fao claims
+        let fao_nutrient_content_claims = null;
+        if (sessionStorage.getItem('fao_nutrient_content_claims')) {
+            fao_nutrient_content_claims = JSON.parse(sessionStorage.getItem('fao_nutrient_content_claims'));
+        } else {
+            const fda_daily_nutrient_values_res = await retryAxios(`${API_BASE_URI}/fao-nutrient-content-claims`);
+            fao_nutrient_content_claims = fda_daily_nutrient_values_res.data;
+            sessionStorage.setItem('fao_nutrient_content_claims', JSON.stringify(fao_nutrient_content_claims));
+        }
+
+        // filter using the current food state
+        const normalized_food_state = normalizeFoodState(food.value.state.name);
+        const filtered_fao_nutrient_content_claims = fao_nutrient_content_claims.filter((itm) => {
+            return itm.food_state === normalized_food_state;
+        });
+    
+        fao_nutrient_claims.value = filtered_fao_nutrient_content_claims;
+
+    } catch (err) {
+        console.log('error loading food data: ', err);
+        isLoading.value = false;
     }
 
-    onMounted(fetchData);
+}
 
-    return {
-        isLoading,
+onMounted(() => {
+    console.log('bam');
+    fetchData();
+});
 
-        food,
-        custom_serving_sizes,
-        selected_custom_serving,
-        selected_serving_qty,
-        fao_nutrient_claims,
+const viewCategory = (slug) => {
+    router.push(`/search?category=${slug}`);
+}
 
-        nutrients,
-        elements,
-        macros,
-        vitamins,
-        minerals,
-        others,
+const closeImageModal = () => {
+    imageModalVisible.value = false;
+}
 
-        images,
-        currentImage,
-        hasMacros,
-        chartData,
+const openImageModal = (img) => {
+    imageModalVisible.value = true;
+    currentImage.value = img;
+}
 
-        calorie_req_in_kcal,
-        recommended_daily_values,
-
-        daily_values_table,
-        servingsPerContainer,
-        hasValuesPerContainerToggle,
-
-        calculatePercentage,
-        formatNumber,
-        convertWeight,
-        convertKjToKcal,
-        FAONutrientContentClaim,
-        
-        getCalorieBgColor,
-        getCalorieColor,
-
-        getFAOColor,
-
-        amountPerContainer,
-
-        openModifyServingCountModal,
-
-        openModifyServingSizeModal,
-        modifyServingSizeDialog,
-
-        modifyServingSize,
-        newServingSize,
-
-        modifyServingCountDialog,
-        newServingCount,
-
-        modifyServingCount,
-        
-        servingSize,
-        
-        openIngredientsInfoModal,
-        ingredientsInfoDialog,
-        food_ingredients,
-
-        addToRecipe,
-        addForAnalysis,
-
-        getValueColor,
-
-        issueDescription,
-        submitIssue,
-
-        exportAsImage,
-
-        exportable,
-    }
-
-  },
-
-  
-
-  methods: {
-      viewCategory(slug) {
-          this.$router.push(`/search?category=${slug}`);
-      },
-      
-      closeImageModal() {
-         this.imageModalVisible = false; 
-      },
-
-      openImageModal(img) {
-          this.imageModalVisible = true;
-          currentImage.value = img;
-      },
-
-      openReportIssueModal() {
-          this.reportIssueModalVisible = true;
-      }
-  }
+const openReportIssueModal = () => {
+    reportIssueModalVisible.value = true;
 }
 </script>
 
