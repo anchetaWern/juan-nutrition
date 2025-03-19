@@ -50,10 +50,9 @@
     </div>
 
     <Tour 
-      target="#search-list .v-list-item--link:nth-child(9)" 
-      title="Step 3" 
-      description="Scroll down and click through the pages until you find what you’re looking for. Once done, click the food." 
+      :targets="targets" 
       :isLoading="isLoading"
+      v-if="tourModeEnabled"
     />
 
 </template>
@@ -89,6 +88,14 @@ const totalPages = ref(1);
 
 const params = new URLSearchParams(route.query);
 const categories = JSON.parse(sessionStorage.getItem("food_types"));
+
+const targets = [
+  {
+    target: '#search-list .v-list-item--link:nth-child(9)',
+    title: 'Step 3',
+    description: 'Scroll down and click through the pages until you find what you’re looking for. Once done, click the food.'
+  },
+];
 
 // Helper function to get category name
 function getCategory(slug) {
