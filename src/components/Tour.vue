@@ -6,19 +6,27 @@
         scrim="transparent"
     >
         <v-card
-            :title="title"
+            :title="targets[currentTargetIndex].title"
         >
             <div class="px-5 text-body-1">
                 <div class="my-4">
-                {{ description }}
+                {{ targets[currentTargetIndex].description }}
                 </div>
             </div>
 
             <template v-slot:actions>
                 <v-btn
+                    v-if="targets.length === 1 || targets.length === currentTargetIndex + 1"
                     class="ms-auto"
                     text="Close"
                     @click="closeTourModal"
+                ></v-btn>
+
+                <v-btn
+                    v-if="targets.length > 1 && targets.length != currentTargetIndex + 1"
+                    class="ms-auto"
+                    text="Next"
+                    @click="nextTourModal"
                 ></v-btn>
             </template>
 
@@ -26,12 +34,14 @@
 
     </v-dialog>
 
-    <div class="overlay-container" v-if="tourModalVisible">
-        <div class="overlay" :style="overlayStyles.top"></div>
-        <div class="overlay" :style="overlayStyles.bottom"></div>
-        <div class="overlay" :style="overlayStyles.left"></div>
-        <div class="overlay" :style="overlayStyles.right"></div>
+    
+    <div class="overlay-container" v-if="tourModalVisible && overlayStyles[currentTargetIndex]">
+        <div class="overlay" :style="overlayStyles[currentTargetIndex].top"></div>
+        <div class="overlay" :style="overlayStyles[currentTargetIndex].bottom"></div>
+        <div class="overlay" :style="overlayStyles[currentTargetIndex].left"></div>
+        <div class="overlay" :style="overlayStyles[currentTargetIndex].right"></div>
     </div>
+  
 </template>
 
 <script setup>
@@ -39,27 +49,23 @@ import { ref, onMounted, watchEffect, watch } from 'vue';
 
 const tourModalVisible = ref(true);
 
-const overlayStyles = ref({
-  top: {}, bottom: {}, left: {}, right: {}
-});
+const overlayStyles = ref([]);
+
+const currentTargetIndex = ref(0);
 
 const closeTourModal = () => {
     tourModalVisible.value = false;
 }
 
+const nextTourModal = () => {
+    console.log('next');
+    currentTargetIndex.value = currentTargetIndex.value + 1;
+}
+
 const props = defineProps({
-    title: {
-        type: String,
-        required: true,
-    },
-
-    description: {
-        type: String,
-        required: true,
-    },
-
-    target: {
-        type: String,
+    
+    targets: {
+        type: Array, // [{title, description, target}]
         required: true,
     },
 
@@ -70,41 +76,46 @@ const props = defineProps({
     }
 });
 
-
+// { top: {}, bottom: {}, left: {}, right: {} }
 const updateOverlayStyles = () => {
-    const targetEl = document.querySelector(`${props.target}`);
+
+    props.targets.forEach((item) => {
+
+        let targetEl = document.querySelector(`${item.target}`);
+        
+        if (!targetEl) return; // Wait until the element is available
+
+        let rect = targetEl.getBoundingClientRect();
+        let padding = 4;
+
+        overlayStyles.value.push({
+            top: {
+                top: "0",
+                left: "0",
+                width: "100%",
+                height: `${rect.top - padding}px`,
+            },
+            bottom: {
+                top: `${rect.bottom + padding}px`,
+                left: "0",
+                width: "100%",
+                height: `calc(100% - ${rect.bottom + padding}px)`,
+            },
+            left: {
+                top: `${rect.top - padding}px`,
+                left: "0",
+                width: `${rect.left - padding}px`,
+                height: `${rect.height + padding * 2}px`,
+            },
+            right: {
+                top: `${rect.top - padding}px`,
+                left: `${rect.right + padding}px`,
+                width: `calc(100% - ${rect.right + padding}px)`,
+                height: `${rect.height + padding * 2}px`,
+            }
+        });
     
-    if (!targetEl) return; // Wait until the element is available
-
-    const rect = targetEl.getBoundingClientRect();
-    const padding = 4;
-
-    overlayStyles.value = {
-        top: {
-            top: "0",
-            left: "0",
-            width: "100%",
-            height: `${rect.top - padding}px`,
-        },
-        bottom: {
-            top: `${rect.bottom + padding}px`,
-            left: "0",
-            width: "100%",
-            height: `calc(100% - ${rect.bottom + padding}px)`,
-        },
-        left: {
-            top: `${rect.top - padding}px`,
-            left: "0",
-            width: `${rect.left - padding}px`,
-            height: `${rect.height + padding * 2}px`,
-        },
-        right: {
-            top: `${rect.top - padding}px`,
-            left: `${rect.right + padding}px`,
-            width: `calc(100% - ${rect.right + padding}px)`,
-            height: `${rect.height + padding * 2}px`,
-        }
-    };
+    });
 };
 
 
