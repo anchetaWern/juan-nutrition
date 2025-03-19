@@ -2,7 +2,7 @@
   <v-app-bar flat>
     <v-app-bar-title>
       <a href="/" style="color: #333;">
-        <img :src="logo" alt="juan nutrisyon logo" style="width:150px;" />
+        <img :src="logo" alt="juan nutrisyon logo" style="width:150px;" id="appIcon" />
       </a>
     </v-app-bar-title>
 
