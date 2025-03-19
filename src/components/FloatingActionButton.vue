@@ -12,6 +12,18 @@
 
 </template>
 
+<script setup>
+import { inject } from 'vue';
+
+const tourModeEnabled = inject("tourModeEnabled");
+const updateTourMode = inject("updateTourMode");
+
+const handleExit = () => {
+    updateTourMode(false);
+};
+</script>
+
+
 <style>
 .fab {
   position: fixed !important;
@@ -20,14 +32,3 @@
   z-index: 1000; 
 }
 </style>
-
-<script setup>
-import { inject } from 'vue';
-
-const tourModeEnabled = inject("tourModeEnabled");
-
-const handleExit = () => {
-    console.log("FAB Clicked!");
-    tourModeEnabled.value = 'no';
-};
-</script>

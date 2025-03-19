@@ -19,4 +19,11 @@ watch(tourModeEnabled, (newValue) => {
 });
 
 provide("tourModeEnabled", tourModeEnabled);
+
+const updateTourMode = (value) => {
+  tourModeEnabled.value = value;
+};
+
+provide('updateTourMode', updateTourMode);
+
 </script>
