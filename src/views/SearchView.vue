@@ -91,9 +91,8 @@ const categories = JSON.parse(sessionStorage.getItem("food_types"));
 
 const targets = [
   {
-    target: '#search-list .v-list-item--link:nth-child(9)',
-    title: 'Step 3',
-    description: 'Scroll down and click through the pages until you find what you’re looking for. Once done, click the food.'
+    target: '#search-list .v-list-item--link:nth-child(1)',
+    description: 'Scroll down and click through the pages until you find what you’re looking for. The calories, carbohydrates (C), total fat (F), and protein (P) content is indicated below the food description. Once done, click the food.'
   },
 ];
 
