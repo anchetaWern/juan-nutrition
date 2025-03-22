@@ -23,7 +23,7 @@
           :key="card.title"
           :cols="card.flex"
         >
-          <v-card @click="goToCategory(card.slug)" :id="card.slug === 'legumes-nuts-and-seeds' ? 'categoryCard' : ''">
+          <v-card @click="goToCategory(card.slug)" :id="card.slug === 'vegetables' ? 'categoryCard' : ''">
             <v-img
               :src="card.src"
               class="align-end"
@@ -135,45 +135,38 @@ const cards = ref([
 const tourTargets = [
   {
     target: "#searchButton",
-    title: "Search",
     description: "Click on this to start searching for a food.",
   },
 
   
   {
     target: "#helpButton",
-    title: "Help",
     description: "Click on this if you're lost or if you want to know more info about this app.",
   },
 
   
   {
     target: "#dietAnalysisButton",
-    title: "Diet Analysis",
     description: "Click on this to quickly go to the diet analysis page. You can click on the 'Analyze' button on a food's page to add foods to this page.",
   },
 
   {
     target: "#recipeAnalysisButton",
-    title: "Recipe Analysis",
     description: "Click on this to quickly go to the recipe analysis page. You can click on the 'Add to recipe' button on a food's page to add foods to this page.",
   },
 
   {
     target: "#loginButton",
-    title: "Login",
     description: "Click on this to login or create a Juan Nutrisyon account. With an account, you can contribute food labels and save recipes for future reference and for other people to view as well.",
   },
 
   {
     target: "#appIcon",
-    title: "Home",
     description: "Click on this if you want to go back to the home page"
   },
 
   {
     target: "#categoryCard",
-    title: "Food Category",
     description: "Click this to list foods of a specific food category"
   }
   
