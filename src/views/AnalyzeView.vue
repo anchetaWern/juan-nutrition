@@ -13,7 +13,7 @@
         You haven't added any foods yet. You can click on the 'Analyze' button on a food page to add it. 
       </v-alert>
 
-      <div v-if="analyze && analyze.length > 0">
+      <div id="analyzed-foods" v-if="analyze && analyze.length > 0">
        
         <div v-for="food in analyze" :key="food.description_slug" class="mb-3">
           <FoodCard 
@@ -29,7 +29,7 @@
       <div v-if="analyze && analyze.length > 0">
         <div class="text-subtitle-1 mt-5 mb-2">Summary</div>
 
-        <v-row justify="space-between" dense no-gutters>
+        <v-row id="analysis-summary" justify="space-between" dense no-gutters>
           <v-col
             v-for="summary_nut in summary_nutrients"
             :key="summary_nut.name"
@@ -44,7 +44,7 @@
         <div v-if="deficient_nutrients && deficient_nutrients.length > 0">
           <div class="text-subtitle-1 mt-5 mb-2">Deficient Nutrients</div>
 
-          <div>
+          <div id="deficient-nutrients">
             <NutrientsTable 
               :nutrients="deficient_nutrients" 
               servingsPerContainer="1" 
@@ -59,7 +59,7 @@
         <div v-if="overconsumed_nutrients && overconsumed_nutrients.length > 0">
           <div class="text-subtitle-1 mt-5 mb-2">Over-consumed nutrients</div>
 
-          <div>
+          <div id="overconsumed-nutrients">
             <NutrientsTable 
               :nutrients="overconsumed_nutrients" 
               servingsPerContainer="1" 
@@ -74,7 +74,7 @@
         <div v-if="good_coverage_nutrients && good_coverage_nutrients.length > 0">
           <div class="text-subtitle-1 mt-5 mb-2">Nutrients with good coverage</div>
 
-          <div>
+          <div id="good-coverage-nutrients">
             <NutrientsTable 
               :nutrients="good_coverage_nutrients" 
               servingsPerContainer="1" 
@@ -88,7 +88,7 @@
 
 
         <div class="mt-5 text-center">
-          <v-btn size="x-small" variant="text" @click="openReportIssueModal">
+          <v-btn id="report-issue" size="x-small" variant="text" @click="openReportIssueModal">
           Report Issue
           </v-btn>
         </div>
@@ -164,6 +164,12 @@
       </v-dialog>
 
     </v-container>
+
+    <Tour 
+      :targets="targets" 
+      :isLoading="isLoading"
+      v-if="tourModeEnabled"
+    />
     
 
 </template>
@@ -180,7 +186,7 @@ import FoodCard from '@/components/FoodCard.vue';
 import NutritionCard from '@/components/NutritionCard.vue';
 import NutrientsTable from '@/components/NutrientsTable.vue';
 
-import { ref, watch, onMounted, nextTick, defineEmits } from 'vue';
+import { ref, watch, onMounted, nextTick, defineEmits, inject } from 'vue';
 
 import axios from 'axios';
 
@@ -197,6 +203,8 @@ import {
 } from '@/helpers/Nutrients';
 
 import { calculatePercentage } from '@/helpers/Numbers';
+
+import Tour from '@/components/Tour.vue';
 
 
 const API_BASE_URI = import.meta.env.VITE_API_URI;
@@ -241,6 +249,56 @@ const food_card_key = ref(1);
 
 const current_food_serving_size = ref(null); // the serving size set for the food being currently updated
 const hasValuesPerContainerToggle = ref(false);
+
+const isLoading = ref(true);
+
+const tourModeEnabled = inject("tourModeEnabled");
+
+const targets = [
+  {
+    target: '#analyzed-foods .food-card:nth-child(1)',
+    description: "This is the list of foods you’ve added for analysis.",
+  },
+  {
+    target: '#analyzed-foods .food-card:nth-child(1) .food-description',
+    description: "Modify the serving size for each food via the text field or by clicking the weighing scale icon."
+  },
+
+  {
+    target: '#analyzed-foods .food-card:nth-child(1) .modify-serving-size',
+    description: "Modify the serving size for each food via the text field or by clicking the weighing scale icon."
+  },
+
+  {
+    target: '#analyzed-foods .food-card:nth-child(1) .remove-food',
+    description: "Click on this to remove the food from your analysis."
+  },
+
+  {
+    target: '#analysis-summary',
+    description: "These are the most important nutrients you have to watch out for. A black text means neutral, green text means you’ve met the recommended daily value for the specific nutrient for that day, and red text can either mean you’re over-consuming or under-consuming the nutrient. You know which one by looking at the arrow: up is over, down is under.",
+  },
+  {
+    target: '#deficient-nutrients',
+    description: "These are the nutrients you’re deficient in. Look into foods that are high on these nutrients and add them to your diet over time."
+  },
+  {
+    target: '#overconsumed-nutrients',
+    description: "These are the nutrients you’re over-consuming. Try going through the food pages of all the foods you’ve added for analysis and check which ones are high on these nutrients. From there, limit how much of those foods you are eating on a daily basis.",
+    position: 'top',
+  },
+  {
+    target: '#good-coverage-nutrients',
+    description: "These are the nutrients where you’re hitting the daily recommended values. Continue consuming the foods rich in these nutrients so you can continue hitting the targets on a daily basis.",
+    position: 'top',
+  },
+
+  {
+    target: '#report-issue',
+    description: "Click on this button to report any issue you notice.",
+    position: 'top'
+  }
+];
 
 
 let isProgrammaticUpdate = false;
@@ -480,6 +538,8 @@ const refreshNutrients = () => {
     deficient_nutrients.value = filtered_deficient_nutrients;
     good_coverage_nutrients.value = filtered_good_coverage_nutrients;
     overconsumed_nutrients.value = filtered_overconsumed_nutrients;
+
+    isLoading.value = false;
   
   }
   

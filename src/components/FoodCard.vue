@@ -1,6 +1,6 @@
 <template>
   <v-card
-    class="mx-auto"
+    class="food-card mx-auto"
     max-width="400"
   >
     <div class="d-flex justify-space-between">
@@ -19,13 +19,13 @@
 
         <div class="d-flex justify-space-between">
          
-          <div class="pl-2 pt-2 text-body-2">
+          <div class="food-description pl-2 pt-2 text-body-2">
             <a :href="`/food/${food.description_slug}`">{{ limit(food.description) }}</a>
 
           </div>
 
           <div>
-            <v-btn size="x-small" icon="mdi-trash-can" color="red" variant="text" @click="removeFood(food.description_slug)"></v-btn>
+            <v-btn class="remove-food" size="x-small" icon="mdi-trash-can" color="red" variant="text" @click="removeFood(food.description_slug)"></v-btn>
           </div>
         </div>
 
@@ -46,8 +46,9 @@
           </div>
 
           <div>
-            <v-btn size="x-small" icon="mdi-scale" variant="text" @click="openModifyServingSizeModal(food.description_slug, food.custom_servings)"></v-btn>
+            <v-btn class="modify-serving-size" size="x-small" icon="mdi-scale" variant="text" @click="openModifyServingSizeModal(food.description_slug, food.custom_servings)"></v-btn>
           </div>
+
         </div>
       </div>
     </div>
