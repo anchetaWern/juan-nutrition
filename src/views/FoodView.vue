@@ -9,7 +9,7 @@
     <div class="pt-3">
         <div class="d-flex justify-end cursor-pointer">
             <div>
-                <v-chip size="small" variant="outlined" v-if="food.type">
+                <v-chip id="food-category" size="small" variant="outlined" v-if="food.type">
                 <span @click="viewCategory(food.type.slug)">{{ food.type.name }}</span> <span @click="viewCategory(food.subtype.slug)" v-if="food.subtype">&nbsp;/ {{ food.subtype.name }}</span>
                 </v-chip>
             </div>
@@ -17,12 +17,12 @@
 
         <div class="d-flex justify-space-between align-center mt-3">
             <div class="mt-1">
-                <h1 class="text-body-1">{{ food.description }}</h1>
-                <span v-if="food.alternate_names != 'N/A'" class="text-medium-emphasis text-subtitle-2">{{ food.alternate_names }}</span>
+                <h1 class="text-body-1" id="food-description">{{ food.description }}</h1>
+                <span id="food-alternate-names" v-if="food.alternate_names != 'N/A'" class="text-medium-emphasis text-subtitle-2">{{ food.alternate_names }}</span>
             </div>
             <div class="w-33">
-                <v-btn size="x-small" color="success" variant="outlined" @click="addToRecipe">{{ food.recipe_ingredients.length ? "Modify Recipe" : "Add to Recipe" }}</v-btn>
-                <v-btn size="x-small" color="primary" variant="outlined" @click="addForAnalysis">Analyze</v-btn>
+                <v-btn id="add-to-recipe" size="x-small" color="success" variant="outlined" @click="addToRecipe">{{ food.recipe_ingredients.length ? "Modify Recipe" : "Add to Recipe" }}</v-btn>
+                <v-btn id="add-to-analyze" size="x-small" color="primary" variant="outlined" @click="addForAnalysis">Analyze</v-btn>
             </div>
         </div>
 
@@ -38,7 +38,7 @@
         </v-alert>
     </div>  
 
-    <div class="mt-3" v-if="hasMacros">
+    <div class="mt-3" v-if="hasMacros" id="macros-section">
         <div class="text-body2 mb-1 text-center font-weight-medium">Macros</div>
         <div class="mt-1" style="height: 130px;">
             <Pie :data="chartData" :options="chartOptions" />
@@ -46,9 +46,10 @@
     </div>
 
     <div class="mt-5 pt-5" v-if="food.nutrients.length > 0">
-        <div class="text-body2 text-center font-weight-medium">Nutrition Facts <v-btn variant="text" size="x-small" icon="mdi-help" @click="dvHelp = true"></v-btn></div>
+        <div class="text-body2 text-center font-weight-medium">Nutrition Facts <v-btn id="nutrition-help" variant="text" size="x-small" icon="mdi-help" @click="dvHelp = true"></v-btn></div>
        
         <v-switch 
+            id="display-values-per-container"
             v-if="hasValuesPerContainerToggle"
             label="Display values per container" 
             v-model="displayValuesPerContainer" 
@@ -61,24 +62,24 @@
 
         <v-table>
             <tbody>
-                <tr v-if="food.servings_per_container">
+                <tr id="servings-per-container" v-if="food.servings_per_container">
                     <td class="text-grey-darken-3">
                         {{ newServingCount ? newServingCount : food.servings_per_container }} Servings Per Container
-                        <v-btn size="x-small" @click="openModifyServingCountModal">Modify</v-btn>
+                        <v-btn id="modify-serving-size" size="x-small" @click="openModifyServingCountModal">Modify</v-btn>
                     </td>
                 </tr>
-                <tr v-if="food.serving_size">
+                <tr id="serving-size" v-if="food.serving_size">
                     <td class="text-grey-darken-3">
                         Serving Size: {{ servingSize(food.serving_size, newServingSize) }}{{ food.serving_size_unit }} <span v-if="food.custom_serving_size">/ {{ food.custom_serving_size }}</span>
                         <v-btn size="x-small" @click="openModifyServingSizeModal">Modify</v-btn>
                     </td>
                 </tr>
-                <tr v-if="food.edible_portion && food.edible_portion < 100">
+                <tr id="edible-portion" v-if="food.edible_portion && food.edible_portion < 100">
                     <td class="text-grey-darken-3">
                        Edible Portion: {{ food.edible_portion }}%
                     </td>
                 </tr>
-                <tr v-if="food.calories">
+                <tr id="calories-available" v-if="food.calories">
                     <td class="text-grey-darken-3">
                         Calories: 
                         {{ 
@@ -268,7 +269,7 @@
                 :faoNutrientContentClaims="fao_nutrient_claims"  />
         </div>
 
-        <div class="mt-3" v-if="macros && macros.length">
+        <div id="macros-details-section" class="mt-3" v-if="macros && macros.length">
             <span class="text-subtitle-2">Macros</span>
             <NutrientsTable 
                 :nutrients="macros" 
@@ -285,7 +286,7 @@
             />
         </div>
 
-        <div class="mt-3" v-if="vitamins && vitamins.length">
+        <div id="vitamins-section" class="mt-3" v-if="vitamins && vitamins.length">
             <span class="text-subtitle-2">Vitamins</span>
             <NutrientsTable 
                 :nutrients="vitamins" 
@@ -301,7 +302,7 @@
                 :faoNutrientContentClaims="fao_nutrient_claims"  />
         </div>
 
-        <div class="mt-3" v-if="minerals && minerals.length">
+        <div id="minerals-section" class="mt-3" v-if="minerals && minerals.length">
             <span class="text-subtitle-2">Minerals</span>
             <NutrientsTable 
                 :nutrients="minerals" 
@@ -317,7 +318,7 @@
                 :faoNutrientContentClaims="fao_nutrient_claims"  />
         </div>
 
-        <div class="mt-3" v-if="others && others.length">
+        <div id="others-section" class="mt-3" v-if="others && others.length">
             <span class="text-subtitle-2">Others</span>
             <NutrientsTable 
                 :nutrients="others" 
@@ -333,14 +334,14 @@
                 :faoNutrientContentClaims="fao_nutrient_claims"  />
         </div>   
         
-        <div class="text-center mt-2">
+        <div id="export-image" class="text-center mt-2">
             <v-btn variant="plain" size="x-small" @click="exportAsImage">
             Export as image
             </v-btn>
         </div>
     </div>
 
-    <div class="mt-5 text-center" v-if="food.ingredients">
+    <div id="ingredients-section" class="mt-5 text-center" v-if="food.ingredients">
         <div class="text-body2 mb-1 text-center font-weight-medium">Ingredients</div>
 
         <p class="text-subtitle2 text-grey-darken-3">
@@ -352,7 +353,7 @@
        </v-btn>
     </div>
 
-    <div class="mt-5" v-if="food.allergen_information">
+    <div id="allergen-section" class="mt-5" v-if="food.allergen_information">
         <div class="text-body2 mb-1 text-center font-weight-medium">Allergen Info</div>
 
         <p class="text-subtitle2 text-grey-darken-3">
@@ -366,7 +367,7 @@
         <template v-if="images.length > 0">
             <div class="text-body2 mb-1 font-weight-medium">Images</div>
 
-            <v-row>
+            <v-row id="images-section">
                 <v-col
                     v-for="img in images"
                     :key="img"
@@ -554,7 +555,7 @@
         <div class="text-body2 mb-1">Origin Country: {{ food.origin_country }}</div>
     </div>
 
-    <div class="mt-5 text-center">
+    <div id="report-issue" class="mt-5 text-center">
         <v-btn size="x-small" variant="text" @click="openReportIssueModal">
         Report Issue
         </v-btn>
@@ -644,11 +645,17 @@
         </template>
     </v-dialog>
 
+    <Tour 
+      :targets="targets" 
+      :isLoading="isLoading"
+      v-if="tourModeEnabled"
+    />
+
 </template>
 
 <script setup>
 import { VNumberInput } from 'vuetify/labs/VNumberInput'
-import { ref, onMounted, watchEffect, watch, defineEmits } from 'vue';
+import { ref, onMounted, watchEffect, watch, defineEmits, inject } from 'vue';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Pie } from 'vue-chartjs'
 import axios from 'axios'
@@ -656,7 +663,7 @@ import NutrientsTable from '@/components/NutrientsTable.vue'
 import NutritionLabel from '@/components/NutritionLabel.vue'
 import { calculatePercentage, formatNumber } from '@/helpers/Numbers';
 import { convertWeight, FAONutrientContentClaim, normalizeFoodState, convertKjToKcal } from '@/helpers/Nutrients';
-
+import Tour from '@/components/Tour.vue';
 
 import { toPng } from 'html-to-image';
 
@@ -780,6 +787,119 @@ const issueDescription = ref('');
 //
 const pageTitle = 'Juan Nutrisyon';
 const pageDescription = 'View more info at app.juanutrisyon.info';
+
+const tourModeEnabled = inject("tourModeEnabled");
+
+const targets = [
+    {
+        target: '#food-description',
+        description: "This is the descriptive name of the food. This will often indicate the state of processing (eg. raw, cooked, unripe).",
+    },
+    {
+        target: '#food-alternate-names',
+        description: "These are the alternative names of the food, if local names for the food is available, you’ll also see it here.",
+    },
+    {
+        target: '#food-category',
+        description: "This is the food category starting from the main category down to the sub-categories, each separated by “/”."
+    },
+    {
+        target: '#add-to-recipe',
+        description: 'Click this button to analyze the nutrient content of a recipe.',
+    },
+    {
+        target: '#recipeAnalysisButton',
+        description: 'This is the link to the recipe analysis page. Click here once you have added all the foods you want to add.'
+    },
+    {
+        target: '#add-to-analyze',
+        description: 'Click this button to analyze the nutrient content of the foods you ate throughout the day.',
+    },
+    {
+        target: '#dietAnalysisButton',
+        description: 'This is the link to the diet analysis page. lick here once you have added all the foods you want to add.',
+    },
+    {
+        target: '#macros-section',
+        description: 'This shows the percentage amount for each macronutrient (protein, fats, carbohydrates) present in the food.'
+    },
+
+
+    /*
+     // bug: if this is not rendered then you get a mismatch
+     // same with all commented ones, check for their existence first before adding them as selector
+    {
+        target: '#servings-per-container',
+        description: "This is the total number of servings available per container. By default, the nutrient data only shows the values per serving.",
+    },
+    {
+        target: '#modify-serving-size',
+        description: 'Click this button to modify the number of servings. Note that this is only useful if the food has other sizes available, you can modify this to match the one you have on hand.'  
+    },
+    */
+    {
+        target: '#serving-size',
+        description: "The weight of the food. you can adjust this by clicking on the ‘modify’ button and entering the weight in grams or select any of the custom servings (if available)."
+    },
+    /*
+   
+    {
+        target: '#edible-portion',
+        description: "This is the percentage amount of the edible portion of the food. Note that the nutrient values are already adjusted to account for this."
+    },
+    */
+    {
+        target: '#calories-available',
+        description: 'The amount of energy you get from the food.'
+    },
+
+    /*
+    {
+        target: '#display-values-per-container',
+        description: "Enable this to display the total nutrient available for the whole container. This is useful for when you're consuming a whole bag of chips."
+    }
+    */
+    {
+        target: '#macros-details-section',
+        description: 'This section shows the macronutrients available in more detail.'
+    },
+
+    {
+        target: '#vitamins-section',
+        description: 'This section shows the amount of vitamins you get from the food.'
+    },
+
+    {
+        target: '#minerals-section',
+        description: 'This section shows the amount of minerals you get from the food.'
+    },
+
+    {
+        target: '#export-image',
+        description: "Click on this button if you want to generate and download a nutrition facts label for the food. Bakeries, restaurant owners, and independent food manufacturers can use this to easily generate a nutrition label for the foods they're selling."
+    },
+
+    {
+        target: '#images-section',
+        description: "This is where you can see the images representing the food. For processed foods, you'll also see here the actual nutrition label, ingredients, and barcode.",
+        position: 'top'
+    },
+    {
+        target: '#report-issue',
+        description: "Click on this button to report any issue you notice.",
+        position: 'top'
+    }
+
+    /*
+    {
+        target: '#ingredients-section',
+        description: 'This shows the ingredients used in making the food. This often applies only to processed foods like junk food.'
+    },
+    */
+
+
+
+];
 
 watch(selected_custom_serving, (new_custom_serving, old_custom_serving) => {
     
