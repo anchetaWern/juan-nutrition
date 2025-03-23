@@ -255,13 +255,10 @@ const isLoading = ref(true);
 const tourModeEnabled = inject("tourModeEnabled");
 
 const targets = [
-  {
-    target: '#analyzed-foods .food-card:nth-child(1)',
-    description: "This is the list of foods you’ve added for analysis.",
-  },
+
   {
     target: '#analyzed-foods .food-card:nth-child(1) .food-description',
-    description: "Modify the serving size for each food via the text field or by clicking the weighing scale icon."
+    description: "This is the name of the food. You can click on this to view the food page."
   },
 
   {

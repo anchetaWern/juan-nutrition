@@ -50,11 +50,11 @@
         </v-dialog>
 
       
-        <div class="overlay-container" v-if="tourModalVisible && overlayStyles[currentTargetIndex]">
-            <div class="overlay" :style="overlayStyles[currentTargetIndex].top"></div>
-            <div class="overlay" :style="overlayStyles[currentTargetIndex].bottom"></div>
-            <div class="overlay":style="overlayStyles[currentTargetIndex].left"></div>
-            <div class="overlay" :style="overlayStyles[currentTargetIndex].right"></div>
+        <div class="overlay-container" v-if="tourModalVisible && overlayStyles">
+            <div class="overlay" :style="overlayStyles.top"></div>
+            <div class="overlay" :style="overlayStyles.bottom"></div>
+            <div class="overlay":style="overlayStyles.left"></div>
+            <div class="overlay" :style="overlayStyles.right"></div>
         </div>
 
     </div>
@@ -66,7 +66,7 @@ import { ref, onMounted, watchEffect, watch, nextTick, inject } from 'vue';
 
 const tourModalVisible = ref(true);
 
-const overlayStyles = ref([]);
+const overlayStyles = ref(null);
 
 const currentTargetIndex = ref(0);
 
@@ -84,7 +84,7 @@ const nextTourModal = async () => {
     
     const elementId = props.targets[currentTargetIndex.value + 1]?.target;
     if (elementId) {
-       
+        console.log(elementId);
         let targetEl = document.querySelector(`${elementId}`);
 
         const rect = targetEl.getBoundingClientRect();
@@ -183,7 +183,7 @@ const updateOverlayStyles = async (target) => {
     let targetEl = document.querySelector(`${target}`);
     
     if (!targetEl) return; // Wait until the element is available
-
+    console.log(targetEl);
     let padding = 4;
     
     let rect = targetEl.getBoundingClientRect();
@@ -195,7 +195,9 @@ const updateOverlayStyles = async (target) => {
         rect = targetEl.getBoundingClientRect(); // Recalculate position after scroll
     }
 
-    overlayStyles.value.push({
+    const adjustedHeight = rect.height > 200 ? 200 : rect.height;
+
+    overlayStyles.value = {
         top: {
             top: "0",
             left: "0",
@@ -220,7 +222,7 @@ const updateOverlayStyles = async (target) => {
             width: `calc(100% - ${rect.right + padding}px)`,
             height: `${rect.height + padding * 2}px`,
         }
-    });
+    };
 
 };
 

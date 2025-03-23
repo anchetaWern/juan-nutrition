@@ -29,7 +29,7 @@
           </div>
         </div>
 
-        <div class="px-3 d-flex flex-row w-50 align-center">
+        <div class="modify-serving-size px-3 d-flex flex-row w-50 align-center">
           <div>
             <v-text-field 
               v-model="localServingSize"
@@ -46,7 +46,7 @@
           </div>
 
           <div>
-            <v-btn class="modify-serving-size" size="x-small" icon="mdi-scale" variant="text" @click="openModifyServingSizeModal(food.description_slug, food.custom_servings)"></v-btn>
+            <v-btn class="" size="x-small" icon="mdi-scale" variant="text" @click="openModifyServingSizeModal(food.description_slug, food.custom_servings)"></v-btn>
           </div>
 
         </div>
