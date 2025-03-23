@@ -144,8 +144,9 @@
 
               <tr>
                   <td id="calories-per-serving" class="text-grey-darken-3">
-                      Calories per serving: {{ wholeNumber(recipe_calories_per_serving) }}kcal / 2000kcal ({{ formatNumber(calculatePercentage(amountPerContainer(recipe_calories_per_serving, servingCount, displayValuesPerContainer, serving_size, serving_size, servingCount), 2000)) }}%)
+                      Calories per serving: <span id="calories">{{ wholeNumber(recipe_calories_per_serving) }}kcal</span> / <span id="calories-required">2000kcal</span> <span id="calories-percent-of-required">({{ formatNumber(calculatePercentage(amountPerContainer(recipe_calories_per_serving, servingCount, displayValuesPerContainer, serving_size, serving_size, servingCount), 2000)) }}%)</span>
                       <v-progress-linear 
+                        id="calories-progress"
                         class="mt-1"
                         :model-value="calculatePercentage(amountPerContainer(recipe_calories_per_serving, servingCount, true, serving_size, serving_size, servingCount), 2000)" 
                         bg-color="grey-darken-3" 
@@ -229,6 +230,12 @@
       </div>
 
     </div>
+
+    <Tour 
+      :targets="targets" 
+      :isLoading="isLoading"
+      v-if="tourModeEnabled"
+    />
     
 
 </template>
@@ -244,7 +251,7 @@
 import { VNumberInput } from 'vuetify/labs/VNumberInput'
 import FoodCard from '@/components/FoodCard.vue';
 import NutrientsTable from '@/components/NutrientsTable.vue'
-import { ref, watch, onMounted, nextTick, defineEmits } from 'vue';
+import { ref, watch, onMounted, nextTick, defineEmits, inject } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
@@ -268,6 +275,8 @@ import { calculatePercentage, wholeNumber, formatNumber } from '@/helpers/Number
 
 import { auth } from '@/firebase.js';
 import { onAuthStateChanged } from "firebase/auth";
+import Tour from '@/components/Tour.vue';
+
 
 const router = useRouter();
 
@@ -333,7 +342,104 @@ const emit = defineEmits(['update-ingredient-count-child', 'update-ingredient-se
 
 let isProgrammaticUpdate = false;
 
+const tourModeEnabled = inject("tourModeEnabled");
 
+const isLoading = ref(false);
+
+const targets = [
+  {
+    target: '#recipe-foods .food-card:nth-child(1) .food-description',
+    description: "This is the name of the food. You can click on this to view the food page."
+  },
+
+  {
+    target: '#recipe-foods .food-card:nth-child(1) .modify-serving-size',
+    description: "Modify the serving size for each food via the text field or by clicking the weighing scale icon."
+  },
+
+  {
+    target: '#recipe-foods .food-card:nth-child(1) .remove-food',
+    description: "Click on this to remove the food from your analysis."
+  },
+
+  {
+    target: '#serving-count',
+    description: 'Enter the estimated number of people that the recipe can feed.',
+  },
+
+  // only available when user is logged in
+  /*
+  {
+    target: '#recipe-name',
+    description: 'Enter a descriptive name for the recipe.',
+  },
+  {
+    target: '#recipe-image',
+    description: 'Upload a photo of the cooked recipe here.',
+  },
+  {
+    target: '#recipe-image-preview',
+    description: 'This is the preview of the recipe image.',
+  },
+  {
+    target: '#save-recipe',
+    description: 'Click this to save the recipe. This will make it available for other users to search.',
+  },
+  */
+  {
+    target: '#serving-size-mirror',
+    description: 'This is the total weight of the recipe.',
+  },
+  {
+    target: '#serving-count-mirror',
+    description: 'This is the total number of servings.',
+  },
+
+  {
+    target: '#calories',
+    description: 'This is the total amount of calories per serving.',
+  },
+  {
+    target: '#calories-required',
+    description: 'This is the daily recommended calorie value.',
+  },
+  {
+    target: '#calories-percent-of-required',
+    description: 'This is the percent of the daily recommended value fulfilled by eating the food.',
+  },
+  {
+    target: '#calories-progress',
+    description: "This is the visual representation of how much of the daily nutrient value is fulfilled by consuming the food. You want this to be darker for fiber, protein, vitamins and minerals. Lighter for saturated fat, sugar, and cholesterol. Note that these nutrients are not inherently good or bad, we all need fat, sugar, and cholesterol. But it's best to be vigilant about it, especially if you're already trying to manage hypertension or diabetes. Moderation and not total avoidance is always key.",
+  },
+  {
+    target: '#total-calories',
+    description: 'This is the total calories provided by the whole recipe.',
+  },
+  {
+    target: '#ingredient-count',
+    description: 'This is the total number of ingredients used in the recipe. Note that this is only accurate if the ingredients used are all whole foods. If processed foods were used as ingredients then this will be inaccurate.',
+  },
+  
+
+  {
+    target: '#macros-section',
+    description: 'This is the macronutrient section which shows detailed information on the amount of carbohydrates, fats, and protein available in the recipe.',
+  },
+  {
+    target: '#vitamins-section',
+    description: 'This is the vitamins section.',
+  },
+  {
+    target: '#minerals-section',
+    description: 'This is the minerals section.',
+    position: 'top',
+  },
+
+  {
+    target: '#report-issue',
+    description: 'Click on this button to report any issue you notice.',
+  },
+];
 
 if (recipe_data && Object.keys(servingSizes.value).length === 0) {
   recipe_data.forEach(food => {
@@ -512,6 +618,9 @@ const fetchDailyValues = async () => {
       consolidated_daily_nutrient_dv = fda_daily_nutrient_values_res.data;
       sessionStorage.setItem('consolidated_daily_nutrient_dv', JSON.stringify(consolidated_daily_nutrient_dv));
   }
+
+  // isLoading.value = false;
+  console.log('rapas')
 
   const fda_daily_nutrient_values_arr = consolidated_daily_nutrient_dv.map((itm) => {
       return {
