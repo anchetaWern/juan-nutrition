@@ -17,14 +17,16 @@
                     <span v-if="nutrient.hasRecommendedDailyValues" class="small-text"> ({{ formatNumber(nutrient.percentage) }}%)</span>
 
                     <span class="ml-1">
-                    <v-chip 
-                      size="x-small" 
-                      :color="nutrient.fao_claim_color" 
-                      density="comfortable" 
-                      v-if="nutrient.fao_claim">
-                      {{ nutrient.fao_claim }}
-                    </v-chip>
+                      <v-chip 
+                        class="fao-content-claim"
+                        size="x-small" 
+                        :color="nutrient.fao_claim_color" 
+                        density="comfortable" 
+                        v-if="nutrient.fao_claim">
+                        {{ nutrient.fao_claim }}
+                      </v-chip>
                     </span>
+                    
                     <v-progress-linear
                       v-if="recommended_daily_values && nutrient.hasRecommendedDailyValues" 
                       :model-value="nutrient.percentage" 
@@ -158,6 +160,8 @@ export default {
       }
 
       const nutrientsWithPercentage = computed(() => {
+
+        // console.log('nutrients: ', props.nutrients);
        
         return props.nutrients.map(nutrient => {
           

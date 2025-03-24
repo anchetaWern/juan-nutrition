@@ -82,6 +82,8 @@
                 <tr id="calories-available" v-if="food.calories">
                     <td class="text-grey-darken-3">
                         Calories: 
+
+                        <span id="calories-provided">
                         {{ 
                             formatNumber(
                                 convertKjToKcal(
@@ -97,7 +99,10 @@
                                 )
                             ) 
                         }}
-                        kcal / {{ calorie_req_in_kcal }}kcal 
+                        kcal
+                        </span> / <span id="calories-required">{{ calorie_req_in_kcal }}kcal</span>
+
+                        <span id="calories-provided-percentage">
                         ({{ 
                             formatNumber(
                                 calculatePercentage(
@@ -116,7 +121,10 @@
                                 )
                             ) 
                         }}%) 
+                        </span>
+
                         <v-chip 
+                            class="fao-content-claim"
                             size="small" 
                             density="compact" 
                             :color="getFAOColor(
@@ -188,6 +196,7 @@
                                         }}
                                     </v-chip>
                         <v-progress-linear 
+                            id="calories-bar"
                             class="mt-1"
                             :model-value="
                                 calculatePercentage(
@@ -790,116 +799,13 @@ const pageDescription = 'View more info at app.juanutrisyon.info';
 
 const tourModeEnabled = inject("tourModeEnabled");
 
-const targets = [
+let targets = ref([
     {
         target: '#food-description',
         description: "This is the descriptive name of the food. This will often indicate the state of processing (eg. raw, cooked, unripe).",
     },
-    {
-        target: '#food-alternate-names',
-        description: "These are the alternative names of the food, if local names for the food is available, you’ll also see it here.",
-    },
-    {
-        target: '#food-category',
-        description: "This is the food category starting from the main category down to the sub-categories, each separated by “/”."
-    },
-    {
-        target: '#add-to-recipe',
-        description: 'Click this button to analyze the nutrient content of a recipe.',
-    },
-    {
-        target: '#recipeAnalysisButton',
-        description: 'This is the link to the recipe analysis page. Click here once you have added all the foods you want to add.'
-    },
-    {
-        target: '#add-to-analyze',
-        description: 'Click this button to analyze the nutrient content of the foods you ate throughout the day.',
-    },
-    {
-        target: '#dietAnalysisButton',
-        description: 'This is the link to the diet analysis page. lick here once you have added all the foods you want to add.',
-    },
-    {
-        target: '#macros-section',
-        description: 'This shows the percentage amount for each macronutrient (protein, fats, carbohydrates) present in the food.'
-    },
-
-
-    /*
-     // bug: if this is not rendered then you get a mismatch
-     // same with all commented ones, check for their existence first before adding them as selector
-    {
-        target: '#servings-per-container',
-        description: "This is the total number of servings available per container. By default, the nutrient data only shows the values per serving.",
-    },
-    {
-        target: '#modify-serving-size',
-        description: 'Click this button to modify the number of servings. Note that this is only useful if the food has other sizes available, you can modify this to match the one you have on hand.'  
-    },
-    */
-    {
-        target: '#serving-size',
-        description: "The weight of the food. you can adjust this by clicking on the ‘modify’ button and entering the weight in grams or select any of the custom servings (if available)."
-    },
-    /*
-   
-    {
-        target: '#edible-portion',
-        description: "This is the percentage amount of the edible portion of the food. Note that the nutrient values are already adjusted to account for this."
-    },
-    */
-    {
-        target: '#calories-available',
-        description: 'The amount of energy you get from the food.'
-    },
-
-    /*
-    {
-        target: '#display-values-per-container',
-        description: "Enable this to display the total nutrient available for the whole container. This is useful for when you're consuming a whole bag of chips."
-    }
-    */
-    {
-        target: '#macros-details-section',
-        description: 'This section shows the macronutrients available in more detail.'
-    },
-
-    {
-        target: '#vitamins-section',
-        description: 'This section shows the amount of vitamins you get from the food.'
-    },
-
-    {
-        target: '#minerals-section',
-        description: 'This section shows the amount of minerals you get from the food.'
-    },
-
-    {
-        target: '#export-image',
-        description: "Click on this button if you want to generate and download a nutrition facts label for the food. Bakeries, restaurant owners, and independent food manufacturers can use this to easily generate a nutrition label for the foods they're selling."
-    },
-
-    {
-        target: '#images-section',
-        description: "This is where you can see the images representing the food. For processed foods, you'll also see here the actual nutrition label, ingredients, and barcode.",
-        position: 'top'
-    },
-    {
-        target: '#report-issue',
-        description: "Click on this button to report any issue you notice.",
-        position: 'top'
-    }
-
-    /*
-    {
-        target: '#ingredients-section',
-        description: 'This shows the ingredients used in making the food. This often applies only to processed foods like junk food.'
-    },
-    */
-
-
-
-];
+]);
+    
 
 watch(selected_custom_serving, (new_custom_serving, old_custom_serving) => {
     
@@ -1178,6 +1084,142 @@ const submitIssue = async () => {
     
 }
 
+const updateTargets = (food) => {
+    if (food.alternate_names) {
+        targets.value.push({
+            target: '#food-alternate-names',
+            description: "These are the alternative names of the food, if local names for the food is available, you’ll also see it here.",
+        });
+    }
+
+    targets.value = targets.value.concat([
+        {
+            target: '#food-category',
+            description: "This is the food category starting from the main category down to the sub-categories, each separated by “/”."
+        },
+        {
+            target: '#add-to-recipe',
+            description: 'Click this button to analyze the nutrient content of a recipe.',
+        },
+        {
+            target: '#recipeAnalysisButton',
+            description: 'This is the link to the recipe analysis page. Click here once you have added all the foods you want to add.'
+        },
+        {
+            target: '#add-to-analyze',
+            description: 'Click this button to analyze the nutrient content of the foods you ate throughout the day.',
+        },
+        {
+            target: '#dietAnalysisButton',
+            description: 'This is the link to the diet analysis page. lick here once you have added all the foods you want to add.',
+        },
+        {
+            target: '#macros-section',
+            description: 'This shows the percentage amount for each macronutrient (protein, fats, carbohydrates) present in the food.'
+        },
+    ]);
+
+    if (food.servings_per_container > 1) {
+        console.log('nono')
+        targets.value.push({
+            target: '#display-values-per-container',
+            description: "Enable this to display the total nutrient available for the whole container. This is useful for when you're consuming a whole bag of chips."
+        });
+    }
+    
+
+    if (food.servings_per_container) {
+        targets.value = targets.value.concat([
+            {
+                target: '#servings-per-container',
+                description: "This is the total number of servings available per container. By default, the nutrient data only shows the values per serving.",
+            },
+            {
+                target: '#modify-serving-size',
+                description: 'Click this button to modify the number of servings. Note that this is only useful if the food has other sizes available, you can modify this to match the one you have on hand.'  
+            }
+        ]);
+    }
+
+    if (food.serving_size) {
+        targets.value.push({
+            target: '#serving-size',
+            description: "The weight of the food. you can adjust this by clicking on the ‘modify’ button and entering the weight in grams or select any of the custom servings (if available)."
+        });
+    }
+
+    if (food.edible_portion) {
+        targets.value.push({
+            target: '#edible-portion',
+            description: "This is the percentage amount of the edible portion of the food. Note that the nutrient values are already adjusted to account for this."
+        });
+    }
+
+    if (food.calories) {
+        targets.value = targets.value.concat([
+            {
+                target: '#calories-provided',
+                description: "The amount of energy you get per serving."
+            },
+            {
+                target: '#calories-required',
+                description: 'The daily required amount of calories as per PDRI.'
+            },
+            {
+                target: '#calories-provided-percentage',
+                description: "The percentage of the daily required amount. If the calorie amount meets the FAO guidelines for use of nutrition and health claims, you will also see here a label saying high, low, very low, or free. This is the FAO health claim rating for the nutrient. As a general guideline, focus on eating foods that are high in protein, fiber, vitamins and minerals (except sodium). Avoid foods that are high in sugars, saturated fat, and cholesterol."
+            },
+            {
+                target: '#calories-bar',
+                description: 'The visual representation of the calories provided.'
+            }
+        ]);
+    }
+
+
+    targets.value.push({
+        target: '#macros-details-section',
+        description: 'This section shows the macronutrients available in more detail. '
+    });
+
+
+    targets.value = targets.value.concat([
+        {
+            target: '#vitamins-section',
+            description: 'This section shows the amount of vitamins you get from the food.'
+        },
+
+        {
+            target: '#minerals-section',
+            description: 'This section shows the amount of minerals you get from the food.'
+        },
+
+        {
+            target: '#export-image',
+            description: "Click on this button if you want to generate and download a nutrition facts label for the food. Bakeries, restaurant owners, and independent food manufacturers can use this to easily generate a nutrition label for the foods they're selling."
+        },
+
+        {
+            target: '#images-section',
+            description: "This is where you can see the images representing the food. For processed foods, you'll also see here the actual nutrition label, ingredients, and barcode.",
+            position: 'top'
+        },
+    ]);
+
+    if (food.ingredients) {
+        targets.value.push({
+            target: '#ingredients-section',
+            description: 'This shows the ingredients used in making the food. This often applies only to processed foods like junk food.'
+        });
+    }
+
+    targets.value.push({
+        target: '#report-issue',
+        description: "Click on this button to report any issue you notice.",
+        position: 'top'
+    });
+}
+
 
 const fetchData = async () => {
     
@@ -1192,7 +1234,12 @@ const fetchData = async () => {
         isLoading.value = false;
 
         const current_food = res.data;
+
         food.value = current_food;
+
+        updateTargets(current_food);
+
+        
         newServingSize.value = res.data.serving_size;
 
         if (food.value.custom_servings) {
@@ -1357,7 +1404,6 @@ const fetchData = async () => {
 }
 
 onMounted(() => {
-    console.log('bam');
     fetchData();
 });
 
