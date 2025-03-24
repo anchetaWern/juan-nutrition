@@ -82,8 +82,8 @@
     <template v-slot:default="{ isActive }">
       <v-card title="Help">
         <template v-slot:text>
-          <h3 class="text-subtitle-1 font-weight-bold">TL;DR</h3> 
-          Click this button on any page to start a tour <v-btn size="x-small" color="primary" @click="enableTourMode">Start Tour</v-btn>
+          <h3 class="text-subtitle-1 font-weight-bold">Tour</h3> 
+          Click the button below on any page to start a tour of the page. <v-btn class="mt-2" color="primary" @click="enableTourMode" block>Start Tour</v-btn>
 
           <h3 class="mt-3 text-subtitle-1 font-weight-bold">How to use</h3>
           This app has three main features: <br>
