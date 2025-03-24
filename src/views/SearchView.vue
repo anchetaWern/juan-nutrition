@@ -89,12 +89,38 @@ const totalPages = ref(1);
 const params = new URLSearchParams(route.query);
 const categories = JSON.parse(sessionStorage.getItem("food_types"));
 
-const targets = [
+const totalItems = ref(0);
+
+const targets = ref([
   {
     target: '#search-list .v-list-item--link:nth-child(1)',
     description: 'Scroll down and click through the pages until you find what you’re looking for. The calories, carbohydrates (C), total fat (F), and protein (P) content is indicated below the food description. Once done, click the food.'
-  },
-];
+  }
+]);
+
+const updateTargets = (total_items) => {
+  
+  if (total_items > 10) {
+    targets.value = targets.value.concat([
+      {
+        target: '.mdi-chevron-right',
+        description: "Click on this button to move to the next page of results. If you can't find what you're looking for after 3 pages, you might want to refine your search term.",
+        position: 'top'
+      },
+      {
+        target: '.mdi-chevron-left',
+        description: "Click on this button to move to the previous page of results.",
+        position: 'top'
+      },
+      {
+        target: '.v-pagination__item--is-active',
+        description: 'This is the current page',
+        position: 'top'
+      }
+    ]);
+  }
+}
+
 
 // Helper function to get category name
 function getCategory(slug) {
@@ -352,13 +378,14 @@ const updateSearchResults = () => {
 
   retryAxios(url)
     .then((res) => {
-      console.log('res: ', res);
-
+      
       const items_per_page = 10;
 
       isLoading.value = false;
 
-      totalPages.value = Math.round(res.data.data.total / items_per_page);
+      totalPages.value = Math.round(res.data.total / items_per_page);
+
+      updateTargets(res.data.total);
 
       items.value = res.data.data.flatMap((itm, index, array) => {
         
