@@ -83,7 +83,7 @@
     </v-dialog>
   
     <Tour 
-      :targets="tourTargets" 
+      :targets="targets" 
       v-if="tourModeEnabled" 
       :isLoading="isLoading" />
 </template>
@@ -93,6 +93,9 @@
 import { ref, computed, inject } from 'vue';
 import { useRouter } from 'vue-router';
 import Tour from '@/components/Tour.vue';
+
+import { auth } from '@/firebase.js';
+import { onAuthStateChanged } from "firebase/auth";
 
 import vegetablesImage from '@/assets/images/vegetables.jpg';
 import aquaticFoodsImage from '@/assets/images/aquatic-foods.jpg';
@@ -132,7 +135,7 @@ const cards = ref([
   { id: 9, slug: 'foraged-foods', title: 'Foraged Foods', src: foragedFoodsImage, flex: 6 },
 ]);
 
-const tourTargets = [
+const targets = ref([
   {
     target: "#searchButton",
     description: "Click on this to start searching for a food.",
@@ -153,24 +156,45 @@ const tourTargets = [
   {
     target: "#recipeAnalysisButton",
     description: "Click on this to quickly go to the recipe analysis page. You can click on the 'Add to recipe' button on a food's page to add foods to this page.",
-  },
-
-  {
-    target: "#loginButton",
-    description: "Click on this to login or create a Juan Nutrisyon account. With an account, you can contribute food labels and save recipes for future reference and for other people to view as well.",
-  },
-
-  {
-    target: "#appIcon",
-    description: "Click on this if you want to go back to the home page"
-  },
-
-  {
-    target: "#categoryCard",
-    description: "Click this to list foods of a specific food category"
   }
   
-];  
+]);
+
+const updateTargets = (new_targets) => {
+  targets.value = targets.value.concat(new_targets);
+}
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+ 
+    updateTargets([
+      {
+        target: "#logoutButton",
+        description: "Click on this to logout.",
+      },
+    ]);
+  } else {
+    updateTargets([
+      {
+        target: "#loginButton",
+        description: "Click on this to login or create a Juan Nutrisyon account. With an account, you can contribute food labels and save recipes for future reference and for other people to view as well.",
+      },
+    ]);
+  }
+
+  updateTargets([
+    {
+      target: "#appIcon",
+      description: "Click on this if you want to go back to the home page"
+    },
+
+    {
+      target: "#categoryCard",
+      description: "Click this to list foods of a specific food category"
+    }
+  ]);
+
+});
 
 
 const goToCategory = (slug) => {
