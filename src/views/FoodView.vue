@@ -799,7 +799,7 @@ const pageDescription = 'View more info at app.juanutrisyon.info';
 
 const tourModeEnabled = inject("tourModeEnabled");
 
-let targets = ref([
+const targets = ref([
     {
         target: '#food-description',
         description: "This is the descriptive name of the food. This will often indicate the state of processing (eg. raw, cooked, unripe).",
