@@ -346,7 +346,7 @@ const tourModeEnabled = inject("tourModeEnabled");
 
 const isLoading = ref(false);
 
-const targets = [
+const targets = ref([
   {
     target: '#recipe-foods .food-card:nth-child(1) .food-description',
     description: "This is the name of the food. You can click on this to view the food page."
@@ -366,80 +366,12 @@ const targets = [
     target: '#serving-count',
     description: 'Enter the estimated number of people that the recipe can feed.',
   },
+]);
 
-  // only available when user is logged in
-  /*
-  {
-    target: '#recipe-name',
-    description: 'Enter a descriptive name for the recipe.',
-  },
-  {
-    target: '#recipe-image',
-    description: 'Upload a photo of the cooked recipe here.',
-  },
-  {
-    target: '#recipe-image-preview',
-    description: 'This is the preview of the recipe image.',
-  },
-  {
-    target: '#save-recipe',
-    description: 'Click this to save the recipe. This will make it available for other users to search.',
-  },
-  */
-  {
-    target: '#serving-size-mirror',
-    description: 'This is the total weight of the recipe.',
-  },
-  {
-    target: '#serving-count-mirror',
-    description: 'This is the total number of servings.',
-  },
+const updateTargets = (new_targets) => {
+    targets.value = targets.value.concat(new_targets);
+}
 
-  {
-    target: '#calories',
-    description: 'This is the total amount of calories per serving.',
-  },
-  {
-    target: '#calories-required',
-    description: 'This is the daily recommended calorie value.',
-  },
-  {
-    target: '#calories-percent-of-required',
-    description: 'This is the percent of the daily recommended value fulfilled by eating the food.',
-  },
-  {
-    target: '#calories-progress',
-    description: "This is the visual representation of how much of the daily nutrient value is fulfilled by consuming the food. You want this to be darker for fiber, protein, vitamins and minerals. Lighter for saturated fat, sugar, and cholesterol. Note that these nutrients are not inherently good or bad, we all need fat, sugar, and cholesterol. But it's best to be vigilant about it, especially if you're already trying to manage hypertension or diabetes. Moderation and not total avoidance is always key.",
-  },
-  {
-    target: '#total-calories',
-    description: 'This is the total calories provided by the whole recipe.',
-  },
-  {
-    target: '#ingredient-count',
-    description: 'This is the total number of ingredients used in the recipe. Note that this is only accurate if the ingredients used are all whole foods. If processed foods were used as ingredients then this will be inaccurate.',
-  },
-  
-
-  {
-    target: '#macros-section',
-    description: 'This is the macronutrient section which shows detailed information on the amount of carbohydrates, fats, and protein available in the recipe.',
-  },
-  {
-    target: '#vitamins-section',
-    description: 'This is the vitamins section.',
-  },
-  {
-    target: '#minerals-section',
-    description: 'This is the minerals section.',
-    position: 'top',
-  },
-
-  {
-    target: '#report-issue',
-    description: 'Click on this button to report any issue you notice.',
-  },
-];
 
 if (recipe_data && Object.keys(servingSizes.value).length === 0) {
   recipe_data.forEach(food => {
@@ -457,9 +389,83 @@ if (serving_count) {
 onAuthStateChanged(auth, (user) => {
   if (user) {
     loggedInUser.value = user;
+    updateTargets([
+      {
+        target: '#recipe-name',
+        description: 'Enter a descriptive name for the recipe.',
+      },
+      {
+        target: '#recipe-image',
+        description: 'Upload a photo of the cooked recipe here.',
+      },
+      {
+        target: '#recipe-image-preview',
+        description: 'This is the preview of the recipe image.',
+      },
+      {
+        target: '#save-recipe',
+        description: 'Click this to save the recipe. This will make it available for other users to search.',
+      }
+    ]);
   } else {
     loggedInUser.value = null;
   }
+
+  updateTargets([
+    {
+      target: '#serving-size-mirror',
+      description: 'This is the total weight of the recipe.',
+    },
+    {
+      target: '#serving-count-mirror',
+      description: 'This is the total number of servings.',
+    },
+
+    {
+      target: '#calories',
+      description: 'This is the total amount of calories per serving.',
+    },
+    {
+      target: '#calories-required',
+      description: 'This is the daily recommended calorie value.',
+    },
+    {
+      target: '#calories-percent-of-required',
+      description: 'This is the percent of the daily recommended value fulfilled by eating the food.',
+    },
+    {
+      target: '#calories-progress',
+      description: "This is the visual representation of how much of the daily nutrient value is fulfilled by consuming the food. You want this to be darker for fiber, protein, vitamins and minerals. Lighter for saturated fat, sugar, and cholesterol. Note that these nutrients are not inherently good or bad, we all need fat, sugar, and cholesterol. But it's best to be vigilant about it, especially if you're already trying to manage hypertension or diabetes. Moderation and not total avoidance is always key.",
+    },
+    {
+      target: '#total-calories',
+      description: 'This is the total calories provided by the whole recipe.',
+    },
+    {
+      target: '#ingredient-count',
+      description: 'This is the total number of ingredients used in the recipe. Note that this is only accurate if the ingredients used are all whole foods. If processed foods were used as ingredients then this will be inaccurate.',
+    },
+    
+
+    {
+      target: '#macros-section',
+      description: 'This is the macronutrient section which shows detailed information on the amount of carbohydrates, fats, and protein available in the recipe.',
+    },
+    {
+      target: '#vitamins-section',
+      description: 'This is the vitamins section.',
+    },
+    {
+      target: '#minerals-section',
+      description: 'This is the minerals section.',
+      position: 'top',
+    },
+
+    {
+      target: '#report-issue',
+      description: 'Click on this button to report any issue you notice.',
+    },
+  ]);
 });
 
 const saveRecipe = async () => {
