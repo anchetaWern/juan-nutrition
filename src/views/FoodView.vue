@@ -249,7 +249,7 @@
         
         <v-divider></v-divider>
 
-        <div ref="exportable" class="capture-area hidden">
+        <div ref="exportable" class="capture-area hidden" v-if="recommended_daily_values">
 
             <NutritionLabel 
                 :servingsPerContainer="food.servings_per_container"
@@ -262,7 +262,7 @@
             />
         </div>
 
-        <div class="mt-3" v-if="elements && elements.length">
+        <div class="mt-3" v-if="elements && elements.length && recommended_daily_values">
             <span class="text-subtitle-2">Elements</span>
             <NutrientsTable 
                 :nutrients="elements" 
@@ -278,7 +278,7 @@
                 :faoNutrientContentClaims="fao_nutrient_claims"  />
         </div>
 
-        <div id="macros-details-section" class="mt-3" v-if="macros && macros.length">
+        <div id="macros-details-section" class="mt-3" v-if="macros && macros.length && recommended_daily_values">
             <span class="text-subtitle-2">Macros</span>
             <NutrientsTable 
                 :nutrients="macros" 
@@ -295,7 +295,7 @@
             />
         </div>
 
-        <div id="vitamins-section" class="mt-3" v-if="vitamins && vitamins.length">
+        <div id="vitamins-section" class="mt-3" v-if="vitamins && vitamins.length && recommended_daily_values">
             <span class="text-subtitle-2">Vitamins</span>
             <NutrientsTable 
                 :nutrients="vitamins" 
@@ -311,7 +311,7 @@
                 :faoNutrientContentClaims="fao_nutrient_claims"  />
         </div>
 
-        <div id="minerals-section" class="mt-3" v-if="minerals && minerals.length">
+        <div id="minerals-section" class="mt-3" v-if="minerals && minerals.length && recommended_daily_values">
             <span class="text-subtitle-2">Minerals</span>
             <NutrientsTable 
                 :nutrients="minerals" 
@@ -327,7 +327,7 @@
                 :faoNutrientContentClaims="fao_nutrient_claims"  />
         </div>
 
-        <div id="others-section" class="mt-3" v-if="others && others.length">
+        <div id="others-section" class="mt-3" v-if="others && others.length && recommended_daily_values">
             <span class="text-subtitle-2">Others</span>
             <NutrientsTable 
                 :nutrients="others" 
@@ -614,7 +614,7 @@
                         
                     </div>   
 
-                    <div class="pt-3 text-body-2">
+                    <div class="pt-3 text-body-2" v-if="daily_values_table">
                  
                         <v-table density="compact">
                             <thead>
