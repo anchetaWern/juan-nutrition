@@ -254,8 +254,7 @@ const isLoading = ref(true);
 
 const tourModeEnabled = inject("tourModeEnabled");
 
-const targets = [
-
+const initial_targets = [
   {
     target: '#analyzed-foods .food-card:nth-child(1) .food-description',
     description: "This is the name of the food. You can click on this to view the food page."
@@ -279,23 +278,38 @@ const targets = [
     target: '#deficient-nutrients',
     description: "These are the nutrients you’re deficient in. Look into foods that are high on these nutrients and add them to your diet over time."
   },
-  {
-    target: '#overconsumed-nutrients',
-    description: "These are the nutrients you’re over-consuming. Try going through the food pages of all the foods you’ve added for analysis and check which ones are high on these nutrients. From there, limit how much of those foods you are eating on a daily basis.",
-    position: 'top',
-  },
-  {
-    target: '#good-coverage-nutrients',
-    description: "These are the nutrients where you’re hitting the daily recommended values. Continue consuming the foods rich in these nutrients so you can continue hitting the targets on a daily basis.",
-    position: 'top',
-  },
+];
 
-  {
+const targets = ref(initial_targets);
+
+const getUpdatedTargets = (overconsumed_nutrients, good_coverage_nutrients) => {
+
+  const new_targets = initial_targets;
+  if (overconsumed_nutrients) {
+    new_targets.push({
+      target: '#overconsumed-nutrients',
+      description: "These are the nutrients you’re over-consuming. Try going through the food pages of all the foods you’ve added for analysis and check which ones are high on these nutrients. From there, limit how much of those foods you are eating on a daily basis.",
+      position: 'top',
+    });
+  }
+
+  if (good_coverage_nutrients) {
+    new_targets.push({
+      target: '#good-coverage-nutrients',
+      description: "These are the nutrients where you’re hitting the daily recommended values. Continue consuming the foods rich in these nutrients so you can continue hitting the targets on a daily basis.",
+      position: 'top',
+    });
+  }
+
+
+  new_targets.push({
     target: '#report-issue',
     description: "Click on this button to report any issue you notice.",
     position: 'top'
-  }
-];
+  });
+
+  return new_targets;
+}
 
 
 let isProgrammaticUpdate = false;
@@ -538,6 +552,7 @@ const refreshNutrients = () => {
 
     isLoading.value = false;
   
+    targets.value = getUpdatedTargets(filtered_good_coverage_nutrients, filtered_overconsumed_nutrients);
   }
   
 }
