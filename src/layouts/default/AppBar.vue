@@ -19,6 +19,7 @@
       >
         <v-btn size="x-small" icon="mdi-chef-hat" @click="goToRecipe" id="recipeAnalysisButton"></v-btn>
       </v-badge>
+      <v-btn v-if="ingredientCount == 0" size="x-small" icon="mdi-chef-hat" @click="goToRecipe" id="recipeAnalysisButton"></v-btn>
 
       <v-badge
         v-if="analyzeCount > 0"
@@ -28,8 +29,6 @@
       >
         <v-btn size="x-small" icon="mdi-chart-box" @click="goToAnalysis" id="dietAnalysisButton"></v-btn>
       </v-badge>
-
-      <v-btn v-if="ingredientCount == 0" size="x-small" icon="mdi-chef-hat" @click="goToRecipe" id="recipeAnalysisButton"></v-btn>
       <v-btn v-if="analyzeCount == 0" size="x-small" icon="mdi-chart-box" @click="goToAnalysis" id="dietAnalysisButton"></v-btn>
       
 
