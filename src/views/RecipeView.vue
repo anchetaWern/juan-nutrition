@@ -2,7 +2,10 @@
  
     <v-container class="mt-5" id="recipe-container">
     
-      <div class="text-h6 mb-2">Create Recipe</div>
+      <div class="text-subtitle-1 mb-2">
+        Create Recipe
+        <v-btn size="x-small" variant="text" icon="mdi-help" @click="helpDialog = true" id="helpButton"></v-btn>
+      </div> 
 
       <v-alert 
         v-if="!recipe || recipe.length === 0"
@@ -231,6 +234,39 @@
 
     </div>
 
+
+    <v-dialog
+        v-model="helpDialog"
+        width="auto"
+        max-width="350px"
+      >
+        <template v-slot:default="{ isActive }">
+          <v-card title="Help">
+            <template v-slot:text>
+              
+              Click the button below to start a tour of the page. <v-btn class="mt-2" color="primary" @click="enableTourMode" block>Start Tour</v-btn>
+
+              <br>
+              You can use the <a href="/recipe">recipe analysis</a> tool to analyze the nutrient content of a recipe. Recipe analysis works the same way as diet analysis: search for the individual ingredients and add them to a recipe. 
+              You will then be able to view the nutrient content of the recipe.
+              You can also save your recipe for other users to view and modify.  
+
+            </template>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+
+              <v-btn
+                text="ok"
+                variant="flat"
+                @click="isActive.value = false"
+              ></v-btn>
+            </v-card-actions>
+          </v-card>
+        </template>
+      </v-dialog>
+
+
     <Tour 
       :targets="targets" 
       :isLoading="isLoading"
@@ -241,9 +277,13 @@
 </template>
 
 
-<style>
+<style scope>
 .img {
   max-width: 100%;
+}
+
+#recipe-container {
+  padding: 0.5rem 0 !important;
 }
 </style>
 
@@ -342,7 +382,15 @@ const emit = defineEmits(['update-ingredient-count-child', 'update-ingredient-se
 
 let isProgrammaticUpdate = false;
 
+const helpDialog = ref(false);
+
 const tourModeEnabled = inject("tourModeEnabled");
+const updateTourMode = inject("updateTourMode");
+
+const enableTourMode = () => {
+  helpDialog.value = false;
+  updateTourMode(true);
+}
 
 const isLoading = ref(false);
 

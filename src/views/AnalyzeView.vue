@@ -2,7 +2,10 @@
  
     <v-container class="mt-5" id="analyze-container">
     
-      <div class="text-h6 mb-2">Analyze your diet</div>
+      <div class="text-subtitle-1 mb-2">
+        Analyze your diet
+        <v-btn size="x-small" variant="text" icon="mdi-help" @click="helpDialog = true" id="helpButton"></v-btn>
+      </div>
 
       <v-alert 
         v-if="!analyze || analyze.length === 0"
@@ -165,6 +168,37 @@
 
     </v-container>
 
+
+    <v-dialog
+      v-model="helpDialog"
+      width="auto"
+      max-width="350px"
+    >
+      <template v-slot:default="{ isActive }">
+        <v-card title="Help">
+          <template v-slot:text>
+            Click the button below to start a tour of the page. <v-btn class="mt-2" color="primary" @click="enableTourMode" block>Start Tour</v-btn>
+
+            <br>
+            To <a href="/analyze">analyze your diet</a>, search for the foods you ate for a day and click on the "Analyze" button. Repeat this step for every food you ate. Once done, click on the graph icon on the top portion of the screen then adjust the serving sizes for each food.<br>
+            The summary section is where all the most important nutrients to watch out for is displayed. <br>
+
+          </template>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+
+            <v-btn
+              text="ok"
+              variant="flat"
+              @click="isActive.value = false"
+            ></v-btn>
+          </v-card-actions>
+        </v-card>
+      </template>
+    </v-dialog>
+
+
     <Tour 
       :targets="targets" 
       :isLoading="isLoading"
@@ -253,6 +287,14 @@ const hasValuesPerContainerToggle = ref(false);
 const isLoading = ref(true);
 
 const tourModeEnabled = inject("tourModeEnabled");
+const updateTourMode = inject("updateTourMode");
+
+const enableTourMode = () => {
+  helpDialog.value = false;
+  updateTourMode(true);
+}
+
+const helpDialog = ref(false);
 
 const initial_targets = [
   {
