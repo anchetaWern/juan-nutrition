@@ -247,9 +247,14 @@
               Click the button below to start a tour of the page. <v-btn class="mt-2" color="primary" @click="enableTourMode" block>Start Tour</v-btn>
 
               <br>
-              You can use the <a href="/recipe">recipe analysis</a> tool to analyze the nutrient content of a recipe. Recipe analysis works the same way as diet analysis: search for the individual ingredients and add them to a recipe. 
+              You can use the <a href="/recipe">recipe analysis</a> tool to analyze the nutrient content of a recipe. 
+              <br>
+              Recipe analysis works the same way as diet analysis: search for the individual ingredients and add them to a recipe by clicking on the <strong>add to recipe</strong> button. 
+              Once you've added all the ingredients, go to the <a href="/recipe">create recipe</a> page and modify the serving sizes for each of the ingredient.
+              You can do so by clicking on the weighing scale icon for each food and enter the weight in grams.
               You will then be able to view the nutrient content of the recipe.
-              You can also save your recipe for other users to view and modify.  
+              <br>
+              You can also save your recipe for other users to view and modify. But this requires a Juan Nutrisyon account. You can click here to <a href="/register">register.</a>
 
             </template>
 
