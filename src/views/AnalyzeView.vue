@@ -180,9 +180,15 @@
             Click the button below to start a tour of the page. <v-btn class="mt-2" color="primary" @click="enableTourMode" block>Start Tour</v-btn>
 
             <br>
-            To <a href="/analyze">analyze your diet</a>, search for the foods you ate for a day and click on the "Analyze" button. Repeat this step for every food you ate. Once done, click on the graph icon on the top portion of the screen then adjust the serving sizes for each food.<br>
+            To analyze your diet, search for the foods you ate for a day and click on the "Analyze" button. Repeat this step for every food you ate. 
+            <br>
+            Once done, go to the <a href="/analyze">diet analysis page</a> then adjust the serving sizes for each food by clicking on the weighing scale icon and entering the weight of the food in grams. Click on the "modify serving size" button to commit your change.<br>
             The summary section is where all the most important nutrients to watch out for is displayed. <br>
-
+            The deficient nutrients section is where all the nutrients you're deficient in is listed. <br>
+            The over-consumed nutrients section is where all the nutrients you've overconsumed is listed. <br>
+            The nutrients with good coverage section lists all the nutrients where you are meeting the daily recommended values. <br>
+            Note that not all foods have data on every single nutrient. For example, foods from the PhilFCT database don't have data on Vitamin B6, Vitamin B9, Vitamin B12, Vitamin D and Vitamin K. But foods from the Food Data Central has it. <br>
+            This means the analysis can never be 100% accurate for those nutrients.
           </template>
 
           <v-card-actions>
