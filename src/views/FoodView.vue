@@ -345,7 +345,7 @@
         
         <div id="export-image" class="text-center mt-2">
             <v-btn variant="plain" size="x-small" @click="exportAsImage">
-            Export as image
+            Export food label
             </v-btn>
         </div>
     </div>
