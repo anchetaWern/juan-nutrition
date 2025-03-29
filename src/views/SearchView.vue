@@ -392,7 +392,7 @@ const updateSearchResults = () => {
         const macros = itm.nutrients.map((nutrient) => {
           if (macros_keys.indexOf(nutrient.name) !== -1) {
             return {
-              [nutrient.name]: `${nutrient.amount}${nutrient.unit}` 
+              [nutrient.name]: `${nutrient.amount.toFixed(2)}${nutrient.unit}` 
             }
             return false;
           }
